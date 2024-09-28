@@ -1,0 +1,53 @@
+[
+  {
+    "ContainingType": "IVEBA_API_Rest.Controllers.IVE13ME.ArchivoME13Controller",
+    "Method": "ConsultarInformacionArchivoIVE13ME",
+    "RelativePath": "api/ArchivoME13/ConsultarInformacionArchivoIVE13ME",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[IVEBA_API_Rest.Models.DTOS.DTO_IVE13ME, IVEBA_API_Rest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "IVEBA_API_Rest.Controllers.IVE13ME.ArchivoME13Controller",
+    "Method": "ConsultarInformacionArchivoIVE13MEPorFecha",
+    "RelativePath": "api/ArchivoME13/ConsultarInformacionArchivoIVE13MEPorFecha",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "fechaInicial",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "fechaFinal",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[IVEBA_API_Rest.Models.DTOS.DTO_IVE13ME, IVEBA_API_Rest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  }
+]
