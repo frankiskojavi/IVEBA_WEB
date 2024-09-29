@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\IVEBA_Web_App.props" />
+</Project>

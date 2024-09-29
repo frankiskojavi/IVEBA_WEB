@@ -1,0 +1,100 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\IVEBA_WEB\\IVEBAWEB\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{C6EF0803-0D14-43FB-B1A1-B42F52566336}|IVEBA_Web_App\\IVEBA_Web_App.csproj|c:\\users\\frank\\desktop\\test off\\inter\\fuentes\\iveba_web\\ivebaweb\\iveba_web_app\\pages\\archivome13\\archivome13.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C6EF0803-0D14-43FB-B1A1-B42F52566336}|IVEBA_Web_App\\IVEBA_Web_App.csproj|solutionrelative:iveba_web_app\\pages\\archivome13\\archivome13.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C6EF0803-0D14-43FB-B1A1-B42F52566336}|IVEBA_Web_App\\IVEBA_Web_App.csproj|c:\\users\\frank\\desktop\\test off\\inter\\fuentes\\iveba_web\\ivebaweb\\iveba_web_app\\pages\\archivome13\\archivome13.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C6EF0803-0D14-43FB-B1A1-B42F52566336}|IVEBA_Web_App\\IVEBA_Web_App.csproj|solutionrelative:iveba_web_app\\pages\\archivome13\\archivome13.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C6EF0803-0D14-43FB-B1A1-B42F52566336}|IVEBA_Web_App\\IVEBA_Web_App.csproj|c:\\users\\frank\\desktop\\test off\\inter\\fuentes\\iveba_web\\ivebaweb\\iveba_web_app\\models\\archivome13\\archivome13dto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C6EF0803-0D14-43FB-B1A1-B42F52566336}|IVEBA_Web_App\\IVEBA_Web_App.csproj|solutionrelative:iveba_web_app\\models\\archivome13\\archivome13dto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C6EF0803-0D14-43FB-B1A1-B42F52566336}|IVEBA_Web_App\\IVEBA_Web_App.csproj|c:\\users\\frank\\desktop\\test off\\inter\\fuentes\\iveba_web\\ivebaweb\\iveba_web_app\\pages\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C6EF0803-0D14-43FB-B1A1-B42F52566336}|IVEBA_Web_App\\IVEBA_Web_App.csproj|solutionrelative:iveba_web_app\\pages\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 257,
+          "SelectedChildIndex": 5,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\IVEBA_WEB\\IVEBAWEB\\IVEBA_Web_App\\Pages\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "IVEBA_Web_App\\Pages\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\IVEBA_WEB\\IVEBAWEB\\IVEBA_Web_App\\Pages\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "IVEBA_Web_App\\Pages\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAAUAAAAA/////78twBIAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-09-29T15:05:02.403Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ArchivoME13DTO.cs",
+              "DocumentMoniker": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\IVEBA_WEB\\IVEBAWEB\\IVEBA_Web_App\\Models\\ArchivoME13\\ArchivoME13DTO.cs",
+              "RelativeDocumentMoniker": "IVEBA_Web_App\\Models\\ArchivoME13\\ArchivoME13DTO.cs",
+              "ToolTip": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\IVEBA_WEB\\IVEBAWEB\\IVEBA_Web_App\\Models\\ArchivoME13\\ArchivoME13DTO.cs",
+              "RelativeToolTip": "IVEBA_Web_App\\Models\\ArchivoME13\\ArchivoME13DTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-29T14:54:37.473Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ArchivoME13.cshtml.cs",
+              "DocumentMoniker": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\IVEBA_WEB\\IVEBAWEB\\IVEBA_Web_App\\Pages\\ArchivoME13\\ArchivoME13.cshtml.cs",
+              "RelativeDocumentMoniker": "IVEBA_Web_App\\Pages\\ArchivoME13\\ArchivoME13.cshtml.cs",
+              "ToolTip": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\IVEBA_WEB\\IVEBAWEB\\IVEBA_Web_App\\Pages\\ArchivoME13\\ArchivoME13.cshtml.cs",
+              "RelativeToolTip": "IVEBA_Web_App\\Pages\\ArchivoME13\\ArchivoME13.cshtml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-29T14:53:48.292Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ArchivoME13.cshtml",
+              "DocumentMoniker": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\IVEBA_WEB\\IVEBAWEB\\IVEBA_Web_App\\Pages\\ArchivoME13\\ArchivoME13.cshtml",
+              "RelativeDocumentMoniker": "IVEBA_Web_App\\Pages\\ArchivoME13\\ArchivoME13.cshtml",
+              "ToolTip": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\IVEBA_WEB\\IVEBAWEB\\IVEBA_Web_App\\Pages\\ArchivoME13\\ArchivoME13.cshtml",
+              "RelativeToolTip": "IVEBA_Web_App\\Pages\\ArchivoME13\\ArchivoME13.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-09-29T14:53:01.749Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

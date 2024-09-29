@@ -1,0 +1,40 @@
+﻿@page
+@model IVEBA_Web_App.Pages.ArchivoME13.ArchivoME13Model
+
+<div class="container mt-5">
+    <h2>Formulario de Ejemplo</h2>
+    <form method="post">
+        <div class="form-group">
+            <label for="Fecha">ID:</label>
+            <input type="text" class="form-control datetimepicker" asp-for="FormModel.Codigo" required />
+            <span asp-validation-for="FormModel.Codigo" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="Fecha">Nombre:</label>
+            <input type="text" class="form-control datetimepicker" asp-for="FormModel.Nombre" required />
+            <span asp-validation-for="FormModel.Nombre" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mt-3">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+    </form>
+
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/js/tempusdominus-bootstrap-4.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/css/tempusdominus-bootstrap-4.min.css" />
+
+    <script>
+        $(function () {
+            $('.datetimepicker').datetimepicker({
+                format: 'YYYY-MM-DD HH:mm'
+            });
+        });
+    </script>
+}
+
+
+
