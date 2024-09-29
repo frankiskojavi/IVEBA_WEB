@@ -10,7 +10,14 @@
 </style>
 <div class="container mt-7">
     <div class="card p-5 shadow mx-auto" style="max-width: 100%; width: 100%; max-width: 600px;">
-        <h4 class="text-center mb-4">IVE Moneda Extranjera - Generación de Archivo</h4>
+        <h4 class="text-center mb-4">IVE Moneda Extranjera</h4>
+
+        <!-- Mostrar errores si hay problemas al cargar información -->
+        <div class="text-danger">
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+        </div>
+
+
         <br>
         <form id="generarForm" method="post">
             <div class="row">
@@ -94,7 +101,8 @@
                         <button type="submit" class="btn btn-danger w-100" id="btnCancelar" asp-page="/Index">Cancelar</button>
                     </div>
                 </div>
-            </div>
+            </div>            
+
         </form>
     </div>
 </div>
@@ -102,15 +110,26 @@
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
-    <script>        
+    <script>
         $(document).ready(function () {
 
-            // POST : OnPostGenerarArchivoME13
+            // Muestra modal SI/NO
             $('#btnGenerar').on('click', function (e) {
                 e.preventDefault();  // Prevenir el envío del formulario tradicional
+                $('#confirmarGeneracionArchivoBody').html('<p>AVISO!!!, recuerde que el archivo definitivo unicamente se puede generar una vez por mes. Asegurese que el archivo preliminar haya sido revisado y depurado. ¿Desea continuar?</p>');
+                var confirmarGeneracionArchivo = new bootstrap.Modal(document.getElementById('confirmarGeneracionArchivo'));
+                confirmarGeneracionArchivo.show();  // Mostrar el modal de confirmación
+            });
 
+            // Si el usuario confirma, realizar la solicitud AJAX
+            $('#btnConfirmar').on('click', function () {
+                // Oculta modal SI/NO
+                var confirmarGeneracionArchivo = bootstrap.Modal.getInstance(document.getElementById('confirmarGeneracionArchivo'));
+                confirmarGeneracionArchivo.hide();
+
+                // POST : OnPostGenerarArchivoME13
                 $.ajax({
-                    url: '@Url.Page("/ArchivoME13/ArchivoME13", new { handler = "GenerarArchivoME13" })',  // Asegúrate de usar el manejador "Generar"
+                    url: '@Url.Page("/ArchivoME13/ArchivoME13", new { handler = "GenerarArchivoME13" })',
                     type: 'POST',
                     data: $('#generarForm').serialize(),  // Serializa los datos del formulario
                     success: function (response) {
@@ -119,37 +138,45 @@
                             $('#registrosProcesados').val(response.registrosProcesados);
                             $('#registrosConError').val(response.registrosConError);
 
-                            // Muestra mensaje 
-                            $('#modalMensajeLabel').text('Proceso realizado exitosamente.');
-                            $('#modalMensajeBody').html('<p>La información del archivo ME13 ha sido realizada exitosamente..</p>');
+                            // Decodificar el archivo base64 y crear un enlace para la descarga
+                            var link = document.createElement('a');
+                            link.href = 'data:text/plain;base64,' + response.fileContent;
+                            link.download = response.fileName;
+                            document.body.appendChild(link);
+
+                            // Escuchar el evento de clic para mostrar el modal después de la descarga
+                            link.addEventListener('click', function () {
+                                setTimeout(function () {
+                                    // Mostrar el modal de éxito después de que el archivo sea descargado
+                                    $('#modalMensajeLabel').text('Proceso realizado exitosamente.');
+                                    $('#modalMensajeBody').html('<p>El archivo ha sido generado y descargado exitosamente.</p>');
+                                    var myModal = new bootstrap.Modal(document.getElementById('modalMensaje'));
+                                    myModal.show();
+                                }, 500);  // Tiempo de espera para asegurar la descarga
+                            });
+                            
+                            link.click();
+                            document.body.removeChild(link);
+                        }
+                        else {
+                            // Si hubo un error, mostrar el mensaje en un modal
+                            $('#modalMensajeLabel').text('Error en la generación del archivo.');
+                            $('#modalMensajeBody').html('<p>' + response.errorMessage + '</p>');
                             var myModal = new bootstrap.Modal(document.getElementById('modalMensaje'));
                             myModal.show();
-
                         }
                     },
                     error: function () {
-                        alert("Hubo un error en el proceso de generación.");
+                        // Mostrar modal de error
+                        $('#modalMensajeLabel').text('Error en la generación del archivo.');
+                        $('#modalMensajeBody').html('<p>Hubo un error en el proceso de generación del archivo.</p>');
+                        var myModal = new bootstrap.Modal(document.getElementById('modalMensaje'));
+                        myModal.show();
                     }
                 });
             });
-            
-            // POST: xxx
 
         });
     </script>
 
-
-    <script>                
-        function actualizarNombreArchivo() {
-            var mes = document.getElementById("mesSelect").value;
-            var año = document.getElementById("añoSelect").value;
-            var codigoArchivo = "IVEME13";  // Aquí puedes definir tu código de archivo
-
-            // Validar que mes y año no estén vacíos
-            if (mes && año) {
-                var nombreArchivo = "C:/" + codigoArchivo + "/" + año + mes.padStart(2, '0') + "BA.117";
-                document.getElementById("nombreArchivo").value = nombreArchivo;
-            }
-        }               
-    </script>
 }

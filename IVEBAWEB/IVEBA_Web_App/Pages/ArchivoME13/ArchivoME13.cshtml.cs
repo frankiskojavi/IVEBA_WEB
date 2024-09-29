@@ -1,4 +1,5 @@
 using IVEBA_Web_App.Models.ArchivoME13;
+using IVEBA_Web_App.Services.ArchivoME13;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -8,81 +9,76 @@ namespace IVEBA_Web_App.Pages.ArchivoME13
     public class ArchivoME13Model : PageModel
     {
         [BindProperty]
-        public ArchivoME13DTO FormModel { get; set; }
+        public DTO_ME13_Form FormModel { get; set; }
         public List<SelectListItem> Meses { get; set; }
         public List<SelectListItem> Años { get; set; }
 
-        public void OnGet()
-        {
-            // Inicializar valores al cargar el formulario
-            cargarInformacionDefault();
-        }
+        private readonly iGeneracionArchivoME13 Service;
 
-        /*
-        public IActionResult OnPost()
+        public ArchivoME13Model(iGeneracionArchivoME13 service)
         {
-            if (!ModelState.IsValid)
+            Service = service;
+        }
+        public IActionResult OnGet()
+        {
+            try
             {
-                return Page();
+                cargarInformacionDefault();
             }
-            return RedirectToPage("/Index");
+            catch (Exception ex)
+            {
+                return RedirectToPage("/Error");
+            }
+            return Page();
         }
-        */
 
-        public IActionResult OnPostGenerarArchivoME13()
-        {            
-            // Simulación de proceso
-            FormModel.registrosProcesados = 100; // Ejemplo de valores modificados
-            FormModel.registrosConError = 5;
+        public async Task<IActionResult> OnPostGenerarArchivoME13Async()
+        {
+            try
+            {
+                return await generarInformacionArchivoME13();
+                // Respuesta al Cliente
 
-            // Retornar un resultado JSON con los datos procesados
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    errorMessage = "Ocurrió un error al generar el archivo: " + ex.Message
+                });
+            }
+        }
+
+        public async void cargarInformacionDefault()
+        {
+            Meses = await Service.recuperarMesesComboBox();
+            Años = await Service.recuperarAñosComboBox();
+            FormModel = await Service.cargarInformacionPorDefecto();
+        }
+
+        public async Task<JsonResult> generarInformacionArchivoME13()
+        {
+            // Contenido del archivo de texto
+            string contendoArchivo = "Hola Mundo";
+            byte[] fileBytes = System.Text.Encoding.UTF8.GetBytes(contendoArchivo);
+            string fileBase64 = Convert.ToBase64String(fileBytes);
+            string fileName = FormModel.nombreArchivo;
+            int fechaInicial = 20240801;
+            int fechaFinal = 20240830;
+            List<DTO_IVE13ME_Response> data = await Service.ConsultarInformacionArchivoIVE13MEPorFecha(fechaInicial, fechaFinal);
+
             return new JsonResult(new
             {
                 success = true,
-                registrosProcesados = FormModel.registrosProcesados,
-                registrosConError = FormModel.registrosConError
-            });
-        }
-
-        public void cargarInformacionDefault(){ 
-            string codigoArchivo = "IVEME13";
-            int añoSistema = System.DateTime.Now.Year;
-            int mesSistema = System.DateTime.Now.Month;
-
-            Meses = new List<SelectListItem>
-            {
-                new SelectListItem("Enero", "1"),
-                new SelectListItem("Febrero", "2"),
-                new SelectListItem("Marzo", "3"),
-                new SelectListItem("Abril", "4"),
-                new SelectListItem("Mayo", "5"),
-                new SelectListItem("Junio", "6"),
-                new SelectListItem("Julio", "7"),
-                new SelectListItem("Agosto", "8"),
-                new SelectListItem("Septiembre", "9"),
-                new SelectListItem("Octubre", "10"),
-                new SelectListItem("Noviembre", "11"),
-                new SelectListItem("Diciembre", "12")
-            };
-            int currentYear = DateTime.Now.Year;
-            Años = new List<SelectListItem>();
-            for (int year = 2005; year <= currentYear; year++)
-            {
-                Años.Add(new SelectListItem(year.ToString(), year.ToString()));
-            }
-
-            FormModel = new ArchivoME13DTO
-            {
-                codigoArchivo = codigoArchivo,
-                año = añoSistema,
-                mes = mesSistema,
-                nombreArchivo = $"C:/{ codigoArchivo }/{ añoSistema }{ mesSistema.ToString("00") }BA.117",
-                registrosProcesados = 0, 
+                registrosProcesados = data.Count(),
                 registrosConError = 0,
-                detalle = 0,
-                nit = "",
-                generaError = 0
-            };
+                fileName = fileName,
+                fileContent = fileBase64
+            });
+
         }
+
+
     }
 }

@@ -2,7 +2,7 @@
 
 namespace IVEBA_Web_App.Models.ArchivoME13
 {
-    public class ArchivoME13DTO
+    public class DTO_ME13_Form
     {
         public string codigoArchivo { get; set; }        
         public int  año { get; set; }

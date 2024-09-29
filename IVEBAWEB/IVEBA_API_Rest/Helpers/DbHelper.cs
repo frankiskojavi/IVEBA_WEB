@@ -18,6 +18,7 @@ namespace IVEBA_API_Rest.Helpers
             using (SqlConnection connection = new SqlConnection(_connectionString))
             using (SqlCommand command = new SqlCommand(query, connection))
             {
+                command.CommandTimeout = 100000;
                 if (parameters != null)
                     command.Parameters.AddRange(parameters);
 
