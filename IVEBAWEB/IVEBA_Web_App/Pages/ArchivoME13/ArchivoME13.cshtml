@@ -1,40 +1,155 @@
 ﻿@page
 @model IVEBA_Web_App.Pages.ArchivoME13.ArchivoME13Model
+@{
+    ViewData["Title"] = "ArchivoME13";
+}
+<style>
+    .mt-7 {
+        margin-top: 4rem;
+    }
+</style>
+<div class="container mt-7">
+    <div class="card p-5 shadow mx-auto" style="max-width: 100%; width: 100%; max-width: 600px;">
+        <h4 class="text-center mb-4">IVE Moneda Extranjera - Generación de Archivo</h4>
+        <br>
+        <form id="generarForm" method="post">
+            <div class="row">
+                <!-- Campo Mes -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="Mes">Mes:</label>
+                        <select class="form-control" asp-for="FormModel.mes" asp-items="Model.Meses" id="mesSelect" onchange="actualizarNombreArchivo()">
+                        </select>
+                    </div>
+                </div>
+                <!-- Campo Año -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="Año">Año:</label>
+                        <select class="form-control" asp-for="FormModel.año" asp-items="Model.Años" id="añoSelect" onchange="actualizarNombreArchivo()">
+                        </select>
+                    </div>
+                </div>
+            </div>
 
-<div class="container mt-5">
-    <h2>Formulario de Ejemplo</h2>
-    <form method="post">
-        <div class="form-group">
-            <label for="Fecha">ID:</label>
-            <input type="text" class="form-control datetimepicker" asp-for="FormModel.Codigo" required />
-            <span asp-validation-for="FormModel.Codigo" class="text-danger"></span>
-        </div>
+            <div class="form-group mt-3">
+                <label for="Nombre">Archivo:</label>
+                <input type="text" class="form-control" asp-for="FormModel.nombreArchivo" id="nombreArchivo" readonly />
+            </div>
 
-        <div class="form-group">
-            <label for="Fecha">Nombre:</label>
-            <input type="text" class="form-control datetimepicker" asp-for="FormModel.Nombre" required />
-            <span asp-validation-for="FormModel.Nombre" class="text-danger"></span>
-        </div>
+            <br>
 
-        <div class="form-group mt-3">
-            <button type="submit" class="btn btn-primary">Guardar</button>
-        </div>
-    </form>
+            <!-- Registros procesados -->
 
+            <div class="row border p-3 mb-3" style="border-color: #ccc; border-radius: 5px;">
+                <div class="col-md-6 col-sm-12 mb-3">
+                    <div class="form-group">
+                        <label>Registros Procesados:</label>
+                        <input type="text" class="form-control" id="registrosProcesados" asp-for="FormModel.registrosProcesados" readonly />
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12 mb-3">
+                    <div class="form-group">
+                        <label>Errores</label>
+                        <input type="text" class="form-control" is="registrosConError" asp-for="FormModel.registrosConError" readonly />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resultado Registros procesados -->
+
+            <div class="row border p-3 mb-4" style="border-color: #ccc; border-radius: 5px;">
+                <div class="col-md-4 col-sm-12 mb-3">
+                    <div class="form-group">
+                        <label for="detalle">Procesados:</label>
+                        <input type="text" class="form-control" id="detalle" asp-for=" FormModel.detalle" readonly />
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-12 mb-3">
+                    <div class="form-group">
+                        <label for="nit">NIT:</label>
+                        <input type="text" class="form-control" id="nit" asp-for="FormModel.nit" readonly />
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-12 mb-3">
+                    <div class="form-group">
+                        <label for="generaError">Errores:</label>
+                        <input type="text" class="form-control" id="generaError" asp-for=" FormModel.generaError" readonly />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <!-- Botón Generar -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary w-100" id="btnGenerar">Generar</button>
+                    </div>
+                </div>
+                <!-- Botón Cancelar -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-danger w-100" id="btnCancelar" asp-page="/Index">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 
 @section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/js/tempusdominus-bootstrap-4.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/css/tempusdominus-bootstrap-4.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
-    <script>
-        $(function () {
-            $('.datetimepicker').datetimepicker({
-                format: 'YYYY-MM-DD HH:mm'
+    <script>        
+        $(document).ready(function () {
+
+            // POST : OnPostGenerarArchivoME13
+            $('#btnGenerar').on('click', function (e) {
+                e.preventDefault();  // Prevenir el envío del formulario tradicional
+
+                $.ajax({
+                    url: '@Url.Page("/ArchivoME13/ArchivoME13", new { handler = "GenerarArchivoME13" })',  // Asegúrate de usar el manejador "Generar"
+                    type: 'POST',
+                    data: $('#generarForm').serialize(),  // Serializa los datos del formulario
+                    success: function (response) {
+                        if (response.success) {
+                            // Actualizar los campos de registros procesados y con error
+                            $('#registrosProcesados').val(response.registrosProcesados);
+                            $('#registrosConError').val(response.registrosConError);
+
+                            // Muestra mensaje 
+                            $('#modalMensajeLabel').text('Proceso realizado exitosamente.');
+                            $('#modalMensajeBody').html('<p>La información del archivo ME13 ha sido realizada exitosamente..</p>');
+                            var myModal = new bootstrap.Modal(document.getElementById('modalMensaje'));
+                            myModal.show();
+
+                        }
+                    },
+                    error: function () {
+                        alert("Hubo un error en el proceso de generación.");
+                    }
+                });
             });
+            
+            // POST: xxx
+
         });
     </script>
+
+
+    <script>                
+        function actualizarNombreArchivo() {
+            var mes = document.getElementById("mesSelect").value;
+            var año = document.getElementById("añoSelect").value;
+            var codigoArchivo = "IVEME13";  // Aquí puedes definir tu código de archivo
+
+            // Validar que mes y año no estén vacíos
+            if (mes && año) {
+                var nombreArchivo = "C:/" + codigoArchivo + "/" + año + mes.padStart(2, '0') + "BA.117";
+                document.getElementById("nombreArchivo").value = nombreArchivo;
+            }
+        }               
+    </script>
 }
-
-
-
