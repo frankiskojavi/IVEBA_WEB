@@ -3,11 +3,7 @@
 @{
     ViewData["Title"] = "ArchivoME13";
 }
-<style>
-    .mt-7 {
-        margin-top: 4rem;
-    }
-</style>
+
 <div class="container mt-7">
     <div class="card p-5 shadow mx-auto" style="max-width: 100%; width: 100%; max-width: 600px;">
         <h4 class="text-center mb-4">IVE Moneda Extranjera</h4>
@@ -17,9 +13,9 @@
             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
         </div>
 
-
         <br>
         <form id="generarForm" method="post">
+            <input type="hidden" id="codigoArchivo" value="@Model.FormModel.codigoArchivo" />
             <div class="row">
                 <!-- Campo Mes -->
                 <div class="col-md-6">
@@ -101,9 +97,9 @@
                         <button type="submit" class="btn btn-danger w-100" id="btnCancelar" asp-page="/Index">Cancelar</button>
                     </div>
                 </div>
-            </div>            
-
+            </div>                    
         </form>
+      
     </div>
 </div>
 
@@ -113,53 +109,54 @@
     <script>
         $(document).ready(function () {
 
-            // Muestra modal SI/NO
+            // Muestra modal de confirmación al hacer clic en "Generar"
             $('#btnGenerar').on('click', function (e) {
                 e.preventDefault();  // Prevenir el envío del formulario tradicional
-                $('#confirmarGeneracionArchivoBody').html('<p>AVISO!!!, recuerde que el archivo definitivo unicamente se puede generar una vez por mes. Asegurese que el archivo preliminar haya sido revisado y depurado. ¿Desea continuar?</p>');
+
+                // Mostrar modal de confirmación
+                $('#confirmarGeneracionArchivoBody').html('<p>AVISO: El archivo definitivo solo puede generarse una vez por mes. ¿Desea continuar?</p>');
                 var confirmarGeneracionArchivo = new bootstrap.Modal(document.getElementById('confirmarGeneracionArchivo'));
-                confirmarGeneracionArchivo.show();  // Mostrar el modal de confirmación
+                confirmarGeneracionArchivo.show();
             });
 
-            // Si el usuario confirma, realizar la solicitud AJAX
+            // Ejecutar el POST solo después de que el usuario confirme en el modal
             $('#btnConfirmar').on('click', function () {
-                // Oculta modal SI/NO
+                // Ocultar el modal de confirmación antes de proceder
                 var confirmarGeneracionArchivo = bootstrap.Modal.getInstance(document.getElementById('confirmarGeneracionArchivo'));
                 confirmarGeneracionArchivo.hide();
 
-                // POST : OnPostGenerarArchivoME13
+                // Mostrar la pantalla de espera con display: flex
+                $('#loadingScreen').css('display', 'flex');
+
+                // Enviar la solicitud POST vía AJAX
                 $.ajax({
-                    url: '@Url.Page("/ArchivoME13/ArchivoME13", new { handler = "GenerarArchivoME13" })',
+                    url: '@Url.Page("/ArchivoME13/ArchivoME13", new { handler = "GenerarArchivoME13" })',  // URL correcta del handler
                     type: 'POST',
                     data: $('#generarForm').serialize(),  // Serializa los datos del formulario
                     success: function (response) {
+                        // Ocultar la pantalla de espera al completar la solicitud
+                        $('#loadingScreen').css('display', 'none');
+
                         if (response.success) {
                             // Actualizar los campos de registros procesados y con error
                             $('#registrosProcesados').val(response.registrosProcesados);
                             $('#registrosConError').val(response.registrosConError);
 
-                            // Decodificar el archivo base64 y crear un enlace para la descarga
+                            // Crear el enlace para descargar el archivo generado
                             var link = document.createElement('a');
                             link.href = 'data:text/plain;base64,' + response.fileContent;
                             link.download = response.fileName;
                             document.body.appendChild(link);
-
-                            // Escuchar el evento de clic para mostrar el modal después de la descarga
-                            link.addEventListener('click', function () {
-                                setTimeout(function () {
-                                    // Mostrar el modal de éxito después de que el archivo sea descargado
-                                    $('#modalMensajeLabel').text('Proceso realizado exitosamente.');
-                                    $('#modalMensajeBody').html('<p>El archivo ha sido generado y descargado exitosamente.</p>');
-                                    var myModal = new bootstrap.Modal(document.getElementById('modalMensaje'));
-                                    myModal.show();
-                                }, 500);  // Tiempo de espera para asegurar la descarga
-                            });
-                            
                             link.click();
                             document.body.removeChild(link);
-                        }
-                        else {
-                            // Si hubo un error, mostrar el mensaje en un modal
+
+                            // Mostrar modal de éxito
+                            $('#modalMensajeLabel').text('Proceso realizado exitosamente.');
+                            $('#modalMensajeBody').html('<p>El archivo ha sido generado y descargado exitosamente.</p>');
+                            var myModal = new bootstrap.Modal(document.getElementById('modalMensaje'));
+                            myModal.show();
+                        } else {
+                            // Mostrar mensaje de error en un modal
                             $('#modalMensajeLabel').text('Error en la generación del archivo.');
                             $('#modalMensajeBody').html('<p>' + response.errorMessage + '</p>');
                             var myModal = new bootstrap.Modal(document.getElementById('modalMensaje'));
@@ -167,6 +164,9 @@
                         }
                     },
                     error: function () {
+                        // Ocultar la pantalla de espera en caso de error
+                        $('#loadingScreen').css('display', 'none');
+
                         // Mostrar modal de error
                         $('#modalMensajeLabel').text('Error en la generación del archivo.');
                         $('#modalMensajeBody').html('<p>Hubo un error en el proceso de generación del archivo.</p>');
@@ -175,8 +175,20 @@
                     }
                 });
             });
-
         });
+
     </script>
 
+    <script>
+        function actualizarNombreArchivo() {
+            var mes = document.getElementById("mesSelect").value;
+            var año = document.getElementById("añoSelect").value;
+            var codigoArchivo = $('#codigoArchivo').val();  // Aquí puedes definir tu código de archivo
+            // Validar que mes y año no estén vacíos
+            if (mes && año) {
+                var nombreArchivo =  codigoArchivo + año + mes.padStart(2, '0') + "BA.117";
+                document.getElementById("nombreArchivo").value = nombreArchivo;
+            }
+        }               
+    </script>
 }

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Serilog;
 using System.Net.Http.Headers;
+using System.Text;
 
 namespace IVEBA_Web_App.Services.ArchivoME13
 {
@@ -66,7 +67,7 @@ namespace IVEBA_Web_App.Services.ArchivoME13
                     codigoArchivo = codigoArchivo,
                     año = añoSistema,
                     mes = mesSistema,
-                    nombreArchivo = $"C:/{codigoArchivo}/{añoSistema}{mesSistema.ToString("00")}BA.117",
+                    nombreArchivo = $"{codigoArchivo}{añoSistema}{mesSistema.ToString("00")}BA.117",
                     registrosProcesados = 0,
                     registrosConError = 0,
                     detalle = 0,
@@ -81,8 +82,17 @@ namespace IVEBA_Web_App.Services.ArchivoME13
             return archivoME13;
         }
 
-        public async Task<List<DTO_IVE13ME_Response>> ConsultarInformacionArchivoIVE13MEPorFecha(int fechaInicial, int fechaFinal)
+        public async Task<List<DTO_IVE13ME_Response>> ConsultarInformacionArchivoIVE13MEPorFecha(int año, int mes)
         {
+
+            DateTime fechaInicialDate = new DateTime(año, mes, 1);
+            DateTime fechaFinalDate = fechaInicialDate.AddMonths(1).AddDays(-1);
+
+            // Convertir las fechas al formato YYYYMMDD como enteros
+            int fechaInicial = int.Parse(fechaInicialDate.ToString("yyyyMMdd"));
+            int fechaFinal = int.Parse(fechaFinalDate.ToString("yyyyMMdd"));
+
+
             string APIUrl = $"{APIUrlBase}/ArchivoME13/ConsultarInformacionArchivoIVE13MEPorFecha?fechaInicial={fechaInicial}&fechaFinal={fechaFinal}";
             string jwtToken = "tu_token_jwt_aqui";
             List<DTO_IVE13ME_Response>? apiResponses = null;
@@ -110,9 +120,54 @@ namespace IVEBA_Web_App.Services.ArchivoME13
             catch (Exception ex)
             {
                 Log.Error("Ocurrio un error al consultar api ConsultarInformacionArchivoIVE13MEPorFecha : " + ex.Message);
+                throw new Exception("Error al consultar Información IVE13ME");
             }
 
             return apiResponses;
+        }
+
+        public async Task<byte[]> GenerarArchivoIVE13ME(List<DTO_IVE13ME_Response> data)
+        {
+            StringBuilder contenidoArchivo = new StringBuilder();
+            byte[] fileBytes = null;
+            try {
+                // Generar las líneas basadas en cada item de la lista `data`
+                foreach (var item in data)
+                {
+
+                    string StringImprimir = FormateoString(item.LineaId.ToString(), 16) + "&&" +
+                                            item.Fecha + "&&" +
+                                            item.Transaccion + "&&" +
+                                            item.Tipo_Moneda + "&&" +
+                                            FormateoString(FormateoMontos(item.MontoMO), 15, " ", true) + "&&" +
+                                            FormateoString(FormateoMontos(item.MontoUSD), 15, " ", true) + "&&" +
+                                            FormateoString(item.Cantidad_Trx.ToString(), 10, " ", true) + "&&" +
+                                            FormateoString(item.Agenciaid.ToString(), 10, " ", true);
+
+
+                    contenidoArchivo.AppendLine(StringImprimir);
+                }
+                fileBytes = System.Text.Encoding.UTF8.GetBytes(contenidoArchivo.ToString());
+            }catch(Exception ex) {
+                Log.Error("Ocurrio un error en GenerarArchivoIVE13ME: " + ex.Message);
+                throw new Exception("Error en la generación del archivo IVE13ME");
+            }    
+
+            return fileBytes;
+        }
+
+        public string FormateoString(string input, int totalWidth, string paddingChar = " ", bool padLeft = false)
+        {
+            if (padLeft)
+                return input.PadLeft(totalWidth, paddingChar[0]);
+            else
+                return input.PadRight(totalWidth, paddingChar[0]);
+        }
+
+        public string FormateoMontos(decimal monto)
+        {
+
+            return monto.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);  // Formato con 2 decimales sin comas        
         }
 
     }

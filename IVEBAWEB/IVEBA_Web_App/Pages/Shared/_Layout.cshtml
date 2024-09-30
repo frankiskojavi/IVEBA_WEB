@@ -9,6 +9,37 @@
     <link rel="stylesheet" href="~/IVEBA_Web_App.styles.css" asp-append-version="true" />
 </head>
 
+<style>
+    .mt-7 {
+        margin-top: 4rem;
+    }
+    
+    /* Pantalla de espera que cubrirá todo */
+    .loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        /* Fondo semi-transparente */
+        z-index: 9999;
+        display: none;
+        /* Se mostrará dinámicamente */
+        justify-content: center;
+        align-items: center;
+        color: rgb(4, 4, 4);
+        font-size: 20px;
+    }
+
+    /* Spinner */
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+        border-width: 0.3rem;
+    }
+</style>
+
 <body style="background-color: #efefef;">
     <header>
         <nav class="navbar navbar-expand-md navbar-dark bg-dark">
@@ -70,6 +101,15 @@
             @RenderBody()
         </main>
     </div>
+
+    <div class="loading-screen" id="loadingScreen">
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p></p>
+        </div>
+    </div>    
 
     <footer class="border-top footer text-muted">
         <div class="container">

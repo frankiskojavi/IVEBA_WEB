@@ -8,6 +8,7 @@ namespace IVEBA_Web_App.Services.ArchivoME13
         public Task<DTO_ME13_Form> cargarInformacionPorDefecto();
         public Task<List<SelectListItem>> recuperarMesesComboBox();
         public Task<List<SelectListItem>> recuperarAñosComboBox();
-        public Task<List<DTO_IVE13ME_Response>> ConsultarInformacionArchivoIVE13MEPorFecha(int fechaInicial, int fechaFinal);
+        public Task<List<DTO_IVE13ME_Response>> ConsultarInformacionArchivoIVE13MEPorFecha(int año, int mes);
+        public Task<byte[]> GenerarArchivoIVE13ME(List<DTO_IVE13ME_Response> data);
     }
 }

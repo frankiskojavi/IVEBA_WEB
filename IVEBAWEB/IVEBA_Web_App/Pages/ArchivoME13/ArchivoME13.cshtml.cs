@@ -1,3 +1,4 @@
+using System.Text;
 using IVEBA_Web_App.Models.ArchivoME13;
 using IVEBA_Web_App.Services.ArchivoME13;
 using Microsoft.AspNetCore.Mvc;
@@ -58,27 +59,27 @@ namespace IVEBA_Web_App.Pages.ArchivoME13
         }
 
         public async Task<JsonResult> generarInformacionArchivoME13()
-        {
-            // Contenido del archivo de texto
-            string contendoArchivo = "Hola Mundo";
-            byte[] fileBytes = System.Text.Encoding.UTF8.GetBytes(contendoArchivo);
-            string fileBase64 = Convert.ToBase64String(fileBytes);
-            string fileName = FormModel.nombreArchivo;
-            int fechaInicial = 20240801;
-            int fechaFinal = 20240830;
-            List<DTO_IVE13ME_Response> data = await Service.ConsultarInformacionArchivoIVE13MEPorFecha(fechaInicial, fechaFinal);
+        {                    
+            List<DTO_IVE13ME_Response> data = await Service.ConsultarInformacionArchivoIVE13MEPorFecha(FormModel.año, FormModel.mes);
 
-            return new JsonResult(new
-            {
-                success = true,
-                registrosProcesados = data.Count(),
-                registrosConError = 0,
-                fileName = fileName,
-                fileContent = fileBase64
-            });
-
+            if (data.Count > 0){
+                string fileBase64 = Convert.ToBase64String(await Service.GenerarArchivoIVE13ME(data));
+                string fileName = FormModel.nombreArchivo;
+                return new JsonResult(new
+                {
+                    success = true,
+                    registrosProcesados = data.Count(),
+                    registrosConError = 0,
+                    fileName = fileName,
+                    fileContent = fileBase64
+                });
+            }else {
+                return new JsonResult(new
+                {
+                    success = false,
+                    errorMessage = "No hay información para generar "
+                });
+            }            
         }
-
-
     }
 }

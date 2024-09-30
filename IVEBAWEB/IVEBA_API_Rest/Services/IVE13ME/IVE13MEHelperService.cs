@@ -40,7 +40,7 @@ namespace IVEBA_API_Rest.Services.IVE13ME
         public IEnumerable<DTO_IVE13ME> ConsultarIVE13MEPorRangoFechas(int fechaInicial, int fechaFinal)
         {
             var empleados = new List<DTO_IVE13ME>();
-            string query = "SELECT * FROM IVE13ME WHERE Fecha between @FechaInicial and @FechaFinal";
+            string query = "SELECT * FROM IVE13ME WHERE Fecha between @FechaInicial and @FechaFinal ORDER BY ORDEN";
             SqlParameter[] parameters = {
                 new SqlParameter("@FechaInicial", fechaInicial),
                 new SqlParameter("@FechaFinal", fechaFinal)

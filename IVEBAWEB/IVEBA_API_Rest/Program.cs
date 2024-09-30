@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Registro de DbHelper
 builder.Services.AddSingleton<DbHelper>();
 
-// Inyección de dependencias para servicios y repositorios
+// Inyecciï¿½n de dependencias para servicios y repositorios
 builder.Services.AddScoped<IIVE13MEHelperService, IVE13MEHelperService>();
 
 // Add services to the container.
@@ -33,4 +33,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.UseHsts();
+
 app.Run();
+
+
