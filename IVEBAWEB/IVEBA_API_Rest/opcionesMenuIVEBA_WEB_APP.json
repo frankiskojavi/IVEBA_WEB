@@ -1,0 +1,21 @@
+{
+  "OpcionesMenu": [
+    {
+      "codigoMenu": 1,
+      "menuTitulo": "",
+      "menuDescripcion": "IVE Moneda Extranjera",
+      "menuBoton": "Generar Archivo IVE-ME-13",
+      "menuImagen": "",
+      "menuPagina": "archivo-me13"
+    },    
+    {
+      "codigoMenu": 2,
+      "menuTitulo": "",
+      "menuDescripcion": "IVE Moneda Nacional ",
+      "menuBoton": "Generar IVE-EF-14",
+      "menuImagen": "",
+      "menuPagina": "archivo-ef14"
+
+    },    
+  ]
+}

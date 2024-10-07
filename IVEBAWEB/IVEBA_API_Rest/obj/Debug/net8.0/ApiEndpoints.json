@@ -1,5 +1,107 @@
 [
   {
+    "ContainingType": "IVEBA_API_Rest.Controllers.IVECH.ArchivoCHController",
+    "Method": "ConsultarClientesCHCajaTemporal",
+    "RelativePath": "api/ArchivoCH/ConsultarClientesCHCajaTemporal",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "fechaInicial",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "fechaFinal",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[IVEBA_API_Rest.Models.IVECH.DTO_IVECHClientesCaja, IVEBA_API_Rest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "IVEBA_API_Rest.Controllers.IVECH.ArchivoCHController",
+    "Method": "EliminaCHCajaTemporal",
+    "RelativePath": "api/ArchivoCH/EliminaCHCajaTemporal",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Int32",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "IVEBA_API_Rest.Controllers.IVE14EF.ArchivoEF14Controller",
+    "Method": "ConsultarInformacionArchivoIVE14EF",
+    "RelativePath": "api/ArchivoEF14/ConsultarInformacionArchivoIVE14EF",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[IVEBA_API_Rest.Models.IVE14EF.DTO_IVE14EF, IVEBA_API_Rest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "IVEBA_API_Rest.Controllers.IVE14EF.ArchivoEF14Controller",
+    "Method": "ConsultarInformacionArchivoIVE14EFPorFecha",
+    "RelativePath": "api/ArchivoEF14/ConsultarInformacionArchivoIVE14EFPorFecha",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "fechaInicial",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "fechaFinal",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[IVEBA_API_Rest.Models.IVE14EF.DTO_IVE14EF, IVEBA_API_Rest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "IVEBA_API_Rest.Controllers.IVE13ME.ArchivoME13Controller",
     "Method": "ConsultarInformacionArchivoIVE13ME",
     "RelativePath": "api/ArchivoME13/ConsultarInformacionArchivoIVE13ME",
@@ -9,7 +111,7 @@
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[IVEBA_API_Rest.Models.DTOS.DTO_IVE13ME, IVEBA_API_Rest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.List\u00601[[IVEBA_API_Rest.Models.IVE13ME.DTO_IVE13ME, IVEBA_API_Rest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -40,7 +142,27 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[IVEBA_API_Rest.Models.DTOS.DTO_IVE13ME, IVEBA_API_Rest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.List\u00601[[IVEBA_API_Rest.Models.IVE13ME.DTO_IVE13ME, IVEBA_API_Rest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "IVEBA_API_Rest.Controllers.SeguridadAPP.SeguridadAPPController",
+    "Method": "ConsultarOpcionesMenuWebApp",
+    "RelativePath": "api/SeguridadAPP/ConsultarOpcionesMenuWebApp",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[IVEBA_API_Rest.Models.DTOS.DTO_OpcionesAPP, IVEBA_API_Rest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",

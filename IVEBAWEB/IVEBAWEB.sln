@@ -5,8 +5,6 @@ VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IVEBA_API_Rest", "IVEBA_API_Rest\IVEBA_API_Rest.csproj", "{552AADAA-57A8-453D-9250-711083C5D9B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IVEBA_Web_App", "IVEBA_Web_App\IVEBA_Web_App.csproj", "{C6EF0803-0D14-43FB-B1A1-B42F52566336}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{552AADAA-57A8-453D-9250-711083C5D9B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{552AADAA-57A8-453D-9250-711083C5D9B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{552AADAA-57A8-453D-9250-711083C5D9B1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C6EF0803-0D14-43FB-B1A1-B42F52566336}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C6EF0803-0D14-43FB-B1A1-B42F52566336}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C6EF0803-0D14-43FB-B1A1-B42F52566336}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C6EF0803-0D14-43FB-B1A1-B42F52566336}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

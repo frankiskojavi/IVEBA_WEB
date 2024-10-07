@@ -887,24 +887,36 @@
     ]
   },
   "packageFolders": {
-    "/Users/franciscohuit/.nuget/packages/": {}
+    "C:\\Users\\frank\\.nuget\\packages\\": {},
+    "C:\\Program Files\\DevExpress 24.1\\Components\\Offline Packages": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/franciscohuit/Desktop/INT TEMP/IVEBA_WEB/IVEBAWEB/IVEBA_API_Rest/IVEBA_API_Rest.csproj",
+      "projectUniqueName": "C:\\Users\\frank\\Desktop\\TRABAJO\\INTER\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\IVEBA_API_Rest.csproj",
       "projectName": "IVEBA_API_Rest",
-      "projectPath": "/Users/franciscohuit/Desktop/INT TEMP/IVEBA_WEB/IVEBAWEB/IVEBA_API_Rest/IVEBA_API_Rest.csproj",
-      "packagesPath": "/Users/franciscohuit/.nuget/packages/",
-      "outputPath": "/Users/franciscohuit/Desktop/INT TEMP/IVEBA_WEB/IVEBAWEB/IVEBA_API_Rest/obj/",
+      "projectPath": "C:\\Users\\frank\\Desktop\\TRABAJO\\INTER\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\IVEBA_API_Rest.csproj",
+      "packagesPath": "C:\\Users\\frank\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\frank\\Desktop\\TRABAJO\\INTER\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files\\DevExpress 24.1\\Components\\Offline Packages",
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "/Users/franciscohuit/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\frank\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 24.1.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\DevExpress 24.1\\Components\\System\\Components\\Packages": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -956,7 +968,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.401/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

@@ -1,5 +1,8 @@
 using IVEBA_API_Rest.Helpers;
 using IVEBA_API_Rest.Services.IVE13ME;
+using IVEBA_API_Rest.Services.IVE14EF;
+using IVEBA_API_Rest.Services.IVECH;
+using IVEBA_API_Rest.Services.SeguridadAPP;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,8 +12,25 @@ var builder = WebApplication.CreateBuilder(args);
 // Registro de DbHelper
 builder.Services.AddSingleton<DbHelper>();
 
-// Inyecci�n de dependencias para servicios y repositorios
+// Cargar el archivo JSON adicional
+builder.Configuration.AddJsonFile("opcionesMenuIVEBA_WEB_APP.json", optional: false, reloadOnChange: true);
+
+// Inyección de dependencias para servicios y repositorios
 builder.Services.AddScoped<IIVE13MEHelperService, IVE13MEHelperService>();
+builder.Services.AddScoped<IIVE14EFHelperService, IVE14EFHelperService>();
+builder.Services.AddScoped<IIVECHHelperService, IVECHHelperService>();
+builder.Services.AddScoped<iSeguridadaAPPService, SeguridadaAPPService>();
+
+// Configurar CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp", builder =>
+    {
+        builder.WithOrigins("http://localhost:4200") // Cambia esto si necesitas permitir otros orígenes
+               .AllowAnyHeader()
+               .AllowAnyMethod();
+    });
+});
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -29,6 +49,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Aplicar la política de CORS
+app.UseCors("AllowAngularApp");
+
 app.UseAuthorization();
 
 app.MapControllers();
@@ -36,5 +59,3 @@ app.MapControllers();
 app.UseHsts();
 
 app.Run();
-
-
