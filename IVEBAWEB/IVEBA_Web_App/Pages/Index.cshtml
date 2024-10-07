@@ -2,9 +2,33 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Inicio";
+    int contadorOpciones = 0;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Bienvenido</h1>
-    <p>Ante cualquier duda o cualquier error técnico favor comunicarse al area de sistemas 1701.</a>.</p>
+
+<div class="container mt-7">
+    <div class="card p-5 shadow mx-auto" style="max-width: 100%; width: 100%; max-width: 1000px;">
+        <div class="row">
+            @foreach (var opcion in Model.formData){ 
+                contadorOpciones++;                
+                <div class="col-sm-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">@opcion.menuTitulo</h5>
+                            <p class="card-text">@opcion.menuDescripcion</p>                            
+                            <a class="btn btn-primary w-100 w-md-50" asp-area="" asp-page="@opcion.menuPagina">@opcion.menuBoton</a>
+
+                        </div>
+                    </div>
+                </div>
+
+                if(contadorOpciones == 2)
+                {
+                    contadorOpciones = 0;                    
+                    <br>
+                    <br>
+                }
+            }            
+        </div>
+    </div>
 </div>

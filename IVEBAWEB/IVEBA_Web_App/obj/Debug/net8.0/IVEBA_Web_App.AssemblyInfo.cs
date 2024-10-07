@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IVEBA_Web_App")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e0194c0e87214c0cd2f152ffbc46e79b757a7f7a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+98227290ce0bf3d2124e81ba513cb78ee5267c6d")]
 [assembly: System.Reflection.AssemblyProductAttribute("IVEBA_Web_App")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IVEBA_Web_App")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,4 +1,4 @@
-﻿namespace IVEBA_API_Rest.Models.DTOS
+﻿namespace IVEBA_API_Rest.Models.IVE13ME
 {
     public class DTO_IVE13ME
 

@@ -1,12 +1,14 @@
+using IVEBA_Web_App.Middleware;
 using IVEBA_Web_App.Models;
 using IVEBA_Web_App.Services.ArchivoME13;
+using IVEBA_Web_App.Services.SeguridadAPP;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Configurar Serilog desde appsettings.json
 Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration) // Leer configuración de Serilog desde appsettings.json
+    .ReadFrom.Configuration(builder.Configuration) // Leer configuraciï¿½n de Serilog desde appsettings.json
     .Enrich.FromLogContext()
     .CreateLogger();
 
@@ -18,7 +20,15 @@ try
     // Agregar servicios
     builder.Services.AddRazorPages();
     builder.Services.AddSingleton<iGeneracionArchivoME13, GeneracionArchivoME13>();
+    builder.Services.AddSingleton<iSeguridadaAPPService, SeguridadAPPService>();
     builder.Services.Configure<DTO_IVEBA_Web_AppConfiguraciones>(builder.Configuration.GetSection("IVEBA_Web_AppConfiguraciones"));
+
+    builder.Services.AddRazorPages()
+    .AddMvcOptions(options =>
+    {
+        options.Filters.Add<ValidacionPaginas>(); // AquÃ­ registramos el filtro global
+    });
+
 
     var app = builder.Build();
 
@@ -35,16 +45,16 @@ try
     app.UseAuthorization();
     app.MapRazorPages();
 
-    // Correr la aplicación
+    // Correr la aplicaciï¿½n
     app.Run();
 }
 catch (Exception ex)
 {
-    // Registrar errores de inicialización
+    // Registrar errores de inicializaciï¿½n
     Log.Fatal(ex, "Host terminated unexpectedly");
 }
 finally
 {
-    // Cerrar el log al finalizar la aplicación
+    // Cerrar el log al finalizar la aplicaciï¿½n
     Log.CloseAndFlush();
 }

@@ -39,6 +39,7 @@ C:/Users/frank/Desktop/TEST OFF/INTER/Fuentes/IVEBA_WEB/IVEBAWEB/IVEBA_API_Rest/
 C:/Users/frank/Desktop/TEST OFF/INTER/Fuentes/IVEBA_WEB/IVEBAWEB/IVEBA_API_Rest/obj/Debug/net8.0/IVEBA_API_Rest.sourcelink.json
 /Users/franciscohuit/Desktop/INT TEMP/IVEBA_WEB/IVEBAWEB/IVEBA_API_Rest/bin/Debug/net8.0/appsettings.Development.json
 /Users/franciscohuit/Desktop/INT TEMP/IVEBA_WEB/IVEBAWEB/IVEBA_API_Rest/bin/Debug/net8.0/appsettings.json
+/Users/franciscohuit/Desktop/INT TEMP/IVEBA_WEB/IVEBAWEB/IVEBA_API_Rest/bin/Debug/net8.0/opcionesMenuIVEBA_WEB_APP.json
 /Users/franciscohuit/Desktop/INT TEMP/IVEBA_WEB/IVEBAWEB/IVEBA_API_Rest/bin/Debug/net8.0/IVEBA_API_Rest
 /Users/franciscohuit/Desktop/INT TEMP/IVEBA_WEB/IVEBAWEB/IVEBA_API_Rest/bin/Debug/net8.0/IVEBA_API_Rest.deps.json
 /Users/franciscohuit/Desktop/INT TEMP/IVEBA_WEB/IVEBAWEB/IVEBA_API_Rest/bin/Debug/net8.0/IVEBA_API_Rest.runtimeconfig.json

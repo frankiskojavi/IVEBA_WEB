@@ -1,0 +1,68 @@
+{
+  "OpcionesMenu": [
+          {
+              "codigoMenu": 1,
+              "menuTitulo": "",
+              "menuDescripcion": "IVE Generacion de Archivos (Detalle por cliente)",
+              "menuBoton": "Generar Archivo IVE-BA-05",
+              "menuImagen": "",
+              "menuPagina": "/ArchivoME13/ArchivoME13"
+          },
+          {
+              "codigoMenu": 2,
+              "menuTitulo": "",
+              "menuDescripcion": "IVE-BA-03",
+              "menuBoton": "Generar Archivo IVEBA03",
+              "menuImagen": "",
+              "menuPagina": "/ArchivoME13/ArchivoME13"
+          },
+          {
+              "codigoMenu": 3,
+              "menuTitulo": "",
+              "menuDescripcion": "IVE Cheque de Caja ",
+              "menuBoton": "Generar IVE CH de Caja",
+              "menuImagen": "",
+              "menuPagina": "/ArchivoME13/ArchivoME13"
+          },
+          {
+              "codigoMenu": 4,
+              "menuTitulo": "",
+              "menuDescripcion": "IVE Cambista ",
+              "menuBoton": "Generar IVE Cambista",
+              "menuImagen": "",
+              "menuPagina": "/ArchivoME13/ArchivoME13"
+          },
+          {
+              "codigoMenu": 5,
+              "menuTitulo": "",
+              "menuDescripcion": "IVE Transferencias TRF-21",
+              "menuBoton": "Generar IVE Transferencias",
+              "menuImagen": "",
+              "menuPagina": "/ArchivoME13/ArchivoME13"
+          },
+          {
+              "codigoMenu": 6,
+              "menuTitulo": "",
+              "menuDescripcion": "IVE Moneda Extranjera ",
+              "menuBoton": "Generar IVE-ME-13",
+              "menuImagen": "",
+              "menuPagina": "/ArchivoME13/ArchivoME13"
+          },
+          {
+              "codigoMenu": 7,
+              "menuTitulo": "",
+              "menuDescripcion": "IVE Moneda Nacional ",
+              "menuBoton": "Generar IVE-EF-14",
+              "menuImagen": "",
+              "menuPagina": "/ArchivoME13/ArchivoME13"
+          },
+          {
+              "codigoMenu": 8,
+              "menuTitulo": "",
+              "menuDescripcion": "IVE Transferencias",
+              "menuBoton": "Generar IVE-DV-17",
+              "menuImagen": "",
+              "menuPagina": "/ArchivoME13/ArchivoME13"
+          }
+      ]
+  }

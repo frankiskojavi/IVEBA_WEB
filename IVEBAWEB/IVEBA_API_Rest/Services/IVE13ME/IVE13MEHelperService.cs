@@ -1,5 +1,5 @@
 ﻿using IVEBA_API_Rest.Helpers;
-using IVEBA_API_Rest.Models.DTOS;
+using IVEBA_API_Rest.Models.IVE13ME;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -12,9 +12,9 @@ namespace IVEBA_API_Rest.Services.IVE13ME
         {
             _dbHelper = dbHelper;
         }
-        public IEnumerable<DTO_IVE13ME> ConsultarIVE13ME()
+        public async Task<List<DTO_IVE13ME>> ConsultarIVE13ME()
         {
-            var empleados = new List<DTO_IVE13ME>();
+            List<DTO_IVE13ME> empleados = new List<DTO_IVE13ME>();
             string query = "SELECT * FROM IVE13ME";
             DataTable dt = _dbHelper.ExecuteSelectCommand(query);
 
@@ -37,9 +37,9 @@ namespace IVEBA_API_Rest.Services.IVE13ME
             return empleados;
         }
 
-        public IEnumerable<DTO_IVE13ME> ConsultarIVE13MEPorRangoFechas(int fechaInicial, int fechaFinal)
+        public async Task<List<DTO_IVE13ME>> ConsultarIVE13MEPorRangoFechas(int fechaInicial, int fechaFinal)
         {
-            var empleados = new List<DTO_IVE13ME>();
+            List<DTO_IVE13ME> empleados = new List<DTO_IVE13ME>();
             string query = "SELECT * FROM IVE13ME WHERE Fecha between @FechaInicial and @FechaFinal ORDER BY ORDEN";
             SqlParameter[] parameters = {
                 new SqlParameter("@FechaInicial", fechaInicial),
