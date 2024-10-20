@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\IVEBA_Web_App.props" />
-</Project>
