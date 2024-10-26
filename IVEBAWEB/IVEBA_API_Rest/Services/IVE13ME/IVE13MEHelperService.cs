@@ -14,13 +14,13 @@ namespace IVEBA_API_Rest.Services.IVE13ME
         }
         public async Task<List<DTO_IVE13ME>> ConsultarIVE13ME()
         {
-            List<DTO_IVE13ME> empleados = new List<DTO_IVE13ME>();
+            List<DTO_IVE13ME> listaDatos = new List<DTO_IVE13ME>();
             string query = "SELECT * FROM IVE13ME";
             DataTable dt = _dbHelper.ExecuteSelectCommand(query);
 
             foreach (DataRow row in dt.Rows)
             {
-                empleados.Add(new DTO_IVE13ME
+                listaDatos.Add(new DTO_IVE13ME
                 {
                     LineaId = row["LineaId"].ToString(),
                     Fecha = int.Parse(row["Fecha"].ToString()),
@@ -34,12 +34,12 @@ namespace IVEBA_API_Rest.Services.IVE13ME
                 });
             }
 
-            return empleados;
+            return listaDatos;
         }
 
         public async Task<List<DTO_IVE13ME>> ConsultarIVE13MEPorRangoFechas(int fechaInicial, int fechaFinal)
         {
-            List<DTO_IVE13ME> empleados = new List<DTO_IVE13ME>();
+            List<DTO_IVE13ME> listaDatos = new List<DTO_IVE13ME>();
             string query = "SELECT * FROM IVE13ME WHERE Fecha between @FechaInicial and @FechaFinal ORDER BY ORDEN";
             SqlParameter[] parameters = {
                 new SqlParameter("@FechaInicial", fechaInicial),
@@ -49,7 +49,7 @@ namespace IVEBA_API_Rest.Services.IVE13ME
 
             foreach (DataRow row in dt.Rows)
             {
-                empleados.Add(new DTO_IVE13ME
+                listaDatos.Add(new DTO_IVE13ME
                 {
                     LineaId = row["LineaId"].ToString(),
                     Fecha = int.Parse(row["Fecha"].ToString()),
@@ -63,7 +63,7 @@ namespace IVEBA_API_Rest.Services.IVE13ME
                 });
             }
 
-            return empleados;
+            return listaDatos;
         }
     }
 }

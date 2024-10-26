@@ -7,7 +7,7 @@
       "menuBoton": "Generar Archivo IVE-ME-13",
       "menuImagen": "",
       "menuPagina": "archivo-me13"
-    },    
+    },
     {
       "codigoMenu": 2,
       "menuTitulo": "",
@@ -16,6 +16,15 @@
       "menuImagen": "",
       "menuPagina": "archivo-ef14"
 
-    },    
+    },
+    {
+      "codigoMenu": 3,
+      "menuTitulo": "IVE Transferencias- Generacion de Archivo",
+      "menuDescripcion": "IVE Transferencias",
+      "menuBoton": "Generar IVE-DV-17",
+      "menuImagen": "",
+      "menuPagina": "archivo-dv17"
+
+    }
   ]
 }

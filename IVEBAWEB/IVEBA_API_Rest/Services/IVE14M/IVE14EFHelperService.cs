@@ -14,13 +14,13 @@ namespace IVEBA_API_Rest.Services.IVE14EF
         }
         public async Task<List<DTO_IVE14EF>> ConsultarIVE14EF()
         {
-            List<DTO_IVE14EF> empleados = new List<DTO_IVE14EF>();
+            List<DTO_IVE14EF> listaDatos = new List<DTO_IVE14EF>();
             string query = "SELECT * FROM IVE14EF";
             DataTable dt = _dbHelper.ExecuteSelectCommand(query);
 
             foreach (DataRow row in dt.Rows)
             {
-                empleados.Add(new DTO_IVE14EF
+                listaDatos.Add(new DTO_IVE14EF
                 {
                     LineaId = row["LineaId"].ToString(),
                     Fecha = int.Parse(row["Fecha"].ToString()),
@@ -32,12 +32,12 @@ namespace IVEBA_API_Rest.Services.IVE14EF
                 });
             }
 
-            return empleados;
+            return listaDatos;
         }
 
         public async Task<List<DTO_IVE14EF>> ConsultarIVE14EFPorRangoFechas(int fechaInicial, int fechaFinal)
         {
-            List<DTO_IVE14EF> empleados = new List<DTO_IVE14EF>();
+            List<DTO_IVE14EF> listaDatos = new List<DTO_IVE14EF>();
             string query = "SELECT * FROM IVE14EF WHERE Fecha between @FechaInicial and @FechaFinal ORDER BY ORDEN";
             SqlParameter[] parameters = {
                 new SqlParameter("@FechaInicial", fechaInicial),
@@ -47,19 +47,19 @@ namespace IVEBA_API_Rest.Services.IVE14EF
 
             foreach (DataRow row in dt.Rows)
             {
-                empleados.Add(new DTO_IVE14EF
+                listaDatos.Add(new DTO_IVE14EF
                 {
                     LineaId = row["LineaId"].ToString(),
                     Fecha = int.Parse(row["Fecha"].ToString()),
-                    Transaccion = row["Transaccion"].ToString(),                    
-                    Monto = decimal.Parse(row["Monto"].ToString()),                    
+                    Transaccion = row["Transaccion"].ToString(),
+                    Monto = decimal.Parse(row["Monto"].ToString()),
                     Cantidad_Trx = int.Parse(row["Cantidad_Trx"].ToString()),
                     Agenciaid = int.Parse(row["Agenciaid"].ToString()),
                     ORDEN = int.Parse(row["ORDEN"].ToString()),
                 });
             }
 
-            return empleados;
+            return listaDatos;
         }
     }
 }

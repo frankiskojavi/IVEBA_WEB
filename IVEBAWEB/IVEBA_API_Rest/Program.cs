@@ -1,6 +1,7 @@
 using IVEBA_API_Rest.Helpers;
 using IVEBA_API_Rest.Services.IVE13ME;
 using IVEBA_API_Rest.Services.IVE14EF;
+using IVEBA_API_Rest.Services.IVE17DV;
 using IVEBA_API_Rest.Services.IVECH;
 using IVEBA_API_Rest.Services.SeguridadAPP;
 
@@ -18,6 +19,7 @@ builder.Configuration.AddJsonFile("opcionesMenuIVEBA_WEB_APP.json", optional: fa
 // Inyección de dependencias para servicios y repositorios
 builder.Services.AddScoped<IIVE13MEHelperService, IVE13MEHelperService>();
 builder.Services.AddScoped<IIVE14EFHelperService, IVE14EFHelperService>();
+builder.Services.AddScoped<IIVE17DVHelperService, IVE17DVHelperService>();
 builder.Services.AddScoped<IIVECHHelperService, IVECHHelperService>();
 builder.Services.AddScoped<iSeguridadaAPPService, SeguridadaAPPService>();
 
