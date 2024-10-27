@@ -1,12 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using IVEBA_API_Rest.Models.IVECH;
 using IVEBA_API_Rest.Services.IVECH;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace IVEBA_API_Rest.Controllers.IVECH
 {
@@ -17,19 +10,13 @@ namespace IVEBA_API_Rest.Controllers.IVECH
         private readonly IIVECHHelperService IVECHService;
         public ArchivoCHController(IIVECHHelperService IVECHService)
         {
-            this.IVECHService = IVECHService; 
+            this.IVECHService = IVECHService;
         }
 
         [HttpGet("[action]")]
-        public async Task<int> EliminaCHCajaTemporal()
+        public async Task<bool> EliminaCHCajaTemporal(int fechaInicial, int fechaFinal)
         {
-            return await IVECHService.EliminaCHCajaTemporal();            
-        }
-
-        [HttpGet("[action]")]
-        public async Task<List<DTO_IVECHClientesCaja>> ConsultarClientesCHCajaTemporal(int fechaInicial, int fechaFinal)
-        {
-            return await IVECHService.ConsultarClientesCHCajaTemporal(fechaInicial, fechaFinal);
+            return await IVECHService.GeneracionTemporalIVECH(fechaInicial, fechaFinal);
         }
     }
 }
