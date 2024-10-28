@@ -4,7 +4,6 @@ namespace IVEBA_API_Rest.Services.IVE13ME
 {
     public interface IIVE13MEHelperService
     {
-        public Task<List<DTO_IVE13ME>> ConsultarIVE13ME();
-        public Task<List<DTO_IVE13ME>> ConsultarIVE13MEPorRangoFechas(int fechaInicial, int fechaFinal);
+        public Task<DTO_IVE13MEResponse> GeneracionArchivoIVE13ME(int fechaInicial, int fechaFinal);
     }
 }
