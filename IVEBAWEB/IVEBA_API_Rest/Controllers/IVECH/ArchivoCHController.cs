@@ -16,7 +16,8 @@ namespace IVEBA_API_Rest.Controllers.IVECH
         [HttpGet("[action]")]
         public async Task<bool> EliminaCHCajaTemporal(int fechaInicial, int fechaFinal)
         {
-            return await IVECHService.GeneracionTemporalIVECH(fechaInicial, fechaFinal);
+            //return await IVECHService.GeneracionTemporalIVECH(fechaInicial, fechaFinal);
+            return true;
         }
     }
 }

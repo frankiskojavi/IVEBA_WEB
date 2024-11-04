@@ -1,12 +1,144 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\frank\\Desktop\\TRABAJO\\INTER\\Github\\IVEBA_WEB\\IVEBAWEB\\",
-  "Documents": [],
+  "WorkspaceRootPath": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\FUentes Github\\IVEBA_WEB\\IVEBAWEB\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|c:\\users\\frank\\desktop\\test off\\inter\\fuentes\\fuentes github\\iveba_web\\ivebaweb\\iveba_api_rest\\opcionesmenuiveba_web_app.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|solutionrelative:iveba_api_rest\\opcionesmenuiveba_web_app.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|c:\\users\\frank\\desktop\\test off\\inter\\fuentes\\fuentes github\\iveba_web\\ivebaweb\\iveba_api_rest\\iveba_api_rest.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}",
+      "RelativeMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|solutionrelative:iveba_api_rest\\iveba_api_rest.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|c:\\users\\frank\\desktop\\test off\\inter\\fuentes\\fuentes github\\iveba_web\\ivebaweb\\iveba_api_rest\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|solutionrelative:iveba_api_rest\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|c:\\users\\frank\\desktop\\test off\\inter\\fuentes\\fuentes github\\iveba_web\\ivebaweb\\iveba_api_rest\\controllers\\ivech\\archivochcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|solutionrelative:iveba_api_rest\\controllers\\ivech\\archivochcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|c:\\users\\frank\\desktop\\test off\\inter\\fuentes\\fuentes github\\iveba_web\\ivebaweb\\iveba_api_rest\\utilidades\\utilidadesapp.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|solutionrelative:iveba_api_rest\\utilidades\\utilidadesapp.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|c:\\users\\frank\\desktop\\test off\\inter\\fuentes\\fuentes github\\iveba_web\\ivebaweb\\iveba_api_rest\\services\\ivech\\ivechhelperservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|solutionrelative:iveba_api_rest\\services\\ivech\\ivechhelperservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|c:\\users\\frank\\desktop\\test off\\inter\\fuentes\\fuentes github\\iveba_web\\ivebaweb\\iveba_api_rest\\services\\ivech\\iivechhelperservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|solutionrelative:iveba_api_rest\\services\\ivech\\iivechhelperservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "opcionesMenuIVEBA_WEB_APP.json",
+              "DocumentMoniker": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\FUentes Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\opcionesMenuIVEBA_WEB_APP.json",
+              "RelativeDocumentMoniker": "IVEBA_API_Rest\\opcionesMenuIVEBA_WEB_APP.json",
+              "ToolTip": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\FUentes Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\opcionesMenuIVEBA_WEB_APP.json",
+              "RelativeToolTip": "IVEBA_API_Rest\\opcionesMenuIVEBA_WEB_APP.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAATAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-11-01T18:51:13.866Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "IVEBA_API_Rest.http",
+              "DocumentMoniker": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\FUentes Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\IVEBA_API_Rest.http",
+              "RelativeDocumentMoniker": "IVEBA_API_Rest\\IVEBA_API_Rest.http",
+              "ToolTip": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\FUentes Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\IVEBA_API_Rest.http",
+              "RelativeToolTip": "IVEBA_API_Rest\\IVEBA_API_Rest.http",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
+              "WhenOpened": "2024-11-01T18:51:13.297Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ArchivoCHController.cs",
+              "DocumentMoniker": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\FUentes Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\Controllers\\IVECH\\ArchivoCHController.cs",
+              "RelativeDocumentMoniker": "IVEBA_API_Rest\\Controllers\\IVECH\\ArchivoCHController.cs",
+              "ToolTip": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\FUentes Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\Controllers\\IVECH\\ArchivoCHController.cs",
+              "RelativeToolTip": "IVEBA_API_Rest\\Controllers\\IVECH\\ArchivoCHController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-31T16:54:35.554Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "appsettings.Development.json",
+              "DocumentMoniker": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\FUentes Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\appsettings.Development.json",
+              "RelativeDocumentMoniker": "IVEBA_API_Rest\\appsettings.Development.json",
+              "ToolTip": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\FUentes Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\appsettings.Development.json",
+              "RelativeToolTip": "IVEBA_API_Rest\\appsettings.Development.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-10-31T16:52:50.247Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "IIVECHHelperService.cs",
+              "DocumentMoniker": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\FUentes Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\Services\\IVECH\\IIVECHHelperService.cs",
+              "RelativeDocumentMoniker": "IVEBA_API_Rest\\Services\\IVECH\\IIVECHHelperService.cs",
+              "ToolTip": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\FUentes Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\Services\\IVECH\\IIVECHHelperService.cs",
+              "RelativeToolTip": "IVEBA_API_Rest\\Services\\IVECH\\IIVECHHelperService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-28T11:23:55.001Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "UtilidadesAPP.cs",
+              "DocumentMoniker": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\FUentes Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\Utilidades\\UtilidadesAPP.cs",
+              "RelativeDocumentMoniker": "IVEBA_API_Rest\\Utilidades\\UtilidadesAPP.cs",
+              "ToolTip": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\FUentes Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\Utilidades\\UtilidadesAPP.cs",
+              "RelativeToolTip": "IVEBA_API_Rest\\Utilidades\\UtilidadesAPP.cs",
+              "ViewState": "AgIAAAQAAAAAAAAAAAA1wBIAAABNAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-28T03:01:39.458Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "IVECHHelperService.cs",
+              "DocumentMoniker": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\FUentes Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\Services\\IVECH\\IVECHHelperService.cs",
+              "RelativeDocumentMoniker": "IVEBA_API_Rest\\Services\\IVECH\\IVECHHelperService.cs",
+              "ToolTip": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\FUentes Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\Services\\IVECH\\IVECHHelperService.cs",
+              "RelativeToolTip": "IVEBA_API_Rest\\Services\\IVECH\\IVECHHelperService.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAqwA4AAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-28T02:52:42.804Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

@@ -894,11 +894,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\frank\\Desktop\\TRABAJO\\INTER\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\IVEBA_API_Rest.csproj",
+      "projectUniqueName": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\FUentes Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\IVEBA_API_Rest.csproj",
       "projectName": "IVEBA_API_Rest",
-      "projectPath": "C:\\Users\\frank\\Desktop\\TRABAJO\\INTER\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\IVEBA_API_Rest.csproj",
+      "projectPath": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\FUentes Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\IVEBA_API_Rest.csproj",
       "packagesPath": "C:\\Users\\frank\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\frank\\Desktop\\TRABAJO\\INTER\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\obj\\",
+      "outputPath": "C:\\Users\\frank\\Desktop\\TEST OFF\\INTER\\Fuentes\\FUentes Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\DevExpress 24.1\\Components\\Offline Packages",
@@ -968,7 +968,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
