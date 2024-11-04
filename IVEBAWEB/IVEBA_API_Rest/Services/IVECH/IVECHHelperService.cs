@@ -19,9 +19,9 @@ namespace IVEBA_API_Rest.Services.IVECH
         }       
 
 
-        private int InsertarCHCajaTemporal(int cliente, string cadena, int dia, int mes, int año)
+        private int InsertarCHCajaTemporal(int cliente, string cadena, int dia, int mes, int ano)
         {
-            string query = $"INSERT into IVE_CH_CAJA_TEMPORAL Values ({cliente}, '{cadena}', {dia}, {mes}, {año} );";
+            string query = $"INSERT into IVE_CH_CAJA_TEMPORAL Values ({cliente}, '{cadena}', {dia}, {mes}, {ano} );";
             int filasAfectadas = 0;
             try
             {
