@@ -24,13 +24,6 @@
             }
         }
 
-        public string FormateoString(string input, int length, char fillChar, bool rightPad = false)
-        {
-            if (input.Length >= length)
-                return input.Substring(0, length);
-            return rightPad ? input.PadRight(length, fillChar) : input.PadLeft(length, fillChar);
-        }
-
         public string FormateoMontos(string montoATransformar)
         {
             if (decimal.TryParse(montoATransformar, out decimal monto))
@@ -39,6 +32,33 @@
             }
             return "0.00";
         }
+
+
+        public string FormateoString2(string stringAFormatear, int digitos, char relleno, bool orientacion)
+        {
+            stringAFormatear = stringAFormatear.Trim();
+            if (stringAFormatear.Length <= digitos)
+            {
+                return orientacion
+                    ? stringAFormatear.PadRight(digitos, relleno)
+                    : stringAFormatear.PadLeft(digitos, relleno);
+            }
+            else
+            {
+                return stringAFormatear.Substring(0, digitos);
+            }
+        }
+
+        public string FormateoMontos2(string montoATransformar)
+        {
+            if (decimal.TryParse(montoATransformar, out decimal monto))
+            {
+                monto *= 100;
+                return ((int)monto).ToString();
+            }
+            return "0";
+        }
+
 
         public string QuitoTildes(string stringQuitar)
         {

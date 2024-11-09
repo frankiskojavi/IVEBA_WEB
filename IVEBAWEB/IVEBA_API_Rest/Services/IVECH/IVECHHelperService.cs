@@ -37,6 +37,11 @@ namespace IVEBA_API_Rest.Services.IVECH
 
             try
             {
+                if (archivoDefinitivo)
+                {
+                    // Pendiente, preguntarle a Oscar si todavia se usará
+                }
+
                 EliminaCHCajaTemporal();
                 clientesCaja = ConsultarClientesCHCajaTemporal(fechaInicial, fechaFinal);
                 foreach (DTO_IVECHClientesCaja clienteCaja in clientesCaja)
@@ -62,7 +67,7 @@ namespace IVEBA_API_Rest.Services.IVECH
                                 break;
                             case 4:
                             case 1:
-                                if (ProcesoJuridicos(clienteCaja.Cliente, out datosPersona))
+                                if (ProcesoJuridicos(clienteCaja.Cliente, out datosEmpresa))
                                 {
                                     datosEmpresa = datosEmpresa.Replace("'", " ");
                                     InsertarCHCajaTemporal(clienteCaja.Cliente, datosEmpresa, 0, 0, 0);
@@ -85,12 +90,17 @@ namespace IVEBA_API_Rest.Services.IVECH
                 await File.WriteAllTextAsync(filePath, logErrores.ToString());
                 byte[] fileBytes = await File.ReadAllBytesAsync(filePath);
                 File.Delete(filePath);
+                response.archivoTXTErrores = fileBytes;
+
+                // *****************************
+                // ARCHIVO OK
+                // *****************************
+                response.archivoTXTOk = TransaccionesClientes(archivoDefinitivo, filePath, fechaInicial, fechaFinal);
+
 
                 response.cantidadNit = contadorNit;                
                 response.registrosOKDetalle = cantidadRegsDetalleOK;
-                response.registrosERRORDetalle = cantidadRegsDetalleERROR;
-                response.archivoTXTErrores = fileBytes;
-                response.archivoTXTOk = TransaccionesClientes(archivoDefinitivo, filePath, fechaInicial, fechaFinal);
+                response.registrosERRORDetalle = cantidadRegsDetalleERROR;                
             }
             catch (Exception ex)
             {
@@ -115,39 +125,43 @@ namespace IVEBA_API_Rest.Services.IVECH
 
                 var clienteData = clientes.First(); // Suponiendo un solo cliente por ID
                 var stringArmado = "I";
+                string orden = clienteData.Identificacion.Substring(1, 3);
 
                 // Construcción de identificación y tipo de documento
                 switch (clienteData.TipoIdentificacion)
                 {
                     case 1: // Cedula
-                        string orden = clienteData.Identificacion.Substring(0, 3);
+                        
                         if (orden[1] == '0')
                         {
                             orden = orden[0] + orden[2].ToString();
                         }
-                        orden = utilidades.FormateoString(orden, 3, ' ', true);
-                        stringArmado += "C" + orden + utilidades.FormateoString(clienteData.Identificacion.Substring(4, 7), 20, ' ', true);
+                        orden = utilidades.FormateoString2(orden, 3, ' ', true);
+                        stringArmado += "C" + orden + utilidades.FormateoString2(clienteData.Identificacion.Substring(5, 7), 20, ' ', true);
                         break;
 
                     case 2: // Partida
-                        stringArmado += "O" + utilidades.FormateoString("", 3, ' ', true) + utilidades.FormateoString(clienteData.Identificacion, 20, ' ', true);
+                        orden = utilidades.FormateoString2(orden, 3, ' ', true);
+                        stringArmado += "O" + orden + utilidades.FormateoString2(" ", 3, ' ', true) + utilidades.FormateoString2(clienteData.Identificacion, 20, ' ', true);
                         break;
 
                     case 4: // Pasaporte
-                        stringArmado += "P" + utilidades.FormateoString("", 3, ' ', true) + utilidades.FormateoString(clienteData.Identificacion, 20, ' ', true);
+                        orden = utilidades.FormateoString2(orden, 3, ' ', true);
+                        stringArmado += "P" + orden +  utilidades.FormateoString2(" ", 3, ' ', true) + utilidades.FormateoString2(clienteData.Identificacion, 20, ' ', true);
                         break;
 
                     case 26: // DPI
-                        stringArmado += "D" + utilidades.FormateoString("   ", 3, ' ', true) + utilidades.FormateoString(clienteData.Identificacion, 20, ' ', true);
+                        orden = "   ";
+                        stringArmado += "D" + orden + utilidades.FormateoString2(clienteData.Identificacion, 20, ' ', true);
                         break;
                 }
 
                 // Apellidos y nombres con tildes removidas y en mayúsculas
-                stringArmado += utilidades.FormateoString(utilidades.QuitoTildes(clienteData.Apellido1.ToUpper()), 15, ' ', true);
-                stringArmado += utilidades.FormateoString(utilidades.QuitoTildes(clienteData.Apellido2.ToUpper()), 15, ' ', true);
-                stringArmado += utilidades.FormateoString(utilidades.QuitoTildes(clienteData.ApellidoCasada.ToUpper()), 15, ' ', true);
-                stringArmado += utilidades.FormateoString(utilidades.QuitoTildes(clienteData.Nombre1.ToUpper()), 15, ' ', true);
-                stringArmado += utilidades.FormateoString(utilidades.QuitoTildes(clienteData.Nombre2.ToUpper()), 15, ' ', true);
+                stringArmado += utilidades.FormateoString2(utilidades.QuitoTildes(clienteData.Apellido1.ToUpper()), 15, ' ', true);
+                stringArmado += utilidades.FormateoString2(utilidades.QuitoTildes(clienteData.Apellido2.ToUpper()), 15, ' ', true);
+                stringArmado += utilidades.FormateoString2(utilidades.QuitoTildes(clienteData.ApellidoCasada.ToUpper()), 15, ' ', true);
+                stringArmado += utilidades.FormateoString2(utilidades.QuitoTildes(clienteData.Nombre1.ToUpper()), 15, ' ', true);
+                stringArmado += utilidades.FormateoString2(utilidades.QuitoTildes(clienteData.Nombre2.ToUpper()), 15, ' ', true);
 
                 stringDatos = stringArmado;
                 return true;
@@ -183,12 +197,11 @@ namespace IVEBA_API_Rest.Services.IVECH
                 }
 
                 // Asigna un NIT específico si es el cliente con CodCliente "10"
-                if (clienteData.CodCliente == 10)
-                    nitEmpresa = "1205544";
+                if (clienteData.CodCliente == 10) nitEmpresa = "1205544";
 
                 // Construcción del StringArmado
-                stringArmado += "N   " + utilidades.FormateoString(utilidades.QuitoCaracter(nitEmpresa), 20, ' ', true);
-                stringArmado += utilidades.FormateoString(utilidades.QuitoTildes(clienteData.NombreCliente.ToUpper()), 75, ' ', true);
+                stringArmado += "N   " + utilidades.FormateoString2(utilidades.QuitoCaracter(nitEmpresa), 20, ' ', true);
+                stringArmado += utilidades.FormateoString2(utilidades.QuitoTildes(clienteData.NombreCliente.ToUpper()), 75, ' ', true);
 
                 stringDatos = stringArmado;
                 return true;
@@ -214,7 +227,7 @@ namespace IVEBA_API_Rest.Services.IVECH
                         ordinal++;
                         //string stringGrabar = registro.FEC.ToString("yyyyMMdd"); // Formateo de fecha
                         string stringGrabar = registro.FEC.ToString(); // Formateo de fecha
-                        stringGrabar += utilidades.FormateoString(registro.Cheq.Trim(), 15, ' ', true);
+                        stringGrabar += utilidades.FormateoString2(registro.Cheq.Trim(), 15, ' ', true);
 
                         //-- Se inicia registrando los beneficiarios de los cheques del banco
                         //-- Proceso los registros del banco (cheques de caja emitidos por el banco)
@@ -223,21 +236,21 @@ namespace IVEBA_API_Rest.Services.IVECH
                             //-- Si el beneficiario no es cliente del banco, se toma la información que se solicitó de los beneficiarios
                             if (registro.CLT.Trim() == "0")
                             {
-                                stringGrabar += utilidades.FormateoString(registro.TPB.Trim(), 1, ' ', true);
+                                stringGrabar += utilidades.FormateoString2(registro.TPB.Trim(), 1, ' ', true);
 
                                 //-- Si es persona individual, se toma el detalle de cada nombre
                                 if (registro.TPB.Trim() == "I")
                                 {
-                                    stringGrabar += utilidades.FormateoString(registro.PAB.ToUpper().Trim(), 15, ' ', true);
-                                    stringGrabar += utilidades.FormateoString(registro.SAB.ToUpper().Trim(), 15, ' ', true);
-                                    stringGrabar += string.IsNullOrEmpty(registro.ACB) ? new string(' ', 15) : utilidades.FormateoString(registro.ACB.ToUpper().Trim(), 15, ' ', true);
-                                    stringGrabar += utilidades.FormateoString(registro.PNB.ToUpper().Trim(), 15, ' ', true);
-                                    stringGrabar += utilidades.FormateoString(registro.SNB.ToUpper().Trim(), 15, ' ', true);
+                                    stringGrabar += utilidades.FormateoString2(registro.PAB.ToUpper().Trim(), 15, ' ', true);
+                                    stringGrabar += utilidades.FormateoString2(registro.SAB.ToUpper().Trim(), 15, ' ', true);
+                                    stringGrabar += string.IsNullOrEmpty(registro.ACB) ? new string(' ', 15) : utilidades.FormateoString2(registro.ACB.ToUpper().Trim(), 15, ' ', true);
+                                    stringGrabar += utilidades.FormateoString2(registro.PNB.ToUpper().Trim(), 15, ' ', true);
+                                    stringGrabar += utilidades.FormateoString2(registro.SNB.ToUpper().Trim(), 15, ' ', true);
                                 }
                                 else
                                 {
                                     //-- Si es jurídica, se toma el nombre de la empresa
-                                    stringGrabar += utilidades.FormateoString(registro.NJB.ToUpper().Trim(), 75, ' ', true);
+                                    stringGrabar += utilidades.FormateoString2(registro.NJB.ToUpper().Trim(), 75, ' ', true);
                                 }
                             }
                             else
@@ -246,12 +259,12 @@ namespace IVEBA_API_Rest.Services.IVECH
                                 var dataTemporal = ConsultarIVECHCajaTemporalPorCliente(registro.CLT.Trim());
                                 if (dataTemporal != null && dataTemporal.String.ToUpper() != "ERROR")
                                 {
-                                    stringGrabar += dataTemporal.String.Substring(0, 1) + utilidades.FormateoString(dataTemporal.String.Substring(25), 75, ' ', true);
+                                    stringGrabar += dataTemporal.String.Substring(0, 1) + utilidades.FormateoString2(dataTemporal.String.Substring(25), 75, ' ', true);
                                     grabar = true;
                                 }
                                 else
                                 {
-                                    stringGrabar += utilidades.FormateoString("", 76, ' ', true);
+                                    stringGrabar += utilidades.FormateoString2("", 76, ' ', true);
                                     grabar = false;
                                 }
                             }
@@ -263,35 +276,35 @@ namespace IVEBA_API_Rest.Services.IVECH
                         {
                             //-- Procesan los cheques de caja vendidos
                             //-- Si el beneficiario no es cliente del banco, se toma la información de la BD
-                            stringGrabar += utilidades.FormateoString(registro.TPB.Trim(), 1, ' ', true);
+                            stringGrabar += utilidades.FormateoString2(registro.TPB.Trim(), 1, ' ', true);
 
                             //-- Si es persona individual, se toma el detalle de cada nombre
                             if (registro.TPB.Trim() == "I")
                             {
-                                stringGrabar += utilidades.FormateoString(registro.PAB.ToUpper().Trim(), 15, ' ', true);
-                                stringGrabar += utilidades.FormateoString(registro.SAB.ToUpper().Trim(), 15, ' ', true);
-                                stringGrabar += string.IsNullOrEmpty(registro.ACB) ? new string(' ', 15) : utilidades.FormateoString(registro.ACB.ToUpper().Trim(), 15, ' ', true);
-                                stringGrabar += utilidades.FormateoString(registro.PNB.ToUpper().Trim(), 15, ' ', true);
-                                stringGrabar += utilidades.FormateoString(registro.SNB.ToUpper().Trim(), 15, ' ', true);
+                                stringGrabar += utilidades.FormateoString2(registro.PAB.ToUpper().Trim(), 15, ' ', true);
+                                stringGrabar += utilidades.FormateoString2(registro.SAB.ToUpper().Trim(), 15, ' ', true);
+                                stringGrabar += string.IsNullOrEmpty(registro.ACB) ? new string(' ', 15) : utilidades.FormateoString2(registro.ACB.ToUpper().Trim(), 15, ' ', true);
+                                stringGrabar += utilidades.FormateoString2(registro.PNB.ToUpper().Trim(), 15, ' ', true);
+                                stringGrabar += utilidades.FormateoString2(registro.SNB.ToUpper().Trim(), 15, ' ', true);
                             }
                             else
                             {
                                 //-- Si es jurídica, se toma el nombre de la empresa
-                                stringGrabar += utilidades.FormateoString(registro.NJB.ToUpper().Trim(), 75, ' ', true);
+                                stringGrabar += utilidades.FormateoString2(registro.NJB.ToUpper().Trim(), 75, ' ', true);
                             }
 
                             //-- Si el solicitante no es cliente del banco, se toma la información de la BD
                             if (registro.CLT.Trim() == "0")
                             {
-                                stringGrabar += utilidades.FormateoString(registro.TPS.Trim(), 1, ' ', true);
+                                stringGrabar += utilidades.FormateoString2(registro.TPS.Trim(), 1, ' ', true);
 
                                 //-- Si es persona individual, se toma el detalle de cada nombre
                                 if (registro.TPS.Trim() == "I")
                                 {
                                     if (registro.IPS.Trim() == "C")
                                     {
-                                        stringGrabar += utilidades.FormateoString(registro.IPS.Trim(), 1, ' ', true);
-                                        stringGrabar += utilidades.FormateoString(registro.NOS.Trim(), 3, ' ', true);
+                                        stringGrabar += utilidades.FormateoString2(registro.IPS.Trim(), 1, ' ', true);
+                                        stringGrabar += utilidades.FormateoString2(registro.NOS.Trim(), 3, ' ', true);
 
                                         string cedula = registro.NIS.Trim();
                                         int posicion = cedula.IndexOf(' ');
@@ -306,27 +319,27 @@ namespace IVEBA_API_Rest.Services.IVECH
                                                 cedula = cedula.Substring(posicion + 1).Replace(" ", "");
                                             }
                                         }
-                                        stringGrabar += utilidades.FormateoString(cedula.ToUpper(), 20, ' ', true);
+                                        stringGrabar += utilidades.FormateoString2(cedula.ToUpper(), 20, ' ', true);
                                     }
                                     else
                                     {
-                                        stringGrabar += utilidades.FormateoString(registro.IPS.Trim(), 1, ' ', true);
+                                        stringGrabar += utilidades.FormateoString2(registro.IPS.Trim(), 1, ' ', true);
                                         stringGrabar += new string(' ', 3);
-                                        stringGrabar += utilidades.FormateoString(registro.NIS.ToUpper().Trim(), 20, ' ', true);
+                                        stringGrabar += utilidades.FormateoString2(registro.NIS.ToUpper().Trim(), 20, ' ', true);
                                     }
 
-                                    stringGrabar += utilidades.FormateoString(registro.PAS.ToUpper().Trim(), 15, ' ', true);
-                                    stringGrabar += utilidades.FormateoString(registro.SAS.ToUpper().Trim(), 15, ' ', true);
-                                    stringGrabar += string.IsNullOrEmpty(registro.ACS) ? new string(' ', 15) : utilidades.FormateoString(registro.ACS.ToUpper().Trim(), 15, ' ', true);
-                                    stringGrabar += utilidades.FormateoString(registro.PNS.ToUpper().Trim(), 15, ' ', true);
-                                    stringGrabar += utilidades.FormateoString(registro.SNS.ToUpper().Trim(), 15, ' ', true);
+                                    stringGrabar += utilidades.FormateoString2(registro.PAS.ToUpper().Trim(), 15, ' ', true);
+                                    stringGrabar += utilidades.FormateoString2(registro.SAS.ToUpper().Trim(), 15, ' ', true);
+                                    stringGrabar += string.IsNullOrEmpty(registro.ACS) ? new string(' ', 15) : utilidades.FormateoString2(registro.ACS.ToUpper().Trim(), 15, ' ', true);
+                                    stringGrabar += utilidades.FormateoString2(registro.PNS.ToUpper().Trim(), 15, ' ', true);
+                                    stringGrabar += utilidades.FormateoString2(registro.SNS.ToUpper().Trim(), 15, ' ', true);
                                 }
                                 else
                                 {
                                     //-- Si es jurídica, se toma el nombre de la empresa
                                     stringGrabar += "N" + new string(' ', 3);
-                                    stringGrabar += utilidades.FormateoString(registro.NIS.ToUpper().Trim(), 20, ' ', true);
-                                    stringGrabar += utilidades.FormateoString(registro.NJS.ToUpper().Trim(), 75, ' ', true);
+                                    stringGrabar += utilidades.FormateoString2(registro.NIS.ToUpper().Trim(), 20, ' ', true);
+                                    stringGrabar += utilidades.FormateoString2(registro.NJS.ToUpper().Trim(), 75, ' ', true);
                                 }
                             }
                             else
@@ -335,12 +348,12 @@ namespace IVEBA_API_Rest.Services.IVECH
                                 var dataTemporal = ConsultarIVECHCajaTemporalPorCliente(registro.CLT.Trim());
                                 if (dataTemporal != null && dataTemporal.String.ToUpper() != "ERROR")
                                 {
-                                    stringGrabar += utilidades.FormateoString(dataTemporal.String, 100, ' ', true);
+                                    stringGrabar += utilidades.FormateoString2(dataTemporal.String, 100, ' ', true);
                                     grabar = true;
                                 }
                                 else
                                 {
-                                    stringGrabar += utilidades.FormateoString("", 76, ' ', true);
+                                    stringGrabar += utilidades.FormateoString2("", 76, ' ', true);
                                     grabar = false;
                                 }
                             }
@@ -348,8 +361,8 @@ namespace IVEBA_API_Rest.Services.IVECH
 
                         // Moneda y valor de transacción
                         stringGrabar += registro.MON == 0 ? "GTQ" : "USD";
-                        stringGrabar += utilidades.FormateoString(utilidades.FormateoMontos(registro.VAL.ToString()), 14, ' ', true);
-                        stringGrabar += utilidades.FormateoString(utilidades.FormateoMontos((registro.VAL / registro.BGU).ToString()), 14, ' ', true);
+                        stringGrabar += utilidades.FormateoString2(utilidades.FormateoMontos2(registro.VAL.ToString()), 14, ' ', true);
+                        stringGrabar += utilidades.FormateoString2(utilidades.FormateoMontos2((registro.VAL / registro.BGU).ToString()), 14, ' ', true);
 
                         //-- Fondos
                         string origenFondos = !string.IsNullOrEmpty(registro.ORI) ? registro.ORI.Replace("/", "") : "";
@@ -359,12 +372,12 @@ namespace IVEBA_API_Rest.Services.IVECH
                         if (registro.TPS == "B")
                         {
                             stringGrabar += "3";
-                            stringGrabar += utilidades.FormateoString("REGISTROS CONTABLES BANCO INTERNACIONAL S.A., DETALLE: " + origenFondos.Trim(), 500, ' ', true);
+                            stringGrabar += utilidades.FormateoString2("REGISTROS CONTABLES BANCO INTERNACIONAL S.A., DETALLE: " + origenFondos.Trim(), 500, ' ', true);
                         }
                         else
                         {
                             stringGrabar += pago.ToString();
-                            stringGrabar += utilidades.FormateoString(origenFondos.Trim(), 500, ' ', true);
+                            stringGrabar += utilidades.FormateoString2(origenFondos.Trim(), 500, ' ', true);
                         }
 
                         //-- String final a grabar
@@ -412,7 +425,7 @@ namespace IVEBA_API_Rest.Services.IVECH
 
         private int EliminaCHCajaTemporal()
         {
-            string query = "DELETE FROM IVE_CH_CAJA_Temporal";
+            string query = "DELETE FROM IVE_CH_CAJA_TEMPORAL";
             int filasAfectadas = 0;
             try
             {
