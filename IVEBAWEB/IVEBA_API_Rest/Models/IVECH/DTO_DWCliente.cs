@@ -2,28 +2,28 @@
 {
     public class DTO_DWCliente
     {
-        public long CodCliente { get; set; }
-        public long CodClienteAnt { get; set; }
+        public long? CodCliente { get; set; }
+        public long? CodClienteAnt { get; set; }
         public string NombreCliente { get; set; }
         public string Identificacion { get; set; }
-        public byte TipoIdentificacion { get; set; }
-        public short IdentUbicacion { get; set; }
-        public int FNacimiento { get; set; }
-        public byte TipoCliente { get; set; }
-        public short OficialCuenta { get; set; }
-        public byte Banca { get; set; }
-        public byte EstadoCivil { get; set; }
-        public byte Genero { get; set; }
-        public byte Edad { get; set; }
-        public byte RangoEdad { get; set; }
-        public short ActividadEconomica { get; set; }
-        public int FechaAgregado { get; set; }
-        public int FechaModificado { get; set; }
-        public short GrupoEconomico { get; set; }
-        public short Profesion { get; set; }
+        public int? TipoIdentificacion { get; set; }
+        public short? IdentUbicacion { get; set; }
+        public int? FNacimiento { get; set; }
+        public int? TipoCliente { get; set; }
+        public short? OficialCuenta { get; set; }
+        public int? Banca { get; set; }
+        public int? EstadoCivil { get; set; }
+        public int? Genero { get; set; }
+        public int? Edad { get; set; }
+        public int? RangoEdad { get; set; }
+        public short? ActividadEconomica { get; set; }
+        public int? FechaAgregado { get; set; }
+        public int? FechaModificado { get; set; }
+        public short? GrupoEconomico { get; set; }
+        public short? Profesion { get; set; }
         public string Email { get; set; }
         public string Nit { get; set; }
-        public short PaisCliente { get; set; }
+        public short? PaisCliente { get; set; }
         public string Telefono1 { get; set; }
         public string Telefono2 { get; set; }
         public string Celular { get; set; }
@@ -33,102 +33,102 @@
         public string Apellido1 { get; set; }
         public string Apellido2 { get; set; }
         public string ApellidoCasada { get; set; }
-        public decimal IngresoMensual { get; set; }
-        public bool RelacionDependencia { get; set; }
+        public decimal? IngresoMensual { get; set; }
+        public bool? RelacionDependencia { get; set; }
         public string LugarTrabajo { get; set; }
         public string CargoTrabajo { get; set; }
         public string ViviendaPropia { get; set; }
-        public byte Bloqueo { get; set; }
-        public int FultActualizacion { get; set; }
+        public int? Bloqueo { get; set; }
+        public int? FultActualizacion { get; set; }
         public string Cotitularidad { get; set; }
-        public short AgenciaApertura { get; set; }
-        public byte CalificacionRiesgo { get; set; }
+        public short? AgenciaApertura { get; set; }
+        public int? CalificacionRiesgo { get; set; }
         public string CategoriaRiesgo { get; set; }
         public string NombreConyuge { get; set; }
-        public byte NumHijos { get; set; }
+        public int? NumHijos { get; set; }
         public string EnFormacion { get; set; }
-        public byte IntermFinanciera { get; set; }
+        public int? IntermFinanciera { get; set; }
         public string NombreUsual { get; set; }
-        public byte FrecOperaciones { get; set; }
-        public byte RefExternas { get; set; }
-        public byte Fuente { get; set; }
+        public int? FrecOperaciones { get; set; }
+        public int? RefExternas { get; set; }
+        public int? Fuente { get; set; }
         public string Comentarios { get; set; }
         public string FolioLibro { get; set; }
-        public int FechaEscritura { get; set; }
+        public int? FechaEscritura { get; set; }
         public string Direccion { get; set; }
-        public short DirPais { get; set; }
-        public short DirDepto { get; set; }
-        public int DirMunicpio { get; set; }
-        public byte Zona { get; set; }
+        public short? DirPais { get; set; }
+        public short? DirDepto { get; set; }
+        public int? DirMunicpio { get; set; }
+        public int? Zona { get; set; }
         public string Colonia { get; set; }
         public string CodigoPostal { get; set; }
-        public byte RetImp { get; set; }
-        public byte ConocimientoAct { get; set; }
-        public byte Documentacion { get; set; }
-        public byte UbicacionNegocio { get; set; }
-        public byte Categoria { get; set; }
-        public byte Indicador { get; set; }
+        public int? RetImp { get; set; }
+        public int? ConocimientoAct { get; set; }
+        public int? Documentacion { get; set; }
+        public int? UbicacionNegocio { get; set; }
+        public int? Categoria { get; set; }
+        public int? Indicador { get; set; }
         public string IdentSociedad { get; set; }
         public string IdentEmpresa { get; set; }
         public string RangosQ { get; set; }
         public string RangosD { get; set; }
         public string Email2 { get; set; }
-        public char Pep { get; set; }
+        public string Pep { get; set; }
         public string NombreParientePEP { get; set; }
         public string Parentesco { get; set; }
         public string LugarTrabajoParientePEP { get; set; }
         public string CargoParientePEP { get; set; }
-        public char EsFamiliarPEP { get; set; }
-        public int FormUltAviso { get; set; }
-        public short FormNumAvisos { get; set; }
-        public int FormImpresion { get; set; }
-        public short FormAgImpresion { get; set; }
-        public byte EstadoCl { get; set; }
-        public byte Sector { get; set; }
-        public byte SubSector { get; set; }
-        public byte PosConsolidada { get; set; }
+        public string EsFamiliarPEP { get; set; }
+        public int? FormUltAviso { get; set; }
+        public short? FormNumAvisos { get; set; }
+        public int? FormImpresion { get; set; }
+        public short? FormAgImpresion { get; set; }
+        public int? EstadoCl { get; set; }
+        public int? Sector { get; set; }
+        public int? SubSector { get; set; }
+        public int? PosConsolidada { get; set; }
         public string FichaSectorial { get; set; }
-        public byte GeneradorME { get; set; }
+        public int? GeneradorME { get; set; }
         public string DescActividadEco { get; set; }
-        public int Expediente { get; set; }
+        public int? Expediente { get; set; }
         public string CatRiesgoBanguat { get; set; }
-        public short MRTipoPersona { get; set; }
-        public short MRActividadEco { get; set; }
-        public short MRProfesion { get; set; }
-        public short MRPaisOrigen { get; set; }
-        public short MRAgencia { get; set; }
-        public short MRIngresos { get; set; }
-        public short MRCategoria { get; set; }
-        public short MRExpediente { get; set; }
-        public short MRReferencias { get; set; }
-        public short MRRangoIngresos { get; set; }
-        public short SubCategoria { get; set; }
-        public short MRAntiguedad { get; set; }
-        public short MRCantCtas { get; set; }
-        public char NegocioPropio { get; set; }
-        public int PEPUltAct { get; set; }
+        public short? MRTipoPersona { get; set; }
+        public short? MRActividadEco { get; set; }
+        public short? MRProfesion { get; set; }
+        public short? MRPaisOrigen { get; set; }
+        public short? MRAgencia { get; set; }
+        public short? MRIngresos { get; set; }
+        public short? MRCategoria { get; set; }
+        public short? MRExpediente { get; set; }
+        public short? MRReferencias { get; set; }
+        public short? MRRangoIngresos { get; set; }
+        public short? SubCategoria { get; set; }
+        public short? MRAntiguedad { get; set; }
+        public short? MRCantCtas { get; set; }
+        public string NegocioPropio { get; set; }
+        public int? PEPUltAct { get; set; }
         public string PEPCond { get; set; }
-        public short PEPPais { get; set; }
-        public int PEPFAgregado { get; set; }
-        public char EsAsociadoPep { get; set; }
+        public short? PEPPais { get; set; }
+        public int? PEPFAgregado { get; set; }
+        public string EsAsociadoPep { get; set; }
         public string NombreAsociadoPep { get; set; }
-        public char EmpMayor { get; set; }
-        public byte EsCliente { get; set; }
-        public decimal MRIngresosMonto { get; set; }
-        public short GrupoAfinidadId { get; set; }
-        public int FultMov { get; set; }
-        public short MrActMasExpuesta { get; set; }
-        public short MRProducto { get; set; }
-        public short MrComparacionIngresos { get; set; }
-        public byte MrCalificacion { get; set; }
-        public int VisitaFecha { get; set; }
+        public string EmpMayor { get; set; }
+        public int? EsCliente { get; set; }
+        public decimal? MRIngresosMonto { get; set; }
+        public short? GrupoAfinidadId { get; set; }
+        public int? FultMov { get; set; }
+        public short? MrActMasExpuesta { get; set; }
+        public short? MRProducto { get; set; }
+        public short? MrComparacionIngresos { get; set; }
+        public int? MrCalificacion { get; set; }
+        public int? VisitaFecha { get; set; }
         public string VisitaRespuesta { get; set; }
         public string VisitaComentario { get; set; }
-        public int RevisionFecha { get; set; }
+        public int? RevisionFecha { get; set; }
         public string RevisionRespuesta { get; set; }
         public string RevisionComentario { get; set; }
         public string UsrCalifica { get; set; }
-        public byte Actualizar { get; set; }
-        public int FAlertaAct { get; set; }
+        public int? Actualizar { get; set; }
+        public int? FAlertaAct { get; set; }
     }
 }
