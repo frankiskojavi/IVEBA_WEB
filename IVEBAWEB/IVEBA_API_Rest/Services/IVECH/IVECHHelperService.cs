@@ -1,7 +1,9 @@
 using IVEBA_API_Rest.Helpers;
 using IVEBA_API_Rest.Models.IVECH;
+using IVEBA_API_Rest.Utilidades;
 using Microsoft.Win32;
 using System.Data;
+using System.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace IVEBA_API_Rest.Services.IVECH
@@ -9,14 +11,159 @@ namespace IVEBA_API_Rest.Services.IVECH
     public class IVECHHelperService : IIVECHHelperService
     {
         private readonly DbHelper _dbHelper;
-        private readonly IConfiguration _configuration;        
-        
+        private readonly IConfiguration _configuration;
+        private readonly UtilidadesAPP utilidades;
+
 
         public IVECHHelperService(DbHelper dbHelper, IConfiguration configuration)
         {
             _dbHelper = dbHelper;
             _configuration = configuration;
-        }       
+            utilidades = new UtilidadesAPP();
+        }
+
+        public async Task<DTO_CHCajaTemporalResponse> GenerarArchivoCH(bool archivoDefinitivo, int fechaInicial, int fechaFinal){
+            DTO_CHCajaTemporalResponse response = new DTO_CHCajaTemporalResponse();
+            List<DTO_IVECHClientesCaja> clientesCaja = new List<DTO_IVECHClientesCaja>();
+            string filePath = Path.Combine(Path.GetTempPath(), "archivoGenerado.txt");
+            string datosPersona = "";
+            string datosEmpresa = "";
+            int registrosProcesados = 0;
+            int registrosErrores = 0;
+            int registrosProcesadosDetalle = 0;
+            int registrosNit = 0;
+            int registrosGeneraError = 0;
+            StringBuilder logErrores = new StringBuilder();
+
+
+            EliminaCHCajaTemporal();
+            clientesCaja = ConsultarClientesCHCajaTemporal(fechaInicial, fechaFinal);
+            foreach (DTO_IVECHClientesCaja clienteCaja in clientesCaja) { 
+                clienteCaja.Nombre = clienteCaja.Nombre.Replace("'","");
+                if(clienteCaja.Cliente != 0 ) { 
+                    switch(clienteCaja.Tipo){ 
+                        case 2 : case 3: 
+                            if (ProcesoFisicos(clienteCaja.Cliente, out datosPersona)) {
+                                InsertarCHCajaTemporal( clienteCaja.Cliente, datosPersona, 0,0,0);
+                                registrosProcesados++;
+                            }else {
+                                InsertarCHCajaTemporal(clienteCaja.Cliente, "ERROR", 99, 99, 9999);
+                                logErrores.AppendLine($"{clienteCaja.Cliente.ToString("D12")} {clienteCaja.Nombre} Error al procesar físico");
+                                registrosErrores++;
+                            }
+                        break; 
+                        case 4 : case 1:
+                            if (ProcesoJuridicos(clienteCaja.Cliente, out datosPersona))
+                            {
+                                datosEmpresa = datosEmpresa.Replace("'", " ");
+                                InsertarCHCajaTemporal(clienteCaja.Cliente, datosEmpresa, 0, 0, 0);
+                                registrosProcesados++;
+                            }
+                            else
+                            {
+                                InsertarCHCajaTemporal(clienteCaja.Cliente, "ERROR", 99, 99, 9999);
+                                logErrores.AppendLine($"{clienteCaja.Cliente.ToString("D12")} {clienteCaja.Nombre} Error al procesar jurídico");
+                                registrosErrores++;
+                            }
+                        break; 
+                    }
+                }
+            }
+
+            // *****************************
+            // ARCHIVO CON ERRORES 
+            // *****************************
+            await File.WriteAllTextAsync(filePath, logErrores.ToString());            
+            byte[] fileBytes = await File.ReadAllBytesAsync(filePath);            
+            File.Delete(filePath);
+            
+
+            response.RegistrosErrores = registrosErrores;
+            response.RegistrosProcesados = registrosProcesados;
+            response.archivoTXTErrores = fileBytes;
+
+            return response;
+        }
+
+
+
+        public bool ProcesoFisicos(int cliente, out string stringDatos)
+        {
+            stringDatos = string.Empty;
+            List<DTO_DWCliente> clientes = ConsultarDWCliente(cliente);
+
+            if (clientes.Count == 0)
+                return false;
+
+            var clienteData = clientes.First(); // Suponiendo un solo cliente por ID
+            var stringArmado = "I";
+
+            // Construcción de identificación y tipo de documento
+            switch (clienteData.TipoIdentificacion)
+            {
+                case 1: // Cedula
+                    string orden = clienteData.Identificacion.Substring(0, 3);
+                    if (orden[1] == '0')
+                    {
+                        orden = orden[0] + orden[2].ToString();
+                    }
+                    orden = utilidades.FormateoString(orden, 3, ' ', true);
+                    stringArmado += "C" + orden + utilidades.FormateoString(clienteData.Identificacion.Substring(4, 7), 20, ' ', true);
+                    break;
+
+                case 2: // Partida
+                    stringArmado += "O" + utilidades.FormateoString("", 3, ' ', true) + utilidades.FormateoString(clienteData.Identificacion, 20, ' ', true);
+                    break;
+
+                case 4: // Pasaporte
+                    stringArmado += "P" + utilidades.FormateoString("", 3, ' ', true) + utilidades.FormateoString(clienteData.Identificacion, 20, ' ', true);
+                    break;
+
+                case 26: // DPI
+                    stringArmado += "D" + utilidades.FormateoString("   ", 3, ' ', true) + utilidades.FormateoString(clienteData.Identificacion, 20, ' ', true);
+                    break;
+            }
+
+            // Apellidos y nombres con tildes removidas y en mayúsculas
+            stringArmado += utilidades.FormateoString(utilidades.QuitoTildes(clienteData.Apellido1.ToUpper()), 15, ' ', true);
+            stringArmado += utilidades.FormateoString(utilidades.QuitoTildes(clienteData.Apellido2.ToUpper()), 15, ' ', true);
+            stringArmado += utilidades.FormateoString(utilidades.QuitoTildes(clienteData.ApellidoCasada.ToUpper()), 15, ' ', true);
+            stringArmado += utilidades.FormateoString(utilidades.QuitoTildes(clienteData.Nombre1.ToUpper()), 15, ' ', true);
+            stringArmado += utilidades.FormateoString(utilidades.QuitoTildes(clienteData.Nombre2.ToUpper()), 15, ' ', true);
+
+            stringDatos = stringArmado;
+            return true;
+        }
+
+        public bool ProcesoJuridicos(int cliente, out string stringDatos)
+        {
+            stringDatos = string.Empty;
+            var clientes = ConsultarDWCliente(cliente);
+
+            if (clientes.Count == 0)
+                return false;
+
+            var clienteData = clientes.First(); // Suponiendo un solo cliente por ID
+            var stringArmado = "J";
+
+            // Determina el NIT de la empresa
+            string nitEmpresa = string.IsNullOrEmpty(clienteData.Nit) || clienteData.Nit == "0"
+                ? clienteData.TipoIdentificacion == 8 ? clienteData.Identificacion : "SINNIT"
+                : clienteData.Nit;
+
+            // Asigna un NIT específico si es el cliente con CodCliente "10"
+            if (clienteData.CodCliente == 10)
+                nitEmpresa = "1205544";
+
+            // Construcción del StringArmado
+            stringArmado += "N   " + utilidades.FormateoString(utilidades.QuitoCaracter(nitEmpresa), 20, ' ', true);
+            stringArmado += utilidades.FormateoString(utilidades.QuitoTildes(clienteData.NombreCliente.ToUpper()), 75, ' ', true);
+
+            stringDatos = stringArmado;
+            return true;
+        }
+
+
 
 
         private int InsertarCHCajaTemporal(int cliente, string cadena, int dia, int mes, int ano)
@@ -80,16 +227,16 @@ namespace IVEBA_API_Rest.Services.IVECH
             return resultado;
         }
 
-        private DTO_DWCliente ConsultarDWCliente(int codigoCliente)
+        private List<DTO_DWCliente> ConsultarDWCliente(int codigoCliente)
         {
-            DTO_DWCliente resultado = new DTO_DWCliente();
-            string query = $" Select * from dwcliente where cod_cliente = {codigoCliente} ";
+            List<DTO_DWCliente> resultado = new List<DTO_DWCliente>();
+            string query = $"SELECT * FROM dwcliente WHERE cod_cliente = {codigoCliente}";
 
             DataTable dt = _dbHelper.ExecuteSelectCommand(query);
 
             foreach (DataRow row in dt.Rows)
             {
-                resultado = new DTO_DWCliente
+                DTO_DWCliente cliente = new DTO_DWCliente
                 {
                     CodCliente = long.Parse(row["cod_cliente"].ToString()),
                     CodClienteAnt = long.Parse(row["cod_cliente_ant"].ToString()),
@@ -220,9 +367,11 @@ namespace IVEBA_API_Rest.Services.IVECH
                     Actualizar = byte.Parse(row["Actualizar"].ToString()),
                     FAlertaAct = int.Parse(row["fAlertaAct"].ToString())
                 };
+
+                resultado.Add(cliente);
             }
+
             return resultado;
         }
-
     }
 }

@@ -24,6 +24,13 @@
             }
         }
 
+        public string FormateoString(string input, int length, char fillChar, bool rightPad = false)
+        {
+            if (input.Length >= length)
+                return input.Substring(0, length);
+            return rightPad ? input.PadRight(length, fillChar) : input.PadLeft(length, fillChar);
+        }
+
         public string FormateoMontos(string montoATransformar)
         {
             if (decimal.TryParse(montoATransformar, out decimal monto))
