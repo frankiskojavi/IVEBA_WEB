@@ -6,6 +6,7 @@ namespace IVEBA_API_Rest.Helpers
     public class DbHelper
     {
         private readonly string _connectionString;
+        private const int CommandTimeout = 5000000;
 
         public DbHelper(IConfiguration configuration)
         {
@@ -18,7 +19,7 @@ namespace IVEBA_API_Rest.Helpers
             using (SqlConnection connection = new SqlConnection(_connectionString))
             using (SqlCommand command = new SqlCommand(query, connection))
             {
-                command.CommandTimeout = 500000;
+                command.CommandTimeout = CommandTimeout;
                 if (parameters != null)
                     command.Parameters.AddRange(parameters);
 
@@ -35,6 +36,7 @@ namespace IVEBA_API_Rest.Helpers
             using (SqlConnection connection = new SqlConnection(_connectionString))
             using (SqlCommand command = new SqlCommand(query, connection))
             {
+                command.CommandTimeout = CommandTimeout;
                 if (parameters != null)
                     command.Parameters.AddRange(parameters);
 

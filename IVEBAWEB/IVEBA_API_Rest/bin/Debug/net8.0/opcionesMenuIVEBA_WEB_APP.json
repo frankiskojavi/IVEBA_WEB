@@ -24,6 +24,14 @@
       "menuBoton": "Generar IVE-DV-17",
       "menuImagen": "",
       "menuPagina": "archivo-dv17"
+    },
+    {
+      "codigoMenu": 4,
+      "menuTitulo": "IVE CH Caja",
+      "menuDescripcion": "IVE Cheque de Caja",
+      "menuBoton": "Generar IVE-CH-CAJA",
+      "menuImagen": "",
+      "menuPagina": "archivo-chcaja"
     }
   ]
 }

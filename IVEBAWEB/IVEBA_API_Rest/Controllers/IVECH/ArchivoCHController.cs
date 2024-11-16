@@ -21,8 +21,8 @@ namespace IVEBA_API_Rest.Controllers.IVECH
             return Ok(response);
         }
 
-        [HttpGet("GenerarArchivoTemporal")]
-        public async Task<ActionResult<DTO_CHCajaTemporalResponse>> GenerarArchivoTemporal(int fechaInicial, int fechaFinal)
+        [HttpGet("GenerarArchivoPrelminar")]
+        public async Task<ActionResult<DTO_CHCajaTemporalResponse>> GenerarArchivoPrelminar(int fechaInicial, int fechaFinal)
         {
             var response = await IVECHService.GenerarArchivoCH(false, fechaInicial, fechaFinal);
             return Ok(response);
