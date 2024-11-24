@@ -1,8 +1,8 @@
 [
   {
     "ContainingType": "IVEBA_API_Rest.Controllers.IVECH.ArchivoCHController",
-    "Method": "GenerarArchivoDefinitivo",
-    "RelativePath": "api/ArchivoCH/GenerarArchivoDefinitivo",
+    "Method": "EliminaCHCajaTemporal",
+    "RelativePath": "api/ArchivoCH/EliminaCHCajaTemporal",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -20,38 +20,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "IVEBA_API_Rest.Models.IVECH.DTO_CHCajaTemporalResponse",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "IVEBA_API_Rest.Controllers.IVECH.ArchivoCHController",
-    "Method": "GenerarArchivoTemporal",
-    "RelativePath": "api/ArchivoCH/GenerarArchivoTemporal",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "fechaInicial",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "fechaFinal",
-        "Type": "System.Int32",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "IVEBA_API_Rest.Models.IVECH.DTO_CHCajaTemporalResponse",
+        "Type": "System.Boolean",
         "MediaTypes": [
           "text/plain",
           "application/json",
