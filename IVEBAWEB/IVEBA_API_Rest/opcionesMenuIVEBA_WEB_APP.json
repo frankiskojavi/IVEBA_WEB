@@ -32,6 +32,14 @@
       "menuBoton": "Generar IVE-CH-CAJA",
       "menuImagen": "",
       "menuPagina": "archivo-chcaja"
+    },    
+    {
+      "codigoMenu": 5, // Usa conexiones remotas 
+      "menuTitulo": "IVE Transferencias TRF-21 (Trabajando)" ,
+      "menuDescripcion": "IVE Transferencias TRF-21",
+      "menuBoton": "Generar IVE-TRF-21",
+      "menuImagen": "",
+      "menuPagina": "archivo-trf21"
     }
   ]
 }
