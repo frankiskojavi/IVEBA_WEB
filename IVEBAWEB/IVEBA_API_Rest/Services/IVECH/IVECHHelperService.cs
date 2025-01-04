@@ -1,4 +1,5 @@
 using IVEBA_API_Rest.Helpers;
+using IVEBA_API_Rest.Models.IVE21TRF;
 using IVEBA_API_Rest.Models.IVECH;
 using IVEBA_API_Rest.Utilidades;
 using Microsoft.Win32;
@@ -32,54 +33,78 @@ namespace IVEBA_API_Rest.Services.IVECH
             List<DTO_IVECHClientesCaja> clientesCaja = new List<DTO_IVECHClientesCaja>();
             string filePath = Path.Combine(Path.GetTempPath(), "archivoGenerado.txt");
             string datosPersona = "";
-            string datosEmpresa = "";            
+            string datosEmpresa = "";
+            int cantidadRegistrosOK = 0;
             StringBuilder logErrores = new StringBuilder();
 
             try
             {
-                if (archivoDefinitivo)
-                {
-                    // Pendiente, preguntarle a Oscar si todavia se usará
-                }
+                List<DTO_IVECHCajaArchivos> registros = ConsultarIVECHCajaPorRangoFechas(fechaInicial, fechaFinal);                
 
-                EliminaCHCajaTemporal();
-                clientesCaja = ConsultarClientesCHCajaTemporal(fechaInicial, fechaFinal);
-                foreach (DTO_IVECHClientesCaja clienteCaja in clientesCaja)
+                // Verifica si hay un archivo existente con la fecha enviada, de ser asi, devuelve la información ya existente para no volver a generarla.
+                if (registros.Count > 0)
                 {
-                    clienteCaja.Nombre = clienteCaja.Nombre.Replace("'", "");
-                    if (clienteCaja.Cliente != 0)
+                    //Existe archivo, devuelve archivo generado.
+                    using (StreamWriter archivo = new StreamWriter(filePath))
                     {
-                        switch (clienteCaja.Tipo)
+                        foreach (var registro in registros)
                         {
-                            case 2:
-                            case 3:
-                                if (ProcesoFisicos(clienteCaja.Cliente, out datosPersona))
-                                {
-                                    InsertarCHCajaTemporal(clienteCaja.Cliente, datosPersona, 0, 0, 0);
-                                    response.registrosOKEncabezado++;
-                                }
-                                else
-                                {
-                                    InsertarCHCajaTemporal(clienteCaja.Cliente, "ERROR", 99, 99, 9999);
-                                    logErrores.AppendLine($"{clienteCaja.Cliente.ToString("D12")} {clienteCaja.Nombre} Error al procesar físico");
-                                    response.registrosOKEncabezado++;
-                                }
-                                break;
-                            case 4:
-                            case 1:
-                                if (ProcesoJuridicos(clienteCaja.Cliente, out datosEmpresa))
-                                {
-                                    datosEmpresa = datosEmpresa.Replace("'", " ");
-                                    InsertarCHCajaTemporal(clienteCaja.Cliente, datosEmpresa, 0, 0, 0);
-                                    response.registrosOKEncabezado++;
-                                }
-                                else
-                                {
-                                    InsertarCHCajaTemporal(clienteCaja.Cliente, "ERROR", 99, 99, 9999);
-                                    logErrores.AppendLine($"{clienteCaja.Cliente.ToString("D12")} {clienteCaja.Nombre} Error al procesar jurídico");
-                                    response.registrosOKEncabezado++;
-                                }
-                                break;
+                            string stringGrabar = $"{registro.String}";
+                            stringGrabar = utilidades.QuitoTildes(stringGrabar);
+                            archivo.WriteLine(stringGrabar);
+                            cantidadRegistrosOK++;
+                        }
+                    }
+                    byte[] fileBytesExistente = File.ReadAllBytes(filePath);
+                    File.Delete(filePath);
+                    response.registrosOKEncabezado = cantidadRegistrosOK;
+                    response.registrosErrorEncabezado = 0;
+                    response.archivoTXTOk = fileBytesExistente;
+                    return response; 
+                }
+                // Genera nueva información
+                else
+                {
+
+                    EliminaCHCajaTemporal();
+                    clientesCaja = ConsultarClientesCHCajaTemporal(fechaInicial, fechaFinal);
+                    foreach (DTO_IVECHClientesCaja clienteCaja in clientesCaja)
+                    {
+                        clienteCaja.Nombre = clienteCaja.Nombre.Replace("'", "");
+                        if (clienteCaja.Cliente != 0)
+                        {
+                            switch (clienteCaja.Tipo)
+                            {
+                                case 2:
+                                case 3:
+                                    if (ProcesoFisicos(clienteCaja.Cliente, out datosPersona))
+                                    {
+                                        InsertarCHCajaTemporal(clienteCaja.Cliente, datosPersona, 0, 0, 0);
+                                        response.registrosOKEncabezado++;
+                                    }
+                                    else
+                                    {
+                                        InsertarCHCajaTemporal(clienteCaja.Cliente, "ERROR", 99, 99, 9999);
+                                        logErrores.AppendLine($"{clienteCaja.Cliente.ToString("D12")} {clienteCaja.Nombre} Error al procesar físico");
+                                        response.registrosOKEncabezado++;
+                                    }
+                                    break;
+                                case 4:
+                                case 1:
+                                    if (ProcesoJuridicos(clienteCaja.Cliente, out datosEmpresa))
+                                    {
+                                        datosEmpresa = datosEmpresa.Replace("'", " ");
+                                        InsertarCHCajaTemporal(clienteCaja.Cliente, datosEmpresa, 0, 0, 0);
+                                        response.registrosOKEncabezado++;
+                                    }
+                                    else
+                                    {
+                                        InsertarCHCajaTemporal(clienteCaja.Cliente, "ERROR", 99, 99, 9999);
+                                        logErrores.AppendLine($"{clienteCaja.Cliente.ToString("D12")} {clienteCaja.Nombre} Error al procesar jurídico");
+                                        response.registrosOKEncabezado++;
+                                    }
+                                    break;
+                            }
                         }
                     }
                 }
@@ -437,6 +462,55 @@ namespace IVEBA_API_Rest.Services.IVECH
             }
 
             return filasAfectadas;
+        }
+
+
+        private List<DTO_IVECHCajaArchivos> ConsultarIVECHCajaPorRangoFechas(int fechaInicial, int fechaFinal)
+        {
+            List<DTO_IVECHCajaArchivos> listaDatos = new List<DTO_IVECHCajaArchivos>();
+
+            // Extraer año y mes de las fechas inicial y final
+            int anioInicial = fechaInicial / 10000;
+            int mesInicial = (fechaInicial / 100) % 100;
+            int anioFinal = fechaFinal / 10000;
+            int mesFinal = (fechaFinal / 100) % 100;
+
+            string query = @"
+                SELECT * 
+                FROM IVE_CH_CAJA_Archivos 
+                WHERE (Ano > @AnioInicial OR (Ano = @AnioInicial AND Mes >= @MesInicial))
+                  AND (Ano < @AnioFinal OR (Ano = @AnioFinal AND Mes <= @MesFinal))";
+
+            SqlParameter[] parameters = {
+                        new SqlParameter("@AnioInicial", anioInicial),
+                        new SqlParameter("@MesInicial", mesInicial),
+                        new SqlParameter("@AnioFinal", anioFinal),
+                        new SqlParameter("@MesFinal", mesFinal)
+                    };
+
+            try
+            {
+                DataTable dt = _dbHelper.ExecuteSelectCommand(query, parameters);
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    listaDatos.Add(new DTO_IVECHCajaArchivos
+                    {
+                        Fecha = row["Fecha"].ToString(),
+                        Archivo = row["Archivo"].ToString()[0], // Convertir a char
+                        Ordinal = Convert.ToInt32(row["Ordinal"]),
+                        Mes = Convert.ToInt32(row["Mes"]),
+                        Ano = Convert.ToInt32(row["Ano"]),
+                        String = row["String"].ToString()
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error en ConsultarIVETRF21PorRangoFechas: " + ex.Message);
+            }
+
+            return listaDatos;
         }
 
         private List<DTO_IVECHClientesCaja> ConsultarClientesCHCajaTemporal(int fechaInicial, int fechaFinal)

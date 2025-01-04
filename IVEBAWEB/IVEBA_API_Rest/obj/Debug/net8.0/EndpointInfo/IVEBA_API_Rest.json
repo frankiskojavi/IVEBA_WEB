@@ -1,0 +1,475 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "IVEBA_API_Rest",
+    "version": "1.0"
+  },
+  "paths": {
+    "/api/ArchivoCH/GenerarArchivoDefinitivo": {
+      "get": {
+        "tags": [
+          "ArchivoCH"
+        ],
+        "parameters": [
+          {
+            "name": "fechaInicial",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "fechaFinal",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DTO_CHCajaTemporalResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DTO_CHCajaTemporalResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DTO_CHCajaTemporalResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ArchivoCH/GenerarArchivoPrelminar": {
+      "get": {
+        "tags": [
+          "ArchivoCH"
+        ],
+        "parameters": [
+          {
+            "name": "fechaInicial",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "fechaFinal",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DTO_CHCajaTemporalResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DTO_CHCajaTemporalResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DTO_CHCajaTemporalResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ArchivoDV17/GenerarArchivoIVE17DV": {
+      "get": {
+        "tags": [
+          "ArchivoDV17"
+        ],
+        "parameters": [
+          {
+            "name": "fechaInicial",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "fechaFinal",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DTO_IVE17DVResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DTO_IVE17DVResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DTO_IVE17DVResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ArchivoEF14/GenerarArchivoIVE14EF": {
+      "get": {
+        "tags": [
+          "ArchivoEF14"
+        ],
+        "parameters": [
+          {
+            "name": "fechaInicial",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "fechaFinal",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DTO_IVE14EFResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DTO_IVE14EFResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DTO_IVE14EFResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ArchivoME13/GenerarArchivoIVE13ME": {
+      "get": {
+        "tags": [
+          "ArchivoME13"
+        ],
+        "parameters": [
+          {
+            "name": "fechaInicial",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "fechaFinal",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DTO_IVE13MEResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DTO_IVE13MEResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DTO_IVE13MEResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ArchivoTRF21/GenerarArchivoIVE21TRF": {
+      "get": {
+        "tags": [
+          "ArchivoTRF21"
+        ],
+        "parameters": [
+          {
+            "name": "fechaInicial",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "fechaFinal",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DTO_IVE21TRFResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DTO_IVE21TRFResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DTO_IVE21TRFResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/SeguridadAPP/ConsultarOpcionesMenuWebApp": {
+      "get": {
+        "tags": [
+          "SeguridadAPP"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DTO_OpcionesAPP"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DTO_OpcionesAPP"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DTO_OpcionesAPP"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DTO_CHCajaTemporalResponse": {
+        "type": "object",
+        "properties": {
+          "registrosOKEncabezado": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "registrosErrorEncabezado": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "registrosOKDetalle": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "registrosERRORDetalle": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cantidadNit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "archivoTXTErrores": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          },
+          "archivoTXTOk": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DTO_IVE13MEResponse": {
+        "type": "object",
+        "properties": {
+          "cantidadRegistrosOK": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cantidadRegistrosError": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "archivoTXT": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DTO_IVE14EFResponse": {
+        "type": "object",
+        "properties": {
+          "cantidadRegistrosOK": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cantidadRegistrosError": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "archivoTXT": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DTO_IVE17DVResponse": {
+        "type": "object",
+        "properties": {
+          "cantidadRegistrosOK": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cantidadRegistrosError": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "archivoTXT": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DTO_IVE21TRFResponse": {
+        "type": "object",
+        "properties": {
+          "cantidadRegistrosOK": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cantidadRegistrosError": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "archivoTXT": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DTO_OpcionesAPP": {
+        "type": "object",
+        "properties": {
+          "codigoMenu": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "menuTitulo": {
+            "type": "string",
+            "nullable": true
+          },
+          "menuDescripcion": {
+            "type": "string",
+            "nullable": true
+          },
+          "menuBoton": {
+            "type": "string",
+            "nullable": true
+          },
+          "menuImagen": {
+            "type": "string",
+            "nullable": true
+          },
+          "menuPagina": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

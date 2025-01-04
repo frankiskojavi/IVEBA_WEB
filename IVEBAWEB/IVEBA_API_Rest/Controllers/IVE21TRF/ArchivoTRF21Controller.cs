@@ -16,7 +16,7 @@ namespace IVEBA_API_Rest.Controllers.IVE21TRF
         }
 
         [HttpGet("[action]")]
-        public async Task<DTO_IVE17DVResponse> GenerarArchivoIVE21TRF(int fechaInicial, int fechaFinal)
+        public async Task<DTO_IVE21TRFResponse> GenerarArchivoIVE21TRF(int fechaInicial, int fechaFinal)
         {
             try
             {

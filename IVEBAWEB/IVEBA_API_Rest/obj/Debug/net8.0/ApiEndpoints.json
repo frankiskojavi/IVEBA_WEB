@@ -1,8 +1,8 @@
 [
   {
     "ContainingType": "IVEBA_API_Rest.Controllers.IVECH.ArchivoCHController",
-    "Method": "EliminaCHCajaTemporal",
-    "RelativePath": "api/ArchivoCH/EliminaCHCajaTemporal",
+    "Method": "GenerarArchivoDefinitivo",
+    "RelativePath": "api/ArchivoCH/GenerarArchivoDefinitivo",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -20,7 +20,38 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "System.Boolean",
+        "Type": "IVEBA_API_Rest.Models.IVECH.DTO_CHCajaTemporalResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "IVEBA_API_Rest.Controllers.IVECH.ArchivoCHController",
+    "Method": "GenerarArchivoPrelminar",
+    "RelativePath": "api/ArchivoCH/GenerarArchivoPrelminar",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "fechaInicial",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "fechaFinal",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "IVEBA_API_Rest.Models.IVECH.DTO_CHCajaTemporalResponse",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -114,6 +145,37 @@
     "ReturnTypes": [
       {
         "Type": "IVEBA_API_Rest.Models.IVE13ME.DTO_IVE13MEResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "IVEBA_API_Rest.Controllers.IVE21TRF.ArchivoTRF21Controller",
+    "Method": "GenerarArchivoIVE21TRF",
+    "RelativePath": "api/ArchivoTRF21/GenerarArchivoIVE21TRF",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "fechaInicial",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "fechaFinal",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "IVEBA_API_Rest.Models.IVE17DV.DTO_IVE21TRFResponse",
         "MediaTypes": [
           "text/plain",
           "application/json",
