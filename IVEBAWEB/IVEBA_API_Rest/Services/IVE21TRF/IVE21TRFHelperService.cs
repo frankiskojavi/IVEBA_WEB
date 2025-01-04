@@ -26,7 +26,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
         }
 
         public async Task<DTO_IVE21TRFResponse> GeneracionArchivoIVE21TRF(int fechaInicial, int fechaFinal, bool archivoDefinitivo)
-        {            
+        {
             DTO_IVE21TRFResponse response = new DTO_IVE21TRFResponse();
             string filePath = Path.Combine(Path.GetTempPath(), "archivoGenerado.txt");
             string datosPersona = "";
@@ -38,8 +38,8 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
             {
                 // Verificar si se debe generar el archivo definitivo
                 if (archivoDefinitivo)
-                {                    
-                    List<DTO_IVETRF21Archivos> registros = ConsultarIVETRF21PorRangoFechas(fechaInicial, fechaFinal);                                        
+                {
+                    List<DTO_IVETRF21Archivos> registros = ConsultarIVETRF21PorRangoFechas(fechaInicial, fechaFinal);
 
                     // Verifica si hay un archivo existente con la fecha enviada, de ser asi, devuelve la información ya existente para no volver a generarla.
                     if (registros.Count > 0)
@@ -48,18 +48,19 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                         using (StreamWriter archivo = new StreamWriter(filePath))
                         {
                             foreach (var registro in registros)
-                            {                                
-                                string stringGrabar = $"{registro.String}";                                                               
-                                stringGrabar = utilidades.QuitoTildes(stringGrabar);                                
+                            {
+                                string stringGrabar = $"{registro.String}";
+                                stringGrabar = utilidades.QuitoTildes(stringGrabar);
                                 archivo.WriteLine(stringGrabar);
                                 cantidadRegistrosOK++;
                             }
-                        }                        
+                        }
                         byte[] fileBytesExistente = File.ReadAllBytes(filePath);
                         File.Delete(filePath);
                         response.registrosOKEncabezado = cantidadRegistrosOK;
                         response.registrosErrorEncabezado = 0;
                         response.archivoTXTOk = fileBytesExistente;
+                        return response;
                     }
                     // Genera nueva información
                     else
@@ -123,7 +124,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                 response.registrosOKDetalle = cantidadRegsDetalleOK;
                 response.registrosERRORDetalle = cantidadRegsDetalleERROR;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception("Error en GeneracionArchivoIVE21TRF : " + ex.Message);
             }
@@ -233,21 +234,113 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
 
         private byte[] TransaccionesClientes(bool tipoArchivo, string filePath, int fechaInicio, int fechaFin)
         {
+            string StringGrabar = "";
+            bool CltOrd;
             try
             {
                 List<DTO_IVE21TRF> listaIVE21TRF = ConsultarIVE21TRFPorFecha(fechaInicio, fechaFin);
-                foreach(DTO_IVE21TRF registro in listaIVE21TRF)
+                using (StreamWriter fileWriter = new StreamWriter(filePath, append: false))
                 {
-                    switch (registro.TRFTIPO)
+                    foreach (DTO_IVE21TRF registro in listaIVE21TRF)
                     {
-                        case "2":
+                        switch (registro.TRFTIPO)
+                        {
+                            case "2":
+                                if (registro.TRFOCUN.Equals("0") || registro.TRFOCUN.Trim().Equals(""))
+                                {
+                                    CltOrd = false;
+                                    List<DTO_IVETRF21Temporal> listaIVE21Temporal = ConsultarIVETRF21Temporal(registro.TRFOCUN);
+                                    foreach (DTO_IVETRF21Temporal registro2 in listaIVE21Temporal)
+                                    {
+                                        StringGrabar = "";
+                                        StringGrabar += registro.TRFFECHA.ToString("yyyyMMdd") + "&&";
+                                        StringGrabar += "2" + "&&";
+                                        StringGrabar += "E" + "&&";
+
+                                        if (registro2.String.Substring(0, 1) == "I")
+                                        {
+                                            StringGrabar += utilidades.FormateoString(registro2.String.Trim(), 135, " ", "I") + "&&";
+                                        }
+                                        else
+                                        {
+                                            StringGrabar += utilidades.FormateoString(registro2.String.Trim(), 135, " ", "I") + "&&";
+                                        }
+                                        CltOrd = true;
+                                        fileWriter.WriteLine(StringGrabar);
+                                    }
+                                }
+                                else
+                                {
+                                    CltOrd = false;
+                                }
+
+                                if (!CltOrd)
+                                {
+                                    StringGrabar = "";
+                                    StringGrabar += registro.TRFFECHA.ToString("yyyyMMdd") + "&&";
+                                    StringGrabar += "2" + "&&";
+                                    StringGrabar += "E" + "&&";
+
+                                    string OTIPOP = registro.TRFOTPER.Trim();
+
+                                    if (OTIPOP == "I")
+                                    {
+                                        string OTIPOID = registro.TRFOTID.Trim();
+                                        string OORDEN = OTIPOID == "C" ? registro.TRFOORD.Trim() : "   ";
+                                        string OID = registro.TRFODOC.Trim();
+                                        string OMUNI = OTIPOID == "C" ? registro.TRFOMUN.Trim() : "  ";
+                                        string OPAPE = registro.TRFOAPE1.Trim();
+                                        string OSAPE = registro.TRFOAPE2.Trim();
+                                        string OACAS = registro.TRFOAPEC.Trim();
+                                        string OPNOM = registro.TRFONOM1.Trim();
+                                        string OSNOM = registro.TRFONOM2.Trim();
+
+                                        StringGrabar += utilidades.FormateoString(OTIPOP, 1, " ", "I") + "&&";
+                                        StringGrabar += utilidades.FormateoString(OTIPOID, 1, " ", "I") + "&&";
+                                        StringGrabar += utilidades.FormateoString(OORDEN, 3, " ", "I") + "&&";
+                                        StringGrabar += utilidades.FormateoString(OID, 20, " ", "I") + "&&";
+                                        StringGrabar += utilidades.FormateoString(OMUNI, 2, " ", "I") + "&&";
+                                        StringGrabar += utilidades.FormateoString(OPAPE, 15, " ", "I") + "&&";
+                                        StringGrabar += utilidades.FormateoString(OSAPE, 15, " ", "I") + "&&";
+                                        StringGrabar += utilidades.FormateoString(OACAS, 15, " ", "I") + "&&";
+                                        StringGrabar += utilidades.FormateoString(OPNOM, 15, " ", "I") + "&&";
+                                        StringGrabar += utilidades.FormateoString(OSNOM, 30, " ", "I") + "&&";
+                                    }
+                                    else
+                                    {
+                                        string OTIPOID = registro.TRFOTID.Trim();
+                                        string OORDEN = "   ";
+                                        string OID = registro.TRFODOC.Trim();
+                                        string OMUNI = "  ";
+                                        string OPAPE = registro.TRFOAPE1.Trim();
+                                        OTIPOP = "";
+
+                                        StringGrabar += utilidades.FormateoString(OTIPOP, 1, " ", "I") + "&&";
+                                        StringGrabar += utilidades.FormateoString(OTIPOID, 1, " ", "I") + "&&";
+                                        StringGrabar += utilidades.FormateoString(OORDEN, 3, " ", "I") + "&&";
+                                        StringGrabar += utilidades.FormateoString(OID, 20, " ", "I") + "&&";
+                                        StringGrabar += utilidades.FormateoString(OMUNI, 2, " ", "I") + "&&";
+                                        StringGrabar += utilidades.FormateoString(utilidades.QuitoTildes(OPAPE.Substring(0, 15)), 15, " ", 1) + "&&";
+                                        StringGrabar += utilidades.FormateoString(utilidades.QuitoTildes(OPAPE.Substring(15, 15)), 15, " ", 1) + "&&";
+                                        StringGrabar += utilidades.FormateoString(utilidades.QuitoTildes(OPAPE.Substring(30, 15)), 15, " ", 1) + "&&";
+                                        StringGrabar += utilidades.FormateoString(utilidades.QuitoTildes(OPAPE.Substring(45, 15)), 15, " ", 1) + "&&";
+                                        StringGrabar += utilidades.FormateoString(utilidades.QuitoTildes(OPAPE.Substring(60, 30)), 30, " ", 1) + "&&";
+                                    }                                                                        
+                                }
+
+                                fileWriter.WriteLine(StringGrabar);
+                                break;
+                        }
                     }
+                }
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
+            return null;
         }
+
 
 
         private void TruncaIVETRF21Temporal()
@@ -277,6 +370,40 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
 
             return filasAfectadas;
         }
+
+        private List<DTO_IVETRF21Temporal> ConsultarIVETRF21Temporal(string cliente)
+        {
+            List<DTO_IVETRF21Temporal> listaDatos = new List<DTO_IVETRF21Temporal>();
+
+            string query = "SELECT * FROM IVE_TRF21_TEMPORAL WHERE Cliente = @Cliente";
+
+            SqlParameter[] parameters = {
+                new SqlParameter("@Cliente", cliente)
+            };
+
+            try
+            {
+                DataTable dt = _dbHelper.ExecuteSelectCommand(query, parameters);
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    listaDatos.Add(new DTO_IVETRF21Temporal
+                    {
+                        Cliente = Convert.ToSingle(row["Cliente"]),
+                        String = row["String"].ToString(),
+                        Dia = Convert.ToInt32(row["Dia"]),
+                        Mes = Convert.ToInt32(row["Mes"]),
+                        Ano = Convert.ToInt32(row["Ano"])
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error en ConsultarIVETRF21Temporal: " + ex.Message);
+            }
+
+            return listaDatos;
+        }
         private List<DTO_IVETRF21Archivos> ConsultarIVETRF21PorRangoFechas(int fechaInicial, int fechaFinal)
         {
             List<DTO_IVETRF21Archivos> listaDatos = new List<DTO_IVETRF21Archivos>();
@@ -293,7 +420,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                 WHERE (Ano > @AnioInicial OR (Ano = @AnioInicial AND Mes >= @MesInicial))
                   AND (Ano < @AnioFinal OR (Ano = @AnioFinal AND Mes <= @MesFinal))";
 
-                    SqlParameter[] parameters = {
+            SqlParameter[] parameters = {
                         new SqlParameter("@AnioInicial", anioInicial),
                         new SqlParameter("@MesInicial", mesInicial),
                         new SqlParameter("@AnioFinal", anioFinal),
@@ -326,7 +453,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
         }
         private List<DTO_IVETRF21Clientes> ConsultarIVETRF21ClientesPorFecha(int anio, int mes)
         {
-            List<DTO_IVETRF21Clientes> listaClientes = new List<DTO_IVETRF21Clientes>();            
+            List<DTO_IVETRF21Clientes> listaClientes = new List<DTO_IVETRF21Clientes>();
             string query = @"
                 SELECT DISTINCT 
                     Cliente, 
@@ -364,8 +491,8 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                 WHERE 
                     Cliente <> '0'";
 
-                    // Parámetros para la consulta
-                    SqlParameter[] parameters = {
+            // Parámetros para la consulta
+            SqlParameter[] parameters = {
                 new SqlParameter("@Anio", anio),
                 new SqlParameter("@Mes", mes)
             };
@@ -591,7 +718,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                 ORDER BY 
                     trffecha, trftipo, trftran;";
 
-                    SqlParameter[] parameters = {
+            SqlParameter[] parameters = {
                 new SqlParameter("@Anio", anio),
                 new SqlParameter("@Mes", mes)
             };

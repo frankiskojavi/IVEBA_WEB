@@ -3,7 +3,7 @@
     public class DTO_IVE21TRF
     {
         // Propiedades de IVE21Transferencia
-        public DateTime? TRFFECHA { get; set; }
+        public DateTime TRFFECHA { get; set; }
         public string TRFTIPO { get; set; }
         public string TRFTRAN { get; set; }
         public string TRFOCUN { get; set; }
