@@ -19,6 +19,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
         private int contadorNit = 0;
         private int cantidadRegsDetalleOK = 0;
         private int cantidadRegsDetalleERROR = 0;
+        private List<DTO_DWCliente> clientesDW = new List<DTO_DWCliente>();
         public IVE21TRFHelperService(DbHelper dbHelper)
         {
             _dbHelper = dbHelper;
@@ -72,6 +73,8 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                         //No existe archivo, genera uno nuevo
                         TruncaIVETRF21Temporal();
                         List<DTO_IVETRF21Clientes> listaClientes = ConsultarIVETRF21ClientesPorFecha(año, mes);
+                        string codigosClientes = string.Join(",", listaClientes.Select(cliente => cliente.Cliente.ToString()));
+                        clientesDW = ConsultarDWClienteTodos(codigosClientes);
                         foreach (DTO_IVETRF21Clientes cliente in listaClientes)
                         {
                             switch (cliente.Tipo)
@@ -114,6 +117,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                 // ARCHIVO CON ERRORES 
                 // *****************************
                 await File.WriteAllTextAsync(filePath, logErrores.ToString());
+                
                 byte[] fileBytes = await File.ReadAllBytesAsync(filePath);
                 File.Delete(filePath);
                 response.archivoTXTErrores = fileBytes;
@@ -141,7 +145,8 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
             try
             {
                 stringDatos = string.Empty;
-                List<DTO_DWCliente> clientes = ConsultarDWCliente(cliente);
+                //List<DTO_DWCliente> clientes = ConsultarDWCliente(cliente);
+                List<DTO_DWCliente> clientes = clientesDW.Where(x => x.CodCliente.Equals(cliente)).ToList();
 
                 if (clientes.Count == 0)
                     return false;
@@ -200,7 +205,8 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
             try
             {
                 stringDatos = string.Empty;
-                var clientes = ConsultarDWCliente(cliente);
+                //var clientes = ConsultarDWCliente(cliente);
+                List<DTO_DWCliente> clientes = clientesDW.Where(x => x.CodCliente.Equals(cliente)).ToList();
 
                 if (clientes.Count == 0)
                     return false;
@@ -1240,8 +1246,8 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                     listaClientes.Add(new DTO_IVETRF21Clientes
                     {
                         Cliente = int.Parse(row["Cliente"].ToString()),
-                        Nombre = row["Nombre"].ToString(),
-                        Tipo = int.Parse(row["Tipo"].ToString()),
+                        Nombre = row["NombreCliente"].ToString(),
+                        Tipo = int.Parse(row["TipoCliente"].ToString()),
                     });
                 }
             }
@@ -1256,6 +1262,158 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
         {
             List<DTO_DWCliente> resultado = new List<DTO_DWCliente>();
             string query = $"SELECT * FROM dwcliente WHERE cod_cliente = {codigoCliente}";
+
+            try
+            {
+                DataTable dt = _dbHelper.ExecuteSelectCommand(query);
+                foreach (DataRow row in dt.Rows)
+                {
+                    DTO_DWCliente cliente = new DTO_DWCliente
+                    {
+                        CodCliente = long.TryParse(row["cod_cliente"].ToString(), out var codCliente) ? codCliente : (long?)null,
+                        CodClienteAnt = long.TryParse(row["cod_cliente_ant"].ToString(), out var codClienteAnt) ? codClienteAnt : (long?)null,
+                        NombreCliente = row["nombrecliente"].ToString(),
+                        Identificacion = row["identificacion"].ToString(),
+                        TipoIdentificacion = int.TryParse(row["tipoidentificacion"].ToString(), out var tipoIdentificacion) ? tipoIdentificacion : (int?)null,
+                        IdentUbicacion = short.TryParse(row["ident_ubicacion"].ToString(), out var identUbicacion) ? identUbicacion : (short?)null,
+                        FNacimiento = int.TryParse(row["fnacimiento"].ToString(), out var fNacimiento) ? fNacimiento : (int?)null,
+                        TipoCliente = int.TryParse(row["tipocliente"].ToString(), out var tipoCliente) ? tipoCliente : (int?)null,
+                        OficialCuenta = short.TryParse(row["oficialcuenta"].ToString(), out var oficialCuenta) ? oficialCuenta : (short?)null,
+                        Banca = int.TryParse(row["banca"].ToString(), out var banca) ? banca : (int?)null,
+                        EstadoCivil = int.TryParse(row["estadocivil"].ToString(), out var estadoCivil) ? estadoCivil : (int?)null,
+                        Genero = int.TryParse(row["genero"].ToString(), out var genero) ? genero : (int?)null,
+                        Edad = int.TryParse(row["edad"].ToString(), out var edad) ? edad : (int?)null,
+                        RangoEdad = int.TryParse(row["rangoedad"].ToString(), out var rangoEdad) ? rangoEdad : (int?)null,
+                        ActividadEconomica = short.TryParse(row["actividadeconomica"].ToString(), out var actividadEconomica) ? actividadEconomica : (short?)null,
+                        FechaAgregado = int.TryParse(row["fecha_agregado"].ToString(), out var fechaAgregado) ? fechaAgregado : (int?)null,
+                        FechaModificado = int.TryParse(row["fecha_modificado"].ToString(), out var fechaModificado) ? fechaModificado : (int?)null,
+                        GrupoEconomico = short.TryParse(row["grupoeconomico"].ToString(), out var grupoEconomico) ? grupoEconomico : (short?)null,
+                        Profesion = short.TryParse(row["profesion"].ToString(), out var profesion) ? profesion : (short?)null,
+                        Email = row["email"].ToString(),
+                        Nit = row["nit"].ToString(),
+                        PaisCliente = short.TryParse(row["pais_cliente"].ToString(), out var paisCliente) ? paisCliente : (short?)null,
+                        Telefono1 = row["telefono1"].ToString(),
+                        Telefono2 = row["telefono2"].ToString(),
+                        Celular = row["celular"].ToString(),
+                        Fax = row["fax"].ToString(),
+                        Nombre1 = row["nombre1"].ToString(),
+                        Nombre2 = row["nombre2"].ToString(),
+                        Apellido1 = row["apellido1"].ToString(),
+                        Apellido2 = row["apellido2"].ToString(),
+                        ApellidoCasada = row["apellidocasada"].ToString(),
+                        IngresoMensual = decimal.TryParse(row["ingresomensual"].ToString(), out var ingresoMensual) ? ingresoMensual : (decimal?)null,
+                        RelacionDependencia = bool.TryParse(row["relacion_dependencia"].ToString(), out var relacionDependencia) && relacionDependencia,
+                        LugarTrabajo = row["lugar_trabajo"].ToString(),
+                        CargoTrabajo = row["cargo_trabajo"].ToString(),
+                        ViviendaPropia = row["vivienda_propia"].ToString(),
+                        Bloqueo = int.TryParse(row["bloqueo"].ToString(), out var bloqueo) ? bloqueo : (int?)null,
+                        FultActualizacion = int.TryParse(row["fultactualizacion"].ToString(), out var fultActualizacion) ? fultActualizacion : (int?)null,
+                        Cotitularidad = row["cotitularidad"].ToString(),
+                        AgenciaApertura = short.TryParse(row["agenciaapertura"].ToString(), out var agenciaApertura) ? agenciaApertura : (short?)null,
+                        CalificacionRiesgo = int.TryParse(row["calificacionriesgo"].ToString(), out var calificacionRiesgo) ? calificacionRiesgo : (int?)null,
+                        CategoriaRiesgo = row["categoriariesgo"].ToString(),
+                        NombreConyuge = row["nombre_conyuge"].ToString(),
+                        NumHijos = int.TryParse(row["num_hijos"].ToString(), out var numHijos) ? numHijos : (int?)null,
+                        EnFormacion = row["en_formacion"].ToString(),
+                        IntermFinanciera = int.TryParse(row["interm_financiera"].ToString(), out var intermFinanciera) ? intermFinanciera : (int?)null,
+                        NombreUsual = row["nombreusual"].ToString(),
+                        FrecOperaciones = int.TryParse(row["frec_operaciones"].ToString(), out var frecOperaciones) ? frecOperaciones : (int?)null,
+                        RefExternas = int.TryParse(row["ref_externas"].ToString(), out var refExternas) ? refExternas : (int?)null,
+                        Fuente = int.TryParse(row["fuente"].ToString(), out var fuente) ? fuente : (int?)null,
+                        Comentarios = row["comentarios"].ToString(),
+                        FolioLibro = row["Folio_Libro"].ToString(),
+                        FechaEscritura = int.TryParse(row["FechaEscritura"].ToString(), out var fechaEscritura) ? fechaEscritura : (int?)null,
+                        Direccion = row["direccion"].ToString(),
+                        DirPais = short.TryParse(row["dir_pais"].ToString(), out var dirPais) ? dirPais : (short?)null,
+                        DirDepto = short.TryParse(row["dir_depto"].ToString(), out var dirDepto) ? dirDepto : (short?)null,
+                        DirMunicpio = int.TryParse(row["dir_municpio"].ToString(), out var dirMunicpio) ? dirMunicpio : (int?)null,
+                        Zona = int.TryParse(row["zona"].ToString(), out var zona) ? zona : (int?)null,
+                        Colonia = row["colonia"].ToString(),
+                        CodigoPostal = row["codigopostal"].ToString(),
+                        RetImp = int.TryParse(row["ret_imp"].ToString(), out var retImp) ? retImp : (int?)null,
+                        ConocimientoAct = int.TryParse(row["conocimiento_act"].ToString(), out var conocimientoAct) ? conocimientoAct : (int?)null,
+                        Documentacion = int.TryParse(row["documentacion"].ToString(), out var documentacion) ? documentacion : (int?)null,
+                        UbicacionNegocio = int.TryParse(row["ubicacionnegocio"].ToString(), out var ubicacionNegocio) ? ubicacionNegocio : (int?)null,
+                        Categoria = int.TryParse(row["categoria"].ToString(), out var categoria) ? categoria : (int?)null,
+                        Indicador = int.TryParse(row["indicador"].ToString(), out var indicador) ? indicador : (int?)null,
+                        IdentSociedad = row["ident_sociedad"].ToString(),
+                        IdentEmpresa = row["ident_empresa"].ToString(),
+                        RangosQ = row["rangos_Q"].ToString(),
+                        RangosD = row["rangos_D"].ToString(),
+                        Email2 = row["email2"].ToString(),
+                        Pep = row["Pep"].ToString(),
+                        NombreParientePEP = row["NombreParientePEP"].ToString(),
+                        Parentesco = row["Parentesco"].ToString(),
+                        LugarTrabajoParientePEP = row["Lugar_TrabajoParientePEP"].ToString(),
+                        CargoParientePEP = row["Cargo_ParientePEP"].ToString(),
+                        EsFamiliarPEP = row["EsFamiliarPEP"].ToString(),
+                        FormUltAviso = int.TryParse(row["form_ultaviso"].ToString(), out var formUltAviso) ? formUltAviso : (int?)null,
+                        FormNumAvisos = short.TryParse(row["form_numavisos"].ToString(), out var formNumAvisos) ? formNumAvisos : (short?)null,
+                        FormImpresion = int.TryParse(row["form_impresion"].ToString(), out var formImpresion) ? formImpresion : (int?)null,
+                        FormAgImpresion = short.TryParse(row["form_agimpresion"].ToString(), out var formAgImpresion) ? formAgImpresion : (short?)null,
+                        EstadoCl = int.TryParse(row["estadocl"].ToString(), out var estadoCl) ? estadoCl : (int?)null,
+                        Sector = int.TryParse(row["Sector"].ToString(), out var sector) ? sector : (int?)null,
+                        SubSector = int.TryParse(row["SubSector"].ToString(), out var subSector) ? subSector : (int?)null,
+                        PosConsolidada = int.TryParse(row["PosConsolidada"].ToString(), out var posConsolidada) ? posConsolidada : (int?)null,
+                        FichaSectorial = row["FichaSectorial"].ToString(),
+                        GeneradorME = int.TryParse(row["GeneradorME"].ToString(), out var generadorME) ? generadorME : (int?)null,
+                        DescActividadEco = row["descactividadeco"].ToString(),
+                        Expediente = int.TryParse(row["expediente"].ToString(), out var expediente) ? expediente : (int?)null,
+                        CatRiesgoBanguat = row["catriesgobanguat"].ToString(),
+                        MRTipoPersona = short.TryParse(row["MRTipoPersona"].ToString(), out var mrTipoPersona) ? mrTipoPersona : (short?)null,
+                        MRActividadEco = short.TryParse(row["MRActividadEco"].ToString(), out var mrActividadEco) ? mrActividadEco : (short?)null,
+                        MRProfesion = short.TryParse(row["MRProfesion"].ToString(), out var mrProfesion) ? mrProfesion : (short?)null,
+                        MRPaisOrigen = short.TryParse(row["MRPaisOrigen"].ToString(), out var mrPaisOrigen) ? mrPaisOrigen : (short?)null,
+                        MRAgencia = short.TryParse(row["MRAgencia"].ToString(), out var mrAgencia) ? mrAgencia : (short?)null,
+                        MRIngresos = short.TryParse(row["MRIngresos"].ToString(), out var mrIngresos) ? mrIngresos : (short?)null,
+                        MRCategoria = short.TryParse(row["MRCategoria"].ToString(), out var mrCategoria) ? mrCategoria : (short?)null,
+                        MRExpediente = short.TryParse(row["MRExpediente"].ToString(), out var mrExpediente) ? mrExpediente : (short?)null,
+                        MRReferencias = short.TryParse(row["MRReferencias"].ToString(), out var mrReferencias) ? mrReferencias : (short?)null,
+                        MRRangoIngresos = short.TryParse(row["MRRangoIngresos"].ToString(), out var mrRangoIngresos) ? mrRangoIngresos : (short?)null,
+                        SubCategoria = short.TryParse(row["SubCategoria"].ToString(), out var subCategoria) ? subCategoria : (short?)null,
+                        MRAntiguedad = short.TryParse(row["MRAntiguedad"].ToString(), out var mrAntiguedad) ? mrAntiguedad : (short?)null,
+                        MRCantCtas = short.TryParse(row["MRCantCtas"].ToString(), out var mrCantCtas) ? mrCantCtas : (short?)null,
+                        NegocioPropio = row["NegocioPropio"].ToString(),
+                        PEPUltAct = int.TryParse(row["PEPUltAct"].ToString(), out var pepUltAct) ? pepUltAct : (int?)null,
+                        PEPCond = row["PEPCond"].ToString(),
+                        PEPPais = short.TryParse(row["PEPPais"].ToString(), out var pepPais) ? pepPais : (short?)null,
+                        PEPFAgregado = int.TryParse(row["PEPFAgregado"].ToString(), out var pepFAgregado) ? pepFAgregado : (int?)null,
+                        EsAsociadoPep = row["EsAsociadoPep"].ToString(),
+                        NombreAsociadoPep = row["NombreAsociadoPep"].ToString(),
+                        EmpMayor = row["EmpMayor"].ToString(),
+                        EsCliente = int.TryParse(row["EsCliente"].ToString(), out var esCliente) ? esCliente : (int?)null,
+                        MRIngresosMonto = decimal.TryParse(row["MRIngresosMonto"].ToString(), out var mrIngresosMonto) ? mrIngresosMonto : (decimal?)null,
+                        GrupoAfinidadId = short.TryParse(row["GrupoAfinidadId"].ToString(), out var grupoAfinidadId) ? grupoAfinidadId : (short?)null,
+                        FultMov = int.TryParse(row["fultmov"].ToString(), out var fultMov) ? fultMov : (int?)null,
+                        MrActMasExpuesta = short.TryParse(row["MrActMasExpuesta"].ToString(), out var mrActMasExpuesta) ? mrActMasExpuesta : (short?)null,
+                        MRProducto = short.TryParse(row["MRProducto"].ToString(), out var mrProducto) ? mrProducto : (short?)null,
+                        MrComparacionIngresos = short.TryParse(row["MrComparacionIngresos"].ToString(), out var mrComparacionIngresos) ? mrComparacionIngresos : (short?)null,
+                        MrCalificacion = int.TryParse(row["MrCalificacion"].ToString(), out var mrCalificacion) ? mrCalificacion : (int?)null,
+                        VisitaFecha = int.TryParse(row["visita_fecha"].ToString(), out var visitaFecha) ? visitaFecha : (int?)null,
+                        VisitaRespuesta = row["visita_respuesta"].ToString(),
+                        VisitaComentario = row["visita_comentario"].ToString(),
+                        RevisionFecha = int.TryParse(row["revision_fecha"].ToString(), out var revisionFecha) ? revisionFecha : (int?)null,
+                        RevisionRespuesta = row["revision_respuesta"].ToString(),
+                        RevisionComentario = row["revision_comentario"].ToString(),
+                        UsrCalifica = row["usr_califica"].ToString(),
+                        Actualizar = int.TryParse(row["Actualizar"].ToString(), out var actualizar) ? actualizar : (int?)null,
+                        FAlertaAct = int.TryParse(row["fAlertaAct"].ToString(), out var fAlertaAct) ? fAlertaAct : (int?)null
+                    };
+
+                    resultado.Add(cliente);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(" Error al consultar ConsultarDWCliente " + ex.Message);
+            }
+            return resultado;
+        }
+
+        private List<DTO_DWCliente> ConsultarDWClienteTodos(string clientes)
+        {
+            List<DTO_DWCliente> resultado = new List<DTO_DWCliente>();
+            string query = $"SELECT * FROM dwcliente WHERE cod_cliente in ({clientes})";
 
             try
             {
