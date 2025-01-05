@@ -424,15 +424,32 @@
       "DTO_IVE21TRFResponse": {
         "type": "object",
         "properties": {
-          "cantidadRegistrosOK": {
+          "registrosOKEncabezado": {
             "type": "integer",
             "format": "int32"
           },
-          "cantidadRegistrosError": {
+          "registrosErrorEncabezado": {
             "type": "integer",
             "format": "int32"
           },
-          "archivoTXT": {
+          "registrosOKDetalle": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "registrosERRORDetalle": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cantidadNit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "archivoTXTErrores": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          },
+          "archivoTXTOk": {
             "type": "string",
             "format": "byte",
             "nullable": true

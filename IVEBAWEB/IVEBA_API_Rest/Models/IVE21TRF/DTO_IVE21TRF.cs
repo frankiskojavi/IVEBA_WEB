@@ -65,13 +65,17 @@
         // Propiedades de dwcuenta_iban
         public int? IbanIdOrigen { get; set; }
         public long? CuentaOrigen { get; set; }
-        public string IbanOrigen { get; set; }
+        public string IBANO { get; set; }
         public string IbanFormatoOrigen { get; set; }
 
         // Propiedades de dwcuenta_ibanben
         public int? IbanIdBeneficiario { get; set; }
         public long? CuentaBeneficiario { get; set; }
-        public string IbanBeneficiario { get; set; }
+        public string IBANB { get; set; }
         public string IbanFormatoBeneficiario { get; set; }
+
+        // Campos consulta
+
+
     }
 }
