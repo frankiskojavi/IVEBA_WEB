@@ -2,8 +2,8 @@
 {
     public class DTO_DWCliente
     {
-        public long? CodCliente { get; set; }
-        public long? CodClienteAnt { get; set; }
+        public int? CodCliente { get; set; }
+        public int? CodClienteAnt { get; set; }
         public string NombreCliente { get; set; }
         public string Identificacion { get; set; }
         public int? TipoIdentificacion { get; set; }

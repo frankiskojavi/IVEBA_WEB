@@ -643,8 +643,8 @@ namespace IVEBA_API_Rest.Services.IVECH
                 {
                     DTO_DWCliente cliente = new DTO_DWCliente
                     {
-                        CodCliente = long.TryParse(row["cod_cliente"].ToString(), out var codCliente) ? codCliente : (long?)null,
-                        CodClienteAnt = long.TryParse(row["cod_cliente_ant"].ToString(), out var codClienteAnt) ? codClienteAnt : (long?)null,
+                        CodCliente = int.TryParse(row["cod_cliente"].ToString(), out var codCliente) ? codCliente : (int?)null,
+                        CodClienteAnt = int.TryParse(row["cod_cliente_ant"].ToString(), out var cod_cliente_ant) ? cod_cliente_ant : (int?)null,
                         NombreCliente = row["nombrecliente"].ToString(),
                         Identificacion = row["identificacion"].ToString(),
                         TipoIdentificacion = int.TryParse(row["tipoidentificacion"].ToString(), out var tipoIdentificacion) ? tipoIdentificacion : (int?)null,

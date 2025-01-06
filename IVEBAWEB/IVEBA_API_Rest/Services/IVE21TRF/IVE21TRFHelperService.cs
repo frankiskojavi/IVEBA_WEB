@@ -125,7 +125,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                 // *****************************
                 // ARCHIVO OK
                 // *****************************
-                response.archivoTXTOk = TransaccionesClientes(archivoDefinitivo, filePath, fechaInicial, fechaFinal);
+                response.archivoTXTOk = TransaccionesClientes(archivoDefinitivo, filePath, año, mes);
 
 
                 response.cantidadNit = contadorNit;
@@ -146,7 +146,13 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
             {
                 stringDatos = string.Empty;
                 //List<DTO_DWCliente> clientes = ConsultarDWCliente(cliente);
-                List<DTO_DWCliente> clientes = clientesDW.Where(x => x.CodCliente.Equals(cliente)).ToList();
+                var clientesDebug = clientesDW
+                    .Where(x => x.CodCliente == cliente)
+                    .Select(x => x.CodCliente)
+                    .ToList();
+                Console.WriteLine($"Clientes encontrados: {string.Join(", ", clientesDebug)}");
+
+                List<DTO_DWCliente> clientes = clientesDW.Where(x => x.CodCliente == cliente).ToList();
 
                 if (clientes.Count == 0)
                     return false;
@@ -158,7 +164,8 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                 // Construcción de identificación y tipo de documento
                 switch (clienteData.TipoIdentificacion)
                 {
-                    case 1: // Cedula
+                    case 1:
+                    case 22:// Cedula (FALTA RECUPERAR INFORMACIÓN MUNICIPALIDAD (PENDIENTE))
 
                         if (orden[1] == '0')
                         {
@@ -240,7 +247,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                 throw new Exception(" Error en ProcesoJuridicos " + ex.Message);
             }
         }
-        private byte[] TransaccionesClientes(bool tipoArchivo, string filePath, int fechaInicio, int fechaFin)
+        private byte[] TransaccionesClientes(bool tipoArchivo, string filePath, int año, int mes)
         {
             string StringGrabar = "";
             bool CltOrd = false;
@@ -252,7 +259,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
             string NombreTmp = "";
             try
             {
-                List<DTO_IVE21TRF> listaIVE21TRF = ConsultarIVE21TRFPorFecha(fechaInicio, fechaFin);
+                List<DTO_IVE21TRF> listaIVE21TRF = ConsultarIVE21TRFPorFecha(año, mes);
                 using (StreamWriter fileWriter = new StreamWriter(filePath, append: false))
                 {
                     foreach (DTO_IVE21TRF registro in listaIVE21TRF)
@@ -1270,8 +1277,8 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                 {
                     DTO_DWCliente cliente = new DTO_DWCliente
                     {
-                        CodCliente = long.TryParse(row["cod_cliente"].ToString(), out var codCliente) ? codCliente : (long?)null,
-                        CodClienteAnt = long.TryParse(row["cod_cliente_ant"].ToString(), out var codClienteAnt) ? codClienteAnt : (long?)null,
+                        CodCliente = int.Parse(row["cod_cliente"].ToString()),
+                        CodClienteAnt = int.Parse(row["cod_cliente_ant"].ToString()),
                         NombreCliente = row["nombrecliente"].ToString(),
                         Identificacion = row["identificacion"].ToString(),
                         TipoIdentificacion = int.TryParse(row["tipoidentificacion"].ToString(), out var tipoIdentificacion) ? tipoIdentificacion : (int?)null,
@@ -1421,9 +1428,9 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                 foreach (DataRow row in dt.Rows)
                 {
                     DTO_DWCliente cliente = new DTO_DWCliente
-                    {
-                        CodCliente = long.TryParse(row["cod_cliente"].ToString(), out var codCliente) ? codCliente : (long?)null,
-                        CodClienteAnt = long.TryParse(row["cod_cliente_ant"].ToString(), out var codClienteAnt) ? codClienteAnt : (long?)null,
+                    {                        
+                        CodCliente =  int.TryParse(row["cod_cliente"].ToString(), out var codCliente) ? codCliente : (int?)null,
+                        CodClienteAnt = int.TryParse(row["cod_cliente_ant"].ToString(), out var cod_cliente_ant) ? cod_cliente_ant : (int?)null,                        
                         NombreCliente = row["nombrecliente"].ToString(),
                         Identificacion = row["identificacion"].ToString(),
                         TipoIdentificacion = int.TryParse(row["tipoidentificacion"].ToString(), out var tipoIdentificacion) ? tipoIdentificacion : (int?)null,
@@ -1561,7 +1568,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
             }
             return resultado;
         }
-        private List<DTO_IVE21TRF> ConsultarIVE21TRFPorFecha(int anio, int mes)
+        private List<DTO_IVE21TRF> ConsultarIVE21TRFPorFecha(int año, int mes)
         {
             List<DTO_IVE21TRF> listaDatos = new List<DTO_IVE21TRF>();
 
@@ -1610,7 +1617,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                     trffecha, trftipo, trftran;";
 
             SqlParameter[] parameters = {
-                new SqlParameter("@Anio", anio),
+                new SqlParameter("@Anio", año),
                 new SqlParameter("@Mes", mes)
             };
 
