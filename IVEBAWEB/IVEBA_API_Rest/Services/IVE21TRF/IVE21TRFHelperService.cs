@@ -2,11 +2,8 @@
 using IVEBA_API_Rest.Models.IVE17DV;
 using IVEBA_API_Rest.Models.IVE21TRF;
 using IVEBA_API_Rest.Models.IVECH;
-using IVEBA_API_Rest.Utilidades;
 using System.Data;
 using System.Data.SqlClient;
-using System.Numerics;
-using System.Runtime.Serialization.Formatters;
 using System.Text;
 
 namespace IVEBA_API_Rest.Services.IVE21TRF
@@ -14,16 +11,18 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
     public class IVE21TRFHelperService : IIVE21TRFHelperService
     {
         private readonly DbHelper _dbHelper;
-        private readonly UtilidadesAPP utilidades;
+        //private readonly PP 
 
         private int contadorNit = 0;
         private int cantidadRegsDetalleOK = 0;
         private int cantidadRegsDetalleERROR = 0;
         private List<DTO_DWCliente> clientesDW = new List<DTO_DWCliente>();
+        private List<DTO_UbicacionGeografica> ubicacionesGeogragricas = new List<DTO_UbicacionGeografica>();
+        private List<DTO_IVETRF21Temporal> listaIVE21TemporalGlobal = new List<DTO_IVETRF21Temporal>();
         public IVE21TRFHelperService(DbHelper dbHelper)
         {
             _dbHelper = dbHelper;
-            utilidades = new UtilidadesAPP();
+            //= new PP();
         }
 
         public async Task<DTO_IVE21TRFResponse> GeneracionArchivoIVE21TRF(int fechaInicial, int fechaFinal, bool archivoDefinitivo)
@@ -44,7 +43,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                 // Verificar si se debe generar el archivo definitivo
                 if (archivoDefinitivo)
                 {
-                    List<DTO_IVETRF21Archivos> registros = ConsultarIVETRF21PorRangoFechas(fechaInicial, fechaFinal);
+                    List<DTO_IVETRF21Archivos> registros = ConsultarIVETRF21(año, mes);
 
                     // Verifica si hay un archivo existente con la fecha enviada, de ser asi, devuelve la información ya existente para no volver a generarla.
                     if (registros.Count > 0)
@@ -55,7 +54,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                             foreach (var registro in registros)
                             {
                                 string stringGrabar = $"{registro.String}";
-                                stringGrabar = utilidades.QuitoTildes(stringGrabar);
+                                stringGrabar = QuitoTildes(stringGrabar);
                                 archivo.WriteLine(stringGrabar);
                                 cantidadRegistrosOK++;
                             }
@@ -67,50 +66,49 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                         response.archivoTXTOk = fileBytesExistente;
                         return response;
                     }
-                    // Genera nueva información
-                    else
+                }
+                // Genera nueva información                
+                TruncaIVETRF21Temporal();
+                List<DTO_IVETRF21Clientes> listaClientes = ConsultarIVETRF21ClientesPorFecha(año, mes);
+                string codigosClientes = string.Join(",", listaClientes.Select(cliente => cliente.Cliente.ToString()));
+
+                //Consultas por unica vez en cada proceso para no recargar la BD
+                clientesDW = ConsultarDWClienteTodos(codigosClientes);
+                ubicacionesGeogragricas = ConsultarUbicacionesGeograficas();
+                foreach (DTO_IVETRF21Clientes cliente in listaClientes)
+                {
+                    switch (cliente.Tipo)
                     {
-                        //No existe archivo, genera uno nuevo
-                        TruncaIVETRF21Temporal();
-                        List<DTO_IVETRF21Clientes> listaClientes = ConsultarIVETRF21ClientesPorFecha(año, mes);
-                        string codigosClientes = string.Join(",", listaClientes.Select(cliente => cliente.Cliente.ToString()));
-                        clientesDW = ConsultarDWClienteTodos(codigosClientes);
-                        foreach (DTO_IVETRF21Clientes cliente in listaClientes)
-                        {
-                            switch (cliente.Tipo)
+                        case 2:
+                        case 3:
+                            if (ProcesoFisicos(cliente.Cliente, out datosPersona))
                             {
-                                case 2:
-                                case 3:
-                                    if (ProcesoFisicos(cliente.Cliente, out datosPersona))
-                                    {
-                                        InsertarCHCajaTemporal(cliente.Cliente, datosPersona, 0, 0, 0);
-                                        response.registrosOKEncabezado++;
-                                    }
-                                    else
-                                    {
-                                        InsertarCHCajaTemporal(cliente.Cliente, "ERROR", 99, 99, 9999);
-                                        logErrores.AppendLine($"{cliente.Cliente.ToString("D12")} {cliente.Nombre} Error al procesar físico");
-                                        response.registrosOKEncabezado++;
-                                    }
-                                    break;
-                                case 4:
-                                case 1:
-                                    if (ProcesoJuridicos(cliente.Cliente, out datosEmpresa))
-                                    {
-                                        datosEmpresa = datosEmpresa.Replace("'", " ");
-                                        InsertarCHCajaTemporal(cliente.Cliente, datosEmpresa, 0, 0, 0);
-                                        response.registrosOKEncabezado++;
-                                    }
-                                    else
-                                    {
-                                        InsertarCHCajaTemporal(cliente.Cliente, "ERROR", 99, 99, 9999);
-                                        logErrores.AppendLine($"{cliente.Cliente.ToString("D12")} {cliente.Nombre} Error al procesar jurídico");
-                                        response.registrosOKEncabezado++;
-                                    }
-                                    break;
+                                InsertarCHCajaTemporal(cliente.Cliente, datosPersona, 0, 0, 0);
+                                response.registrosOKEncabezado++;
                             }
-                        }
-                    }
+                            else
+                            {
+                                InsertarCHCajaTemporal(cliente.Cliente, "ERROR", 99, 99, 9999);
+                                logErrores.AppendLine($"{cliente.Cliente.ToString("D12")} {cliente.Nombre} Error al procesar físico");
+                                response.registrosOKEncabezado++;
+                            }
+                            break;
+                        case 4:
+                        case 1:
+                            if (ProcesoJuridicos(cliente.Cliente, out datosEmpresa))
+                            {
+                                datosEmpresa = datosEmpresa.Replace("'", " ");
+                                InsertarCHCajaTemporal(cliente.Cliente, datosEmpresa, 0, 0, 0);
+                                response.registrosOKEncabezado++;
+                            }
+                            else
+                            {
+                                InsertarCHCajaTemporal(cliente.Cliente, "ERROR", 99, 99, 9999);
+                                logErrores.AppendLine($"{cliente.Cliente.ToString("D12")} {cliente.Nombre} Error al procesar jurídico");
+                                response.registrosOKEncabezado++;
+                            }
+                            break;
+                    }                                   
                 }
 
                 // *****************************
@@ -125,6 +123,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                 // *****************************
                 // ARCHIVO OK
                 // *****************************
+                listaIVE21TemporalGlobal = ConsultarIVETRF21Temporal();
                 response.archivoTXTOk = TransaccionesClientes(archivoDefinitivo, filePath, año, mes);
 
 
@@ -145,108 +144,163 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
             try
             {
                 stringDatos = string.Empty;
-                //List<DTO_DWCliente> clientes = ConsultarDWCliente(cliente);
-                var clientesDebug = clientesDW
-                    .Where(x => x.CodCliente == cliente)
-                    .Select(x => x.CodCliente)
-                    .ToList();
-                Console.WriteLine($"Clientes encontrados: {string.Join(", ", clientesDebug)}");
 
+                // Buscar cliente en la lista
                 List<DTO_DWCliente> clientes = clientesDW.Where(x => x.CodCliente == cliente).ToList();
 
                 if (clientes.Count == 0)
                     return false;
 
-                var clienteData = clientes.First(); // Suponiendo un solo cliente por ID
-                var stringArmado = "I";
-                string orden = clienteData.Identificacion.Substring(1, 3);
+                var clienteData = clientes.First(); // Se asume un solo cliente por ID
+                var stringArmado = "I&&";
+                string orden = string.Empty;
+                string munisib = "  "; // Valor predeterminado
 
                 // Construcción de identificación y tipo de documento
                 switch (clienteData.TipoIdentificacion)
                 {
-                    case 1:
-                    case 22:// Cedula (FALTA RECUPERAR INFORMACIÓN MUNICIPALIDAD (PENDIENTE))
+                    case 1: // Cédula
+                    case 22:
+                        orden = clienteData.Identificacion.Length >= 3
+                            ? clienteData.Identificacion.Substring(0, 3)
+                            : clienteData.Identificacion.PadRight(3, ' ');
 
-                        if (orden[1] == '0')
+                        if (orden.Length >= 2 && orden[1] == '0')
                         {
                             orden = orden[0] + orden[2].ToString();
                         }
-                        orden = utilidades.FormateoString2(orden, 3, ' ', true);
-                        stringArmado += "C" + orden + utilidades.FormateoString2(clienteData.Identificacion.Substring(5, 7), 20, ' ', true);
+
+                        orden = FormateoString(orden, 3, ' ', true);
+
+                        // Recuperar información de la ubicación geográfica
+                        var ubicacion = ubicacionesGeogragricas.FirstOrDefault(x => x.UbicacionGeoId == clienteData.IdentUbicacion);
+
+                        if (ubicacion != null && !string.IsNullOrEmpty(ubicacion.CodSibMuni))
+                        {
+                            munisib = ubicacion.CodSibMuni;
+                        }
+
+                        if (string.IsNullOrEmpty(munisib) || munisib == "00")
+                        {
+                            munisib = "01"; // Valor por defecto
+                        }
+
+                        stringArmado += "C&&";
+                        stringArmado += orden + "&&";
+                        stringArmado += FormateoString(clienteData.Identificacion.Length > 5
+                            ? clienteData.Identificacion.Substring(5).PadRight(20)
+                            : clienteData.Identificacion.PadRight(20), 20, ' ', true) + "&&";
+                        stringArmado += munisib + "&&";
                         break;
 
                     case 2: // Partida
-                        orden = utilidades.FormateoString2(orden, 3, ' ', true);
-                        stringArmado += "O" + orden + utilidades.FormateoString2(" ", 3, ' ', true) + utilidades.FormateoString2(clienteData.Identificacion, 20, ' ', true);
+                        orden = FormateoString("", 3, ' ', true);
+                        stringArmado += "O&&";
+                        stringArmado += orden + "&&";
+                        stringArmado += FormateoString(clienteData.Identificacion, 20, ' ', true) + "&&";
+                        stringArmado += munisib + "&&";
                         break;
 
                     case 4: // Pasaporte
-                        orden = utilidades.FormateoString2(orden, 3, ' ', true);
-                        stringArmado += "P" + orden + utilidades.FormateoString2(" ", 3, ' ', true) + utilidades.FormateoString2(clienteData.Identificacion, 20, ' ', true);
+                        orden = FormateoString("", 3, ' ', true);
+                        stringArmado += "P&&";
+                        stringArmado += orden + "&&";
+                        stringArmado += FormateoString(clienteData.Identificacion, 20, ' ', true) + "&&";
+                        stringArmado += munisib + "&&";
                         break;
 
                     case 26: // DPI
                         orden = "   ";
-                        stringArmado += "D" + orden + utilidades.FormateoString2(clienteData.Identificacion, 20, ' ', true);
+                        stringArmado += "D&&";
+                        stringArmado += orden + "&&";
+                        stringArmado += FormateoString(clienteData.Identificacion, 20, ' ', true) + "&&";
+                        stringArmado += munisib + "&&";
                         break;
                 }
 
-                // Apellidos y nombres con tildes removidas y en mayúsculas
-                stringArmado += utilidades.FormateoString2(utilidades.QuitoTildes(clienteData.Apellido1.ToUpper()), 15, ' ', true);
-                stringArmado += utilidades.FormateoString2(utilidades.QuitoTildes(clienteData.Apellido2.ToUpper()), 15, ' ', true);
-                stringArmado += utilidades.FormateoString2(utilidades.QuitoTildes(clienteData.ApellidoCasada.ToUpper()), 15, ' ', true);
-                stringArmado += utilidades.FormateoString2(utilidades.QuitoTildes(clienteData.Nombre1.ToUpper()), 15, ' ', true);
-                stringArmado += utilidades.FormateoString2(utilidades.QuitoTildes(clienteData.Nombre2.ToUpper()), 15, ' ', true);
+                // Construcción de apellidos y nombres
+                stringArmado += FormateoString(QuitoTildes(clienteData.Apellido1?.ToUpper() ?? ""), 15, ' ', true) + "&&";
+                stringArmado += FormateoString(QuitoTildes(clienteData.Apellido2?.ToUpper() ?? ""), 15, ' ', true) + "&&";
+                stringArmado += FormateoString(QuitoTildes(clienteData.ApellidoCasada?.ToUpper() ?? ""), 15, ' ', true) + "&&";
+                stringArmado += FormateoString(QuitoTildes(clienteData.Nombre1?.ToUpper() ?? ""), 15, ' ', true) + "&&";
+                stringArmado += FormateoString(QuitoTildes(clienteData.Nombre2?.ToUpper() ?? ""), 30, ' ', true);
 
-                stringDatos = stringArmado;
+                // Resultado final
+                stringDatos = QuitoTildes(stringArmado);
                 return true;
             }
             catch (Exception ex)
             {
-                throw new Exception(" Error en ProcesoFisicos " + ex.Message);
+                throw new Exception("Error en ProcesoFisicos: " + ex.Message, ex);
             }
-
         }
+
+
         private bool ProcesoJuridicos(int cliente, out string stringDatos)
         {
             try
             {
                 stringDatos = string.Empty;
-                //var clientes = ConsultarDWCliente(cliente);
+                var stringArmado = "";
+                string nitEmpresa = "";
+
                 List<DTO_DWCliente> clientes = clientesDW.Where(x => x.CodCliente.Equals(cliente)).ToList();
 
                 if (clientes.Count == 0)
                     return false;
 
-                var clienteData = clientes.First(); // Suponiendo un solo cliente por ID
-                var stringArmado = "J";
+                var varEmpresa = clientes.First(); // Suponiendo un solo cliente por ID                
 
-                // Determina el NIT de la empresa
-                string nitEmpresa = string.IsNullOrEmpty(clienteData.Nit) || clienteData.Nit == "0"
-                    ? clienteData.TipoIdentificacion == 8 ? clienteData.Identificacion : "SINNIT"
-                    : clienteData.Nit;
-
-                // Incrementa el contador si NitEmpresa es "SINNIT"
-                if (nitEmpresa == "SINNIT")
+                if (varEmpresa.Nit.Equals("") || varEmpresa.Nit.Equals("0"))
                 {
-                    contadorNit++;
+                    nitEmpresa = "";
+                }
+                else
+                {
+                    nitEmpresa = varEmpresa.Nit;
+                }
+
+                if (nitEmpresa.Equals(""))
+                {
+                    if (varEmpresa.TipoIdentificacion.Equals("8"))
+                    {
+                        nitEmpresa = varEmpresa.Identificacion.Trim();
+                    }
+                    else
+                    {
+                        nitEmpresa = "SINNIT";
+                        contadorNit++;
+                    }
+                    if (nitEmpresa.Equals("0") || nitEmpresa.Equals("")) nitEmpresa = "SINNIT";
                 }
 
                 // Asigna un NIT específico si es el cliente con CodCliente "10"
-                if (clienteData.CodCliente == 10) nitEmpresa = "1205544";
+                if (cliente == 10) nitEmpresa = "1205544";
 
-                // Construcción del StringArmado
-                stringArmado += "N   " + utilidades.FormateoString2(utilidades.QuitoCaracter(nitEmpresa), 20, ' ', true);
-                stringArmado += utilidades.FormateoString2(utilidades.QuitoTildes(clienteData.NombreCliente.ToUpper()), 75, ' ', true);
+                string nombreCliente = QuitoTildes(varEmpresa.NombreCliente?.Trim() ?? string.Empty);
+
+                stringArmado = "J" + "&&";
+                stringArmado = stringArmado + "N" + "&&";                
+                stringArmado = stringArmado + "   " + "&&";
+                stringArmado = stringArmado + FormateoString(QuitoCaracter(nitEmpresa.Trim()), 20,' ', true) + "&&";
+                stringArmado = stringArmado + "  " + "&&";
+
+                // Construcción segura de las partes del nombre
+                stringArmado += FormateoString(nombreCliente.PadRight(15).Substring(0, 15), 15, ' ', true) + "&&";
+                stringArmado += FormateoString((nombreCliente.Length > 15 ? nombreCliente.Substring(15).PadRight(15) : string.Empty.PadRight(15)).Substring(0, 15), 15, ' ', true) + "&&";
+                stringArmado += FormateoString((nombreCliente.Length > 30 ? nombreCliente.Substring(30).PadRight(15) : string.Empty.PadRight(15)).Substring(0, 15), 15, ' ', true) + "&&";
+                stringArmado += FormateoString((nombreCliente.Length > 45 ? nombreCliente.Substring(45).PadRight(15) : string.Empty.PadRight(15)).Substring(0, 15), 15, ' ', true) + "&&";
+                stringArmado += FormateoString((nombreCliente.Length > 60 ? nombreCliente.Substring(60).PadRight(30) : string.Empty.PadRight(30)).Substring(0, 30), 30, ' ', true);
 
                 stringDatos = stringArmado;
                 return true;
             }
             catch (Exception ex)
             {
-                throw new Exception(" Error en ProcesoJuridicos " + ex.Message);
+                throw new Exception("Error en ProcesoJuridicos: " + ex.Message, ex);
             }
         }
+
         private byte[] TransaccionesClientes(bool tipoArchivo, string filePath, int año, int mes)
         {
             string StringGrabar = "";
@@ -257,9 +311,33 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
             string DeptoD = "";
             string DeptoO = "";
             string NombreTmp = "";
+
+
+            string OTIPOID = "";
+            string OORDEN = "";
+            string OID = "";
+            string OMUNI = "";
+            string OPAPE = "";
+            string OSAPE = "";
+            string OACAS = "";
+            string OPNOM = "";
+            string OSNOM = "";
+
+            string BTIPOID = "";
+            string BORDEN = "";
+            string BID = "";
+            string BMUNI = "";
+            string BPAPE = "";
+            string BSAPE = "";
+            string BACAS = "";
+            string BPNOM = "";
+            string BSNOM = "";
+            string OTIPOP = "";
+
             try
             {
-                List<DTO_IVE21TRF> listaIVE21TRF = ConsultarIVE21TRFPorFecha(año, mes);
+                List<DTO_IVE21TRF> listaIVE21TRF = ConsultarIVE21TRFPorFecha(año, mes);                
+                
                 using (StreamWriter fileWriter = new StreamWriter(filePath, append: false))
                 {
                     foreach (DTO_IVE21TRF registro in listaIVE21TRF)
@@ -270,7 +348,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                 if (registro.TRFOCUN.Equals("0") || registro.TRFOCUN.Trim().Equals(""))
                                 {
                                     CltOrd = false;
-                                    List<DTO_IVETRF21Temporal> listaIVE21Temporal = ConsultarIVETRF21Temporal(registro.TRFOCUN);
+                                    var listaIVE21Temporal = listaIVE21TemporalGlobal.Where(x => x.Cliente == float.Parse(registro.TRFOCUN));
                                     foreach (DTO_IVETRF21Temporal registro2 in listaIVE21Temporal)
                                     {
                                         StringGrabar = "";
@@ -280,11 +358,11 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
 
                                         if (registro2.String.Substring(0, 1) == "I")
                                         {
-                                            StringGrabar += utilidades.FormateoString(registro2.String.Trim(), 135, " ", "I") + "&&";
+                                            StringGrabar += FormateoString(registro2.String.Trim(), 135, ' ', true) + "&&";
                                         }
                                         else
                                         {
-                                            StringGrabar += utilidades.FormateoString(registro2.String.Trim(), 135, " ", "I") + "&&";
+                                            StringGrabar += FormateoString(registro2.String.Trim(), 135, ' ', true) + "&&";
                                         }
                                         CltOrd = true;
                                         //fileWriter.WriteLine(StringGrabar);
@@ -295,57 +373,68 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                     CltOrd = false;
                                 }
 
-                                if (!CltOrd)
+                                if (CltOrd == false)
                                 {
                                     StringGrabar = "";
                                     StringGrabar += registro.TRFFECHA.ToString("yyyyMMdd") + "&&";
                                     StringGrabar += "2" + "&&";
                                     StringGrabar += "E" + "&&";
-
-                                    string OTIPOP = registro.TRFOTPER.Trim();
-
+                                    OTIPOP = registro.TRFOTPER.Trim();
                                     if (OTIPOP == "I")
                                     {
-                                        string OTIPOID = registro.TRFOTID.Trim();
-                                        string OORDEN = OTIPOID == "C" ? registro.TRFOORD.Trim() : "   ";
-                                        string OID = registro.TRFODOC.Trim();
-                                        string OMUNI = OTIPOID == "C" ? registro.TRFOMUN.Trim() : "  ";
-                                        string OPAPE = registro.TRFOAPE1.Trim();
-                                        string OSAPE = registro.TRFOAPE2.Trim();
-                                        string OACAS = registro.TRFOAPEC.Trim();
-                                        string OPNOM = registro.TRFONOM1.Trim();
-                                        string OSNOM = registro.TRFONOM2.Trim();
+                                        OTIPOID = registro.TRFOTID.Trim();
+                                        if (registro.TRFOTID == "C")
+                                        {
+                                            OORDEN = registro.TRFOORD.Trim();
+                                            OID = registro.TRFODOC.Trim();
+                                            OMUNI = registro.TRFOMUN.Trim();
+                                            OPAPE = registro.TRFOAPE1.Trim();
+                                            OSAPE = registro.TRFOAPE2.Trim();
+                                            OACAS = registro.TRFOAPEC.Trim();
+                                            OPNOM = registro.TRFONOM1.Trim();
+                                            OSNOM = registro.TRFONOM2.Trim();
+                                        }else
+                                        {
+                                            OORDEN = "   ";
+                                            OID = registro.TRFODOC.Trim();
+                                            OMUNI = "  ";
+                                            OPAPE = registro.TRFOAPE1.Trim();
+                                            OSAPE = registro.TRFOAPE2.Trim();
+                                            OACAS = registro.TRFOAPEC.Trim();
+                                            OPNOM = registro.TRFONOM1.Trim();
+                                            OSNOM = registro.TRFONOM2.Trim();
+                                        }                                                                                
 
-                                        StringGrabar += utilidades.FormateoString(OTIPOP, 1, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OTIPOID, 1, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OORDEN, 3, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OID, 20, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OMUNI, 2, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OPAPE, 15, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OSAPE, 15, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OACAS, 15, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OPNOM, 15, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OSNOM, 30, " ", "I") + "&&";
+                                        StringGrabar += FormateoString(OTIPOP, 1, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OTIPOID, 1, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OORDEN, 3, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OID, 20, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OMUNI, 2, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OPAPE, 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OSAPE, 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OACAS, 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OPNOM, 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OSNOM, 30, ' ', true) + "&&";
                                     }
                                     else
                                     {
-                                        string OTIPOID = registro.TRFOTID.Trim();
-                                        string OORDEN = "   ";
-                                        string OID = registro.TRFODOC.Trim();
-                                        string OMUNI = "  ";
-                                        string OPAPE = registro.TRFOAPE1.Trim();
+                                        OTIPOID = registro.TRFOTID.Trim();
+                                        OORDEN = "   ";
+                                        OID = registro.TRFODOC.Trim();
+                                        OMUNI = "  ";
+                                        OPAPE = registro.TRFOAPE1.Trim();
                                         OTIPOP = "";
 
-                                        StringGrabar += utilidades.FormateoString(OTIPOP, 1, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OTIPOID, 1, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OORDEN, 3, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OID, 20, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OMUNI, 2, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(OPAPE.Substring(0, 15)), 15, ' ', true) + "&&";
-                                        StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(OPAPE.Substring(15, 15)), 15, ' ', true) + "&&";
-                                        StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(OPAPE.Substring(30, 15)), 15, ' ', true) + "&&";
-                                        StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(OPAPE.Substring(45, 15)), 15, ' ', true) + "&&";
-                                        StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(OPAPE.Substring(60, 30)), 30, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OTIPOP, 1, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OTIPOID, 1, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OORDEN, 3, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OID, 20, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OMUNI, 2, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes(OPAPE.Substring(1, 15)), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes(OPAPE.Substring(16, 15)), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes(OPAPE.Substring(31, 15)), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes(OPAPE.Substring(46, 15)), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes(OPAPE.Substring(61, 30)), 30, ' ', true) + "&&";
                                     }                                                                        
                                 }
 
@@ -353,27 +442,28 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
 
                                 if (!string.IsNullOrEmpty(registro.IBANO))
                                 {
-                                    StringGrabar += utilidades.FormateoString(registro.IBANO, 28, " ", "I") + "&&";
+                                    StringGrabar += FormateoString(registro.IBANO, 28, ' ', true) + "&&";
                                 }
                                 else
                                 {
-                                    StringGrabar += utilidades.FormateoString(registro.TRFOCTA, 28, " ", "I") + "&&";
+                                    StringGrabar += FormateoString(registro.TRFOCTA, 28, ' ', true) + "&&";
                                 }
 
                                 if (!string.IsNullOrEmpty(registro.TRFBCUN) && !registro.TRFBCUN.Equals("0"))
-                                {
-                                    var listaTemporalBeneficiarios = ConsultarIVETRF21Temporal(registro.TRFBCUN);
+                                {                                    
+                                    var listaTemporalBeneficiarios = listaIVE21TemporalGlobal.Where(x => x.Cliente == float.Parse(registro.TRFOCUN));
+
                                     if (listaTemporalBeneficiarios.Any())
                                     {
                                         foreach (var registro2 in listaTemporalBeneficiarios)
                                         {
                                             if (registro2.String.StartsWith("I"))
                                             {
-                                                StringGrabar += utilidades.FormateoString(registro2.String.Trim(), 135, " ", "I") + "&&";
+                                                StringGrabar += FormateoString(registro2.String.Trim(), 135, ' ', true) + "&&";
                                             }
                                             else
                                             {
-                                                StringGrabar += utilidades.FormateoString(registro2.String.Trim(), 135, " ", "I") + "&&";
+                                                StringGrabar += FormateoString(registro2.String.Trim(), 135, ' ', true) + "&&";
                                             }
                                             CltBen = true;
                                         }
@@ -388,50 +478,66 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                     CltBen = false;
                                 }
 
-                                if (!CltBen)
+                                if (CltBen == false)
                                 {
-                                    string BTIPOP = registro.TRFBCUN?.Trim();
+                                    string BTIPOP = registro.TRFBTPER?.Trim();
                                     if (BTIPOP == "I")
                                     {
-                                        string BTIPOID = registro.TRFBTID?.Trim();
-                                        string BORDEN = BTIPOID == "C" ? registro.TRFBORD?.Trim() : "   ";
-                                        string BID = registro.TRFBDOC?.Trim();
-                                        string BMUNI = BTIPOID == "C" ? registro.TRFBMUN?.Trim() : "  ";
-                                        string BPAPE = registro.TRFBAPE1?.Trim();
-                                        string BSAPE = registro.TRFBAPE2?.Trim();
-                                        string BACAS = registro.TRFBAPEC?.Trim();
-                                        string BPNOM = registro.TRFBNOM1?.Trim();
-                                        string BSNOM = registro.TRFBNOM2?.Trim();
+                                        BTIPOID = registro.TRFBTID.Trim();
 
-                                        StringGrabar += utilidades.FormateoString(BTIPOP, 1, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(BTIPOID, 1, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(BORDEN, 3, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(BID, 20, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(BMUNI, 2, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(BPAPE, 15, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(BSAPE, 15, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(BACAS, 15, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(BPNOM, 15, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(BSNOM, 30, " ", "I") + "&&";
+                                        if (registro.TRFOTID == "C")
+                                        {
+                                            BORDEN = registro.TRFBORD.Trim();
+                                            BID = registro.TRFODOC.Trim();
+                                            BMUNI = registro.TRFOMUN.Trim();
+                                            BPAPE = registro.TRFOAPE1.Trim();
+                                            BSAPE = registro.TRFOAPE2.Trim();
+                                            BACAS = registro.TRFOAPEC.Trim();
+                                            BPNOM = registro.TRFONOM1.Trim();
+                                            BSNOM = registro.TRFONOM2.Trim();
+                                        }
+                                        else
+                                        {
+                                            BORDEN = "   ";
+                                            BID = registro.TRFODOC.Trim();
+                                            BMUNI = "  ";
+                                            BPAPE = registro.TRFOAPE1.Trim();
+                                            BSAPE = registro.TRFOAPE2.Trim();
+                                            BACAS = registro.TRFOAPEC.Trim();
+                                            BPNOM = registro.TRFONOM1.Trim();
+                                            BSNOM = registro.TRFONOM2.Trim();
+                                        }                                        
+
+                                        StringGrabar += FormateoString(BTIPOP, 1, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(BTIPOID, 1, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(BORDEN, 3, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(BID, 20, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(BMUNI, 2, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(BPAPE, 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(BSAPE, 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(BACAS, 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(BPNOM, 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(BSNOM, 30, ' ', true) + "&&";
                                     }
                                     else
                                     {
-                                        string BTIPOID = registro.TRFBTID?.Trim();
-                                        string BORDEN = "   ";
-                                        string BID = registro.TRFBDOC?.Trim();
-                                        string BMUNI = "  ";
-                                        string BPAPE = registro.TRFBAPE1?.Trim();
+                                        BTIPOID = registro.TRFOTID.Trim();
+                                        BORDEN = "   ";
+                                        BID = registro.TRFODOC.Trim();
+                                        BMUNI = "  ";
+                                        BPAPE = registro.TRFOAPE1.Trim();
+                                        BTIPOP = "";
 
-                                        StringGrabar += utilidades.FormateoString(BTIPOP, 1, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(BTIPOID, 1, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(BORDEN, 3, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(BID, 20, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(BMUNI, 2, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(BPAPE.Substring(0, Math.Min(15, BPAPE.Length))), 15, ' ', true) + "&&";
-                                        StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(BPAPE.Substring(15, Math.Min(15, BPAPE.Length - 15))), 15, ' ', true) + "&&";
-                                        StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(BPAPE.Substring(30, Math.Min(15, BPAPE.Length - 30))), 15, ' ', true) + "&&";
-                                        StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(BPAPE.Substring(45, Math.Min(15, BPAPE.Length - 45))), 15, ' ', true) + "&&";
-                                        StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(BPAPE.Substring(60, Math.Min(30, BPAPE.Length - 60))), 30, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(BTIPOP, 1, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(BTIPOID, 1, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(BORDEN, 3, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(BID, 20, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(BMUNI, 2, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes(BPAPE.Substring(0, 15)), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes(BPAPE.Substring(16, 15)), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes(BPAPE.Substring(31, 15)), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes(BPAPE.Substring(46, 15)), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes(BPAPE.Substring(61, 30)), 30, ' ', true) + "&&";
                                     }
                                 }
 
@@ -440,40 +546,38 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
 
                                 if (!string.IsNullOrEmpty(registro.IBANB))
                                 {
-                                    StringGrabar += utilidades.FormateoString(registro.IBANB, 28, " ", "I") + "&&";
+                                    StringGrabar += FormateoString(registro.IBANB, 28, ' ', true) + "&&";
                                 }
                                 else
                                 {
-                                    StringGrabar += utilidades.FormateoString(registro.TRFBCTA, 28, " ", "I") + "&&";
+                                    StringGrabar += FormateoString(registro.TRFBCTA, 28, ' ', true) + "&&";
                                 }
 
                                 if (registro.TRFBBCO == 0)
                                 {
-                                    StringGrabar += utilidades.FormateoString("117", 5, " ", "I") + "&&";
+                                    StringGrabar += FormateoString("117", 5, ' ', true) + "&&";
                                 }
                                 else
                                 {
-                                    StringGrabar += utilidades.FormateoString(registro.TRFBBCO.ToString(), 5, " ", "I") + "&&";
+                                    StringGrabar += FormateoString(registro.TRFBBCO.ToString(), 5, ' ', true) + "&&";
                                 }
 
                                 Pais = !string.IsNullOrEmpty(registro.TRFPAIS) ? registro.TRFPAIS : "GT";
                                 DeptoO = !string.IsNullOrEmpty(registro.TRFODEPT) ? registro.TRFODEPT : "01";
                                 DeptoD = !string.IsNullOrEmpty(registro.TRFDDEPT) ? registro.TRFDDEPT : "01";
 
-                                StringGrabar += utilidades.FormateoString(registro.TRFNUM, 20, " ", "I") + "&&";
-                                StringGrabar += utilidades.FormateoString(Pais, 2, " ", "I") + "&&";
-                                StringGrabar += utilidades.FormateoString(DeptoO, 2, " ", "I") + "&&";
-                                StringGrabar += utilidades.FormateoString(DeptoD, 2, " ", "I") + "&&";
-
+                                StringGrabar += FormateoString(registro.TRFNUM, 20, ' ', true) + "&&";
+                                StringGrabar += FormateoString(Pais, 2, ' ', true) + "&&";
+                                StringGrabar += FormateoString(DeptoO, 2, ' ', true) + "&&";
+                                StringGrabar += FormateoString(DeptoD, 2, ' ', true) + "&&";
                                 SucursalTrn = !string.IsNullOrEmpty(registro.TRFBRN) ? registro.TRFBRN : "0";
-
                                 if (double.TryParse(SucursalTrn, out double sucursal) && sucursal > 100)
                                 {
                                     SucursalTrn = "0";
                                 }
 
-                                StringGrabar += utilidades.FormateoString(SucursalTrn, 10, " ", "I") + "&&";
-                                StringGrabar += utilidades.FormateoString(utilidades.FormateoMontos(registro.TRFMNT.ToString()), 14, " ", "I") + "&&";
+                                StringGrabar += FormateoString(SucursalTrn, 10, ' ', true) + "&&";
+                                StringGrabar += FormateoString(FormateoMontos(registro.TRFMNT.ToString()), 14, ' ', true) + "&&";
 
                                 if (registro.TRFCCY == "QTZ")
                                 {
@@ -481,21 +585,18 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                 }
                                 else
                                 {
-                                    StringGrabar += utilidades.FormateoString(registro.TRFCCY, 3, " ", "I") + "&&";
+                                    StringGrabar += FormateoString(registro.TRFCCY, 3, ' ', true) + "&&";
                                 }
 
-                                StringGrabar += utilidades.FormateoString(utilidades.FormateoMontos(registro.TRFMNTD.ToString()), 14, " ", "I") + "&&";
-
-
-                                //fileWriter.WriteLine(StringGrabar);
+                                StringGrabar += FormateoString(FormateoMontos(registro.TRFMNTD.ToString()), 14, ' ', true) + "&&";                                
                                 break;
                             case "3": // TRANSFERENCIAS SWIFT
                                 switch (registro.TRFTRAN)
                                 {
                                     case "E": // TRANSFERENCIAS SWIFT ENVIADAS
                                         if (!string.IsNullOrEmpty(registro.TRFOCUN) && registro.TRFOCUN != "0")
-                                        {
-                                            List<DTO_IVETRF21Temporal> listaTemporal = ConsultarIVETRF21Temporal(registro.TRFOCUN);
+                                        {                                            
+                                            var listaTemporal = listaIVE21TemporalGlobal.Where(x => x.Cliente == float.Parse(registro.TRFOCUN));
                                             if (listaTemporal.Any())
                                             {
                                                 foreach (var temporal in listaTemporal)
@@ -504,7 +605,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                                     StringGrabar += registro.TRFFECHA.ToString("yyyyMMdd") + "&&";
                                                     StringGrabar += "3" + "&&";
                                                     StringGrabar += "E" + "&&";
-                                                    StringGrabar += utilidades.FormateoString(temporal.String.Trim(), 135, " ", "I") + "&&";                                                    
+                                                    StringGrabar += FormateoString(temporal.String.Trim(), 135, ' ', true) + "&&";                                                    
                                                 }
                                             }
                                         }
@@ -516,33 +617,31 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                             StringGrabar += "E" + "&&";
                                             StringGrabar += "J" + "&&";
                                             StringGrabar += "N" + "&&";
-                                            StringGrabar += utilidades.FormateoString("   ", 3, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString("1205544", 20, " ", "I") + "&&";
+                                            StringGrabar += FormateoString("   ", 3,' ', true) + "&&";
+                                            StringGrabar += FormateoString("1205544", 20, ' ', true) + "&&";
                                             StringGrabar += "  " + "&&";
 
                                             NombreTmp = "BANCO INTERNACIONAL, S.A.";
-                                            StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(NombreTmp.Substring(0, 15)), 15, ' ', true) + "&&";
-                                            StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(NombreTmp.Substring(15, 15)), 15, ' ', true) + "&&";
-                                            StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(NombreTmp.Substring(30, 15)), 15, ' ', true) + "&&";
-                                            StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(NombreTmp.Substring(45, 15)), 15, ' ', true) + "&&";
-                                            StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(NombreTmp.Substring(60, 30)), 30, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes(NombreTmp.Substring(1, 15)), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes(NombreTmp.Substring(16, 15)), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes(NombreTmp.Substring(31, 15)), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes(NombreTmp.Substring(46, 15)), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes(NombreTmp.Substring(61, 30)), 30, ' ', true) + "&&";
                                         }
 
                                         if (registro.IBANO != null)
                                         {
-                                            StringGrabar += utilidades.FormateoString(registro.IBANO, 28, " ", "I") + "&&";
+                                            StringGrabar += FormateoString(registro.IBANO, 28, ' ', true) + "&&";
                                         }
                                         else
                                         {
-                                            StringGrabar += utilidades.FormateoString(registro.TRFOCTA, 28, " ", "I") + "&&";
+                                            StringGrabar += FormateoString(registro.TRFOCTA, 28, ' ', true) + "&&";
                                         }
 
                                         string BTIPOP = registro.TRFBTPER?.Trim();
                                         if (BTIPOP == "I")
                                         {
-                                            string BTIPOID = registro.TRFBTID?.Trim();
-                                            string BORDEN, BID, BMUNI, BPAPE, BSAPE, BACAS, BPNOM, BSNOM;
-
+                                            BTIPOID = registro.TRFBTID?.Trim();                                            
                                             if (BTIPOID == "C")
                                             {
                                                 BORDEN = registro.TRFBORD?.Trim();
@@ -566,65 +665,64 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                                 BSNOM = registro.TRFBNOM2?.Trim();
                                             }
 
-                                            StringGrabar += utilidades.FormateoString(BTIPOP, 1, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(BTIPOID, 1, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(BORDEN, 3, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(BID, 20, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(BMUNI, 2, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(BPAPE, 15, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(BSAPE, 15, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(BACAS, 15, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(BPNOM, 15, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(BSNOM, 30, " ", "I") + "&&";
+                                            StringGrabar += FormateoString(BTIPOP, 1, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(BTIPOID, 1, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(BORDEN, 3, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(BID, 20, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(BMUNI, 2, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(BPAPE, 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(BSAPE, 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(BACAS, 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(BPNOM, 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(BSNOM, 30, ' ', true) + "&&";
                                         }
                                         else
                                         {
-                                            string BTIPOID = registro.TRFBTID?.Trim();
-                                            string BORDEN = "   ";
-                                            string BID = registro.TRFBDOC?.Trim();
-                                            string BMUNI = "  ";
-                                            string BPAPE = registro.TRFBAPE1?.Trim();
-
-                                            StringGrabar += utilidades.FormateoString(BTIPOP, 1, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(BTIPOID, 1, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(BORDEN, 3, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(BID, 20, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(BMUNI, 2, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(BPAPE?.Substring(0, 15)), 15, ' ', true) + "&&";
-                                            StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(BPAPE?.Substring(15, 15)), 15, ' ', true) + "&&";
-                                            StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(BPAPE?.Substring(30, 15)), 15, ' ', true) + "&&";
-                                            StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(BPAPE?.Substring(45, 15)), 15, ' ', true) + "&&";
-                                            StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(BPAPE?.Substring(60, 30)), 30, ' ', true) + "&&";
+                                            BTIPOID = registro.TRFBTID?.Trim();
+                                            BORDEN = "   ";
+                                            BID = registro.TRFBDOC?.Trim();
+                                            BMUNI = "  ";
+                                            BPAPE = registro.TRFBAPE1?.Trim();
+                                            StringGrabar += FormateoString(BTIPOP, 1, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(BTIPOID, 1, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(BORDEN, 3, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(BID, 20, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(BMUNI, 2, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes(BPAPE?.Substring(1, 15)), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes(BPAPE?.Substring(16, 15)), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes(BPAPE?.Substring(31, 15)), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes(BPAPE?.Substring(46, 15)), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes(BPAPE?.Substring(61, 30)), 30, ' ', true) + "&&";
                                         }
 
                                         if (!string.IsNullOrEmpty(registro.IBANB))
                                         {
-                                            StringGrabar += utilidades.FormateoString(registro.IBANB, 28, " ", "I") + "&&";
+                                            StringGrabar += FormateoString(registro.IBANB, 28, ' ', true) + "&&";
                                         }
                                         else
                                         {
-                                            StringGrabar += utilidades.FormateoString(registro.TRFBCTA, 28, " ", "I") + "&&";
+                                            StringGrabar += FormateoString(registro.TRFBCTA, 28, ' ', true) + "&&";
                                         }
 
                                         if (registro.TRFBBCO == 0)
                                         {
-                                            StringGrabar += utilidades.FormateoString("", 5, " ", "I") + "&&";
+                                            StringGrabar += FormateoString("", 5, ' ', true) + "&&";
                                         }
                                         else
                                         {
-                                            StringGrabar += utilidades.FormateoString(registro.TRFBBCO.ToString(), 5, " ", "I") + "&&";
+                                            StringGrabar += FormateoString(registro.TRFBBCO.ToString(), 5, ' ', true) + "&&";
                                         }
 
                                         Pais = registro.TRFPAIS?.Trim();
 
-                                        StringGrabar += utilidades.FormateoString(registro.TRFNUM, 20, " ", "I") + "&&";
+                                        StringGrabar += FormateoString(registro.TRFNUM, 20, ' ', true) + "&&";
 
                                         if (Pais == "GT")
                                         {
                                             Pais = "US";
                                         }
 
-                                        StringGrabar += utilidades.FormateoString(Pais, 2, " ", "I") + "&&";
+                                        StringGrabar += FormateoString(Pais, 2, ' ', true) + "&&";
 
                                         string DeptoOrigen = !string.IsNullOrEmpty(registro.DepartamentoAgencia.ToString()) ? registro.DepartamentoAgencia.ToString() : "01";
                                         if (DeptoOrigen == "" || DeptoOrigen == "0")
@@ -643,7 +741,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                             SucursalTrn = "0";
                                         }
 
-                                        StringGrabar += utilidades.FormateoString(DeptoOrigen.PadLeft(2, '0'), 2, " ", "I") + "&&";
+                                        StringGrabar += FormateoString(DeptoOrigen.PadLeft(2, '0'), 2, ' ', true) + "&&";
 
                                         if (Pais == "US")
                                         {
@@ -652,15 +750,15 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                             {
                                                 DeptoD = "FL";
                                             }
-                                            StringGrabar += utilidades.FormateoString(DeptoD, 2, " ", "I") + "&&";
+                                            StringGrabar += FormateoString(DeptoD, 2, ' ', true) + "&&";
                                         }
                                         else
                                         {
-                                            StringGrabar += utilidades.FormateoString("", 2, " ", "I") + "&&";
+                                            StringGrabar += FormateoString("", 2, ' ', true) + "&&";
                                         }
 
-                                        StringGrabar += utilidades.FormateoString(SucursalTrn, 10, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString2(utilidades.FormateoMontos(registro.TRFMNT.ToString()), 14, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(SucursalTrn, 10, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(FormateoMontos(registro.TRFMNT.ToString()), 14, ' ', true) + "&&";
 
                                         if (registro.TRFCCY == "QTZ")
                                         {
@@ -668,10 +766,10 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                         }
                                         else
                                         {
-                                            StringGrabar += utilidades.FormateoString(registro.TRFCCY, 3, " ", "I") + "&&";
+                                            StringGrabar += FormateoString(registro.TRFCCY, 3, ' ', true) + "&&";
                                         }
 
-                                        StringGrabar += utilidades.FormateoString2(utilidades.FormateoMontos(registro.TRFMNTD.ToString()), 14, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(FormateoMontos(registro.TRFMNTD.ToString()), 14, ' ', true) + "&&";
                                         break;
                                     case "R": // SWIFT RECIBIDAS
                                         StringGrabar = "";
@@ -679,12 +777,10 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                         StringGrabar += "3" + "&&";
                                         StringGrabar += "R" + "&&";
 
-                                        string OTIPOP = registro.TRFOTPER?.Trim();
+                                        OTIPOP = registro.TRFOTPER?.Trim();
                                         if (OTIPOP == "I")
                                         {
-                                            string OTIPOID = registro.TRFOTID?.Trim();
-                                            string OORDEN, OID, OMUNI, OPAPE, OSAPE, OACAS, OPNOM, OSNOM;
-
+                                            OTIPOID = registro.TRFOTID.Trim();
                                             if (OTIPOID == "C")
                                             {
                                                 OORDEN = registro.TRFOORD?.Trim();
@@ -721,75 +817,73 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                                 }
                                             }
 
-                                            StringGrabar += utilidades.FormateoString(OTIPOP, 1, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(OTIPOID, 1, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(OORDEN, 3, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(OID, 20, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(OMUNI, 2, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(OPAPE, 15, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(OSAPE, 15, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(OACAS, 15, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(OPNOM, 15, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(OSNOM, 30, " ", "I") + "&&";
+                                            StringGrabar += FormateoString(OTIPOP, 1, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(OTIPOID, 1, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(OORDEN, 3, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(OID, 20, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(OMUNI, 2, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(OPAPE, 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(OSAPE, 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(OACAS, 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(OPNOM, 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(OSNOM, 30, ' ', true) + "&&";
                                         }
                                         else
                                         {
-                                            string OTIPOID = registro.TRFOTID?.Trim();
-                                            string OORDEN = "   ";
-                                            string OID = registro.TRFODOC?.Trim();
-                                            string OMUNI = "  ";
-                                            string OPAPE = registro.TRFOAPE1?.Trim();
+                                            OTIPOID = registro.TRFOTID?.Trim();
+                                            OORDEN = "   ";
+                                            OID = registro.TRFODOC?.Trim();
+                                            OMUNI = "  ";
+                                            OPAPE = registro.TRFOAPE1?.Trim();
 
-                                            StringGrabar += utilidades.FormateoString(OTIPOP, 1, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(OTIPOID, 1, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(OORDEN, 3, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(OID, 20, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString(OMUNI, 2, " ", "I") + "&&";
-                                            StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(OPAPE?.Substring(0, Math.Min(15, OPAPE.Length))), 15,' ', true) + "&&";
-                                            StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(OPAPE?.Substring(15, Math.Min(15, OPAPE.Length - 15))), 15, ' ', true) + "&&";
-                                            StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(OPAPE?.Substring(30, Math.Min(15, OPAPE.Length - 30))), 15, ' ', true) + "&&";
-                                            StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(OPAPE?.Substring(45, Math.Min(15, OPAPE.Length - 45))), 15, ' ', true) + "&&";
-                                            StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(OPAPE?.Substring(60, Math.Min(30, OPAPE.Length - 60))), 30, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(OTIPOP, 1, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(OTIPOID, 1, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(OORDEN, 3, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(OID, 20, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(OMUNI, 2, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes(OPAPE?.Substring(0, Math.Min(15, OPAPE.Length))), 15,' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes(OPAPE?.Substring(15, Math.Min(15, OPAPE.Length - 15))), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes(OPAPE?.Substring(30, Math.Min(15, OPAPE.Length - 30))), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes(OPAPE?.Substring(45, Math.Min(15, OPAPE.Length - 45))), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes(OPAPE?.Substring(60, Math.Min(30, OPAPE.Length - 60))), 30, ' ', true) + "&&";
                                         }
 
                                         if (!string.IsNullOrEmpty(registro.IBANO))
                                         {
-                                            StringGrabar += utilidades.FormateoString(registro.IBANO, 28, " ", "I") + "&&";
+                                            StringGrabar += FormateoString(registro.IBANO, 28, ' ', true) + "&&";
                                         }
                                         else
                                         {
-                                            StringGrabar += utilidades.FormateoString(registro.TRFOCTA, 28, " ", "I") + "&&";
+                                            StringGrabar += FormateoString(registro.TRFOCTA, 28, ' ', true) + "&&";
                                         }
 
                                         CltBen = false;
                                         if (!string.IsNullOrEmpty(registro.TRFOCUN) && registro.TRFOCUN != "0")
-                                        {
-                                            var registrosTemporal = ConsultarIVETRF21Temporal(registro.TRFOCUN);
+                                        {                                            
+                                            var registrosTemporal = listaIVE21TemporalGlobal.Where(x => x.Cliente == float.Parse(registro.TRFOCUN));
                                             if (registrosTemporal.Any())
                                             {
                                                 foreach (var temp in registrosTemporal)
                                                 {
                                                     if (temp.String.StartsWith("I"))
                                                     {
-                                                        StringGrabar += utilidades.FormateoString(temp.String.Trim(), 135, " ", "I") + "&&";
+                                                        StringGrabar += FormateoString(temp.String.Trim(), 135, ' ', true) + "&&";
                                                     }
                                                     else
                                                     {
-                                                        StringGrabar += utilidades.FormateoString(temp.String.Trim(), 135, " ", "I") + "&&";
+                                                        StringGrabar += FormateoString(temp.String.Trim(), 135, ' ', true) + "&&";
                                                     }
                                                 }
                                                 CltBen = true;
                                             }
                                         }
 
-                                        if (!CltBen)
+                                        if (CltBen == false)
                                         {
                                             BTIPOP = registro.TRFBTPER?.Trim();
                                             if (BTIPOP == "I")
                                             {
-                                                string BTIPOID = registro.TRFBTID?.Trim();
-                                                string BORDEN, BID, BMUNI, BPAPE, BSAPE, BACAS, BPNOM, BSNOM;
-
+                                                BTIPOID = registro.TRFBTID;
                                                 if (BTIPOID == "C")
                                                 {
                                                     BORDEN = registro.TRFBORD?.Trim();
@@ -813,58 +907,58 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                                     BSNOM = registro.TRFBNOM2?.Trim();
                                                 }
 
-                                                StringGrabar += utilidades.FormateoString(BTIPOP, 1, " ", "I") + "&&";
-                                                StringGrabar += utilidades.FormateoString(BTIPOID, 1, " ", "I") + "&&";
-                                                StringGrabar += utilidades.FormateoString(BORDEN, 3, " ", "I") + "&&";
-                                                StringGrabar += utilidades.FormateoString(BID, 20, " ", "I") + "&&";
-                                                StringGrabar += utilidades.FormateoString(BMUNI, 2, " ", "I") + "&&";
-                                                StringGrabar += utilidades.FormateoString(BPAPE, 15, " ", "I") + "&&";
-                                                StringGrabar += utilidades.FormateoString(BSAPE, 15, " ", "I") + "&&";
-                                                StringGrabar += utilidades.FormateoString(BACAS, 15, " ", "I") + "&&";
-                                                StringGrabar += utilidades.FormateoString(BPNOM, 15, " ", "I") + "&&";
-                                                StringGrabar += utilidades.FormateoString(BSNOM, 30, " ", "I") + "&&";
+                                                StringGrabar += FormateoString(BTIPOP, 1, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(BTIPOID, 1, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(BORDEN, 3, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(BID, 20, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(BMUNI, 2, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(BPAPE, 15, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(BSAPE, 15, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(BACAS, 15, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(BPNOM, 15, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(BSNOM, 30, ' ', true) + "&&";
                                             }
                                             else
                                             {
-                                                string BTIPOID = registro.TRFBTID?.Trim() ?? "N";
-                                                string BORDEN = "   ";
-                                                string BID = registro.TRFBDOC?.Trim();
+                                                BTIPOID = registro.TRFBTID?.Trim() ?? "N";
+                                                BORDEN = "   ";
+                                                BID = registro.TRFBDOC?.Trim();
                                                 if (string.IsNullOrEmpty(BID) || BID == "--") BID = "SINNIT";
-                                                string BMUNI = "  ";
-                                                string BPAPE = registro.TRFBAPE1?.Trim();
+                                                BMUNI = "  ";
+                                                BPAPE = registro.TRFBAPE1?.Trim();
 
-                                                StringGrabar += utilidades.FormateoString(BTIPOP, 1, " ", "I") + "&&";
-                                                StringGrabar += utilidades.FormateoString(BTIPOID, 1, " ", "I") + "&&";
-                                                StringGrabar += utilidades.FormateoString(BORDEN, 3, " ", "I") + "&&";
-                                                StringGrabar += utilidades.FormateoString(BID, 20, " ", "I") + "&&";
-                                                StringGrabar += utilidades.FormateoString(BMUNI, 2, " ", "I") + "&&";
-                                                StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(BPAPE?.Substring(0, Math.Min(15, BPAPE.Length))), 15, ' ', true) + "&&";
-                                                StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(BPAPE?.Substring(15, Math.Min(15, BPAPE.Length - 15))), 15, ' ', true) + "&&";
-                                                StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(BPAPE?.Substring(30, Math.Min(15, BPAPE.Length - 30))), 15, ' ', true) + "&&";
-                                                StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(BPAPE?.Substring(45, Math.Min(15, BPAPE.Length - 45))), 15, ' ', true) + "&&";
-                                                StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(BPAPE?.Substring(60, Math.Min(30, BPAPE.Length - 60))), 30, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(BTIPOP, 1, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(BTIPOID, 1, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(BORDEN, 3, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(BID, 20, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(BMUNI, 2, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(QuitoTildes(BPAPE?.Substring(0, Math.Min(15, BPAPE.Length))), 15, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(QuitoTildes(BPAPE?.Substring(15, Math.Min(15, BPAPE.Length - 15))), 15, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(QuitoTildes(BPAPE?.Substring(30, Math.Min(15, BPAPE.Length - 30))), 15, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(QuitoTildes(BPAPE?.Substring(45, Math.Min(15, BPAPE.Length - 45))), 15, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(QuitoTildes(BPAPE?.Substring(60, Math.Min(30, BPAPE.Length - 60))), 30, ' ', true) + "&&";
                                             }
                                         }
 
                                         if (!string.IsNullOrEmpty(registro.IBANB))
                                         {
-                                            StringGrabar += utilidades.FormateoString(registro.IBANB, 28, " ", "I") + "&&";
+                                            StringGrabar += FormateoString(registro.IBANB, 28, ' ', true) + "&&";
                                         }
                                         else
                                         {
-                                            StringGrabar += utilidades.FormateoString(registro.TRFBCTA, 28, " ", "I") + "&&";
+                                            StringGrabar += FormateoString(registro.TRFBCTA, 28, ' ', true) + "&&";
                                         }
 
                                         if (registro.TRFBBCO == 0)
                                         {
-                                            StringGrabar += utilidades.FormateoString("117", 5, " ", "I") + "&&";
+                                            StringGrabar += FormateoString("117", 5, ' ', true) + "&&";
                                         }
                                         else
                                         {
-                                            StringGrabar += utilidades.FormateoString(registro.TRFBBCO.ToString(), 5, " ", "I") + "&&";
+                                            StringGrabar += FormateoString(registro.TRFBBCO.ToString(), 5, ' ', true) + "&&";
                                         }
 
-                                        StringGrabar += utilidades.FormateoString(registro.TRFNUM, 20, " ", "I") + "&&";
+                                        StringGrabar += FormateoString(registro.TRFNUM, 20, ' ', true) + "&&";
 
                                         Pais = registro.TRFPAIS?.Trim();
                                         DeptoO = registro.TRFODEPT?.Trim();
@@ -875,7 +969,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                             Pais = "US";
                                         }
 
-                                        StringGrabar += utilidades.FormateoString(Pais, 2, " ", "I") + "&&";
+                                        StringGrabar += FormateoString(Pais, 2, ' ', true) + "&&";
 
                                         if (Pais == "US")
                                         {
@@ -883,14 +977,14 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                             {
                                                 DeptoO = "FL";
                                             }
-                                            StringGrabar += utilidades.FormateoString(DeptoO, 2, " ", "I") + "&&";
+                                            StringGrabar += FormateoString(DeptoO, 2, ' ', true) + "&&";
                                         }
                                         else
                                         {
-                                            StringGrabar += utilidades.FormateoString(" ", 2, " ", "I") + "&&";
+                                            StringGrabar += FormateoString(" ", 2, ' ', true) + "&&";
                                         }
 
-                                        StringGrabar += utilidades.FormateoString("01", 2, " ", "I") + "&&";
+                                        StringGrabar += FormateoString("01", 2, ' ', true) + "&&";
 
                                         SucursalTrn = registro.TRFBRN?.Trim();
                                         if (string.IsNullOrEmpty(SucursalTrn))
@@ -903,8 +997,8 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                             SucursalTrn = "0";
                                         }
 
-                                        StringGrabar += utilidades.FormateoString(SucursalTrn, 10, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString2(utilidades.FormateoMontos(registro.TRFMNT.ToString()), 14, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(SucursalTrn, 10, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(FormateoMontos(registro.TRFMNT.ToString()), 14, ' ', true) + "&&";
 
                                         if (registro.TRFCCY == "QTZ")
                                         {
@@ -912,10 +1006,10 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                         }
                                         else
                                         {
-                                            StringGrabar += utilidades.FormateoString(registro.TRFCCY, 3, " ", "I") + "&&";
+                                            StringGrabar += FormateoString(registro.TRFCCY, 3, ' ', true) + "&&";
                                         }
 
-                                        StringGrabar += utilidades.FormateoString2(utilidades.FormateoMontos(registro.TRFMNTD.ToString()), 14, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(FormateoMontos(registro.TRFMNTD.ToString()), 14, ' ', true) + "&&";
 
 
                                         break; 
@@ -924,7 +1018,8 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                             case "4":
                                 if (!string.IsNullOrEmpty(registro.TRFOCUN) && registro.TRFOCUN != "0")
                                 {
-                                    var registrosTemporales = ConsultarIVETRF21Temporal(registro.TRFOCUN);
+                                    //var registrosTemporales = ConsultarIVETRF21Temporal(registro.TRFOCUN);}
+                                    var registrosTemporales = listaIVE21TemporalGlobal.Where(x => x.Cliente == float.Parse(registro.TRFOCUN));
                                     if (registrosTemporales.Any())
                                     {
                                         StringGrabar = "";
@@ -936,11 +1031,11 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                         {
                                             if (registroTemporal.String.StartsWith("I"))
                                             {
-                                                StringGrabar += utilidades.FormateoString(registroTemporal.String.Trim(), 135, " ", "I") + "&&";
+                                                StringGrabar += FormateoString(registroTemporal.String.Trim(), 135, ' ', true) + "&&";
                                             }
                                             else
                                             {
-                                                StringGrabar += utilidades.FormateoString(registroTemporal.String.Trim(), 135, " ", "I") + "&&";
+                                                StringGrabar += FormateoString(registroTemporal.String.Trim(), 135, ' ', true) + "&&";
                                             }
                                         }
                                         CltOrd = true;
@@ -955,66 +1050,77 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                     CltOrd = false;
                                 }
 
-                                if (!CltOrd)
+                                if (CltOrd == false)
                                 {
                                     StringGrabar = "";
                                     StringGrabar += registro.TRFFECHA.ToString("yyyyMMdd") + "&&";
                                     StringGrabar += "4" + "&&";
                                     StringGrabar += "E" + "&&";
-
-                                    string OTIPOP = registro.TRFOTPER.Trim();
-
+                                    OTIPOP = registro.TRFOTPER.Trim();                                    
                                     if (OTIPOP == "I")
                                     {
-                                        string OTIPOID = registro.TRFOTID.Trim();
-                                        string OORDEN = OTIPOID == "C" ? registro.TRFOORD.Trim() : "   ";
-                                        string OID = registro.TRFODOC.Trim();
-                                        string OMUNI = OTIPOID == "C" ? registro.TRFOMUN.Trim() : "  ";
-                                        string OPAPE = registro.TRFOAPE1.Trim();
-                                        string OSAPE = registro.TRFOAPE2.Trim();
-                                        string OACAS = registro.TRFOAPEC.Trim();
-                                        string OPNOM = registro.TRFONOM1.Trim();
-                                        string OSNOM = registro.TRFONOM2.Trim();
-
-                                        StringGrabar += utilidades.FormateoString(OTIPOP, 1, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OTIPOID, 1, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OORDEN, 3, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OID, 20, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OMUNI, 2, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OPAPE, 15, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OSAPE, 15, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OACAS, 15, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OPNOM, 15, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OSNOM, 30, " ", "I") + "&&";
-                                    }
+                                        OTIPOID = registro.TRFOTID.Trim();
+                                        if (OTIPOID == "C")
+                                        {
+                                            OORDEN = registro.TRFOORD.Trim();
+                                            OID = registro.TRFODOC.Trim();
+                                            OMUNI = registro.TRFOMUN.Trim();
+                                            OPAPE = registro.TRFOAPE1.Trim();
+                                            OSAPE = registro.TRFOAPE2.Trim();
+                                            OACAS = registro.TRFOAPEC.Trim();
+                                            OPNOM = registro.TRFONOM1.Trim();
+                                            OSNOM = registro.TRFONOM2.Trim();
+                                        }else
+                                        {
+                                            OORDEN = registro.TRFOORD.Trim();
+                                            OID = registro.TRFODOC.Trim();
+                                            OMUNI = registro.TRFOMUN.Trim();
+                                            OPAPE = registro.TRFOAPE1.Trim();
+                                            OSAPE = registro.TRFOAPE2.Trim();
+                                            OACAS = registro.TRFOAPEC.Trim();
+                                            OPNOM = registro.TRFONOM1.Trim();
+                                            OSNOM = registro.TRFONOM2.Trim();
+                                        }
+                                        StringGrabar += FormateoString(OTIPOP, 1, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OTIPOID, 1, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OORDEN, 3, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OID, 20, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OMUNI, 2, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OPAPE, 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OSAPE, 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OACAS, 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OPNOM, 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OSNOM, 30, ' ', true) + "&&";
+                                    }                                    
+                                                                    
                                     else
                                     {
-                                        string OTIPOID = registro.TRFOTID.Trim();
-                                        string OORDEN = "   ";
-                                        string OID = registro.TRFODOC.Trim();
-                                        string OMUNI = "  ";
-                                        string OPAPE = registro.TRFOAPE1.Trim();
+                                        OTIPOID = registro.TRFOTID.Trim();
+                                        OORDEN = "   ";
+                                        OID = registro.TRFODOC.Trim();
+                                        OMUNI = "  ";
+                                        OPAPE = registro.TRFOAPE1.Trim();
 
-                                        StringGrabar += utilidades.FormateoString(OTIPOP, 1, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OTIPOID, 1, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OORDEN, 3, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OID, 20, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString(OMUNI, 2, " ", "I") + "&&";
-                                        StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(OPAPE.Substring(0, 15).Trim()), 15, ' ', true) + "&&";
-                                        StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(OPAPE.Substring(15, 15).Trim()), 15, ' ', true) + "&&";
-                                        StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(OPAPE.Substring(30, 15).Trim()), 15, ' ', true) + "&&";
-                                        StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(OPAPE.Substring(45, 15).Trim()), 15, ' ', true) + "&&";
-                                        StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(OPAPE.Substring(60, 30).Trim()), 30, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OTIPOP, 1, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OTIPOID, 1, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OORDEN, 3, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OID, 20, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(OMUNI, 2, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes(OPAPE.Substring(0, 15).Trim()), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes(OPAPE.Substring(15, 15).Trim()), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes(OPAPE.Substring(30, 15).Trim()), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes(OPAPE.Substring(45, 15).Trim()), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes(OPAPE.Substring(60, 30).Trim()), 30, ' ', true) + "&&";
                                     }
                                 }
 
                                 if (!string.IsNullOrEmpty(registro.IBANO))
                                 {
-                                    StringGrabar += utilidades.FormateoString(registro.IBANO, 28, " ", "I") + "&&";
+                                    StringGrabar += FormateoString(registro.IBANO, 28, ' ', true) + "&&";
                                 }
                                 else
                                 {
-                                    StringGrabar += utilidades.FormateoString(registro.TRFOCTA, 28, " ", "I") + "&&";
+                                    StringGrabar += FormateoString(registro.TRFOCTA, 28, ' ', true) + "&&";
                                 }
 
                                 StringGrabar += " " + "&&";
@@ -1024,26 +1130,26 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                 StringGrabar += "  " + "&&";
 
                                 NombreTmp = "POR PAGO DE PLANILLAS";
-                                StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(NombreTmp.Substring(0, 15).Trim()), 15, ' ', true) + "&&";
-                                StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(NombreTmp.Substring(15, 15).Trim()), 15, ' ', true) + "&&";
-                                StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(NombreTmp.Substring(30, 15).Trim()), 15, ' ', true) + "&&";
-                                StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(NombreTmp.Substring(45, 15).Trim()), 15, ' ', true) + "&&";
-                                StringGrabar += utilidades.FormateoString2(utilidades.QuitoTildes(NombreTmp.Substring(60, 30).Trim()), 30, ' ', true) + "&&";
+                                StringGrabar += FormateoString(QuitoTildes(NombreTmp.Substring(0, 15).Trim()), 15, ' ', true) + "&&";
+                                StringGrabar += FormateoString(QuitoTildes(NombreTmp.Substring(15, 15).Trim()), 15, ' ', true) + "&&";
+                                StringGrabar += FormateoString(QuitoTildes(NombreTmp.Substring(30, 15).Trim()), 15, ' ', true) + "&&";
+                                StringGrabar += FormateoString(QuitoTildes(NombreTmp.Substring(45, 15).Trim()), 15, ' ', true) + "&&";
+                                StringGrabar += FormateoString(QuitoTildes(NombreTmp.Substring(60, 30).Trim()), 30, ' ', true) + "&&";
 
                                 if (!string.IsNullOrEmpty(registro.IBANB))
                                 {
-                                    StringGrabar += utilidades.FormateoString(registro.IBANB, 28, " ", "I") + "&&";
+                                    StringGrabar += FormateoString(registro.IBANB, 28, ' ', true) + "&&";
                                 }
                                 else
                                 {
-                                    StringGrabar += utilidades.FormateoString(registro.TRFBCTA, 28, " ", "I") + "&&";
+                                    StringGrabar += FormateoString(registro.TRFBCTA, 28, ' ', true) + "&&";
                                 }
 
-                                StringGrabar += utilidades.FormateoString(" ", 5, " ", "I") + "&&";
-                                StringGrabar += utilidades.FormateoString(registro.TRFNUM, 20, " ", "I") + "&&";
-                                StringGrabar += utilidades.FormateoString(registro.TRFPAIS, 2, " ", "I") + "&&";
-                                StringGrabar += utilidades.FormateoString(registro.TRFODEPT, 2, " ", "I") + "&&";
-                                StringGrabar += utilidades.FormateoString(registro.TRFDDEPT, 2, " ", "I") + "&&";
+                                StringGrabar += FormateoString(" ", 5, ' ', true) + "&&";
+                                StringGrabar += FormateoString(registro.TRFNUM, 20, ' ', true) + "&&";
+                                StringGrabar += FormateoString(registro.TRFPAIS, 2, ' ', true) + "&&";
+                                StringGrabar += FormateoString(registro.TRFODEPT, 2, ' ', true) + "&&";
+                                StringGrabar += FormateoString(registro.TRFDDEPT, 2, ' ', true) + "&&";
 
                                 SucursalTrn = registro.TRFBRN;
                                 if (string.IsNullOrEmpty(SucursalTrn))
@@ -1055,8 +1161,8 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                     SucursalTrn = "0";
                                 }
 
-                                StringGrabar += utilidades.FormateoString(SucursalTrn, 10, " ", "I") + "&&";
-                                StringGrabar += utilidades.FormateoString2(utilidades.FormateoMontos(registro.TRFMNT.ToString()), 14, ' ', true) + "&&";
+                                StringGrabar += FormateoString(SucursalTrn, 10, ' ', true) + "&&";
+                                StringGrabar += FormateoString(FormateoMontos(registro.TRFMNT.ToString()), 14, ' ', true) + "&&";
 
                                 if (registro.TRFCCY == "QTZ")
                                 {
@@ -1064,16 +1170,16 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                 }
                                 else
                                 {
-                                    StringGrabar += utilidades.FormateoString(registro.TRFCCY, 3, " ", "I") + "&&";
+                                    StringGrabar += FormateoString(registro.TRFCCY, 3, ' ', true) + "&&";
                                 }
 
-                                StringGrabar += utilidades.FormateoString2(utilidades.FormateoMontos(registro.TRFMNTD.ToString()), 14, ' ', true) + "&&";
+                                StringGrabar += FormateoString(FormateoMontos(registro.TRFMNTD.ToString()), 14, ' ', true) + "&&";
 
 
                                 break;
 
                         }
-                        fileWriter.WriteLine(utilidades.QuitoTildes(StringGrabar));
+                        fileWriter.WriteLine(QuitoTildes(StringGrabar));
                         cantidadRegsDetalleOK++;
                     }                    
 
@@ -1117,20 +1223,15 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
 
             return filasAfectadas;
         }
-        private List<DTO_IVETRF21Temporal> ConsultarIVETRF21Temporal(string cliente)
+        private List<DTO_IVETRF21Temporal> ConsultarIVETRF21Temporal()
         {
             List<DTO_IVETRF21Temporal> listaDatos = new List<DTO_IVETRF21Temporal>();
 
-            string query = "SELECT * FROM IVE_TRF21_TEMPORAL WHERE Cliente = @Cliente";
-
-            SqlParameter[] parameters = {
-                new SqlParameter("@Cliente", cliente)
-            };
+            string query = "SELECT * FROM IVE_TRF21_TEMPORAL";            
 
             try
             {
-                DataTable dt = _dbHelper.ExecuteSelectCommand(query, parameters);
-
+                DataTable dt = _dbHelper.ExecuteSelectCommand(query);
                 foreach (DataRow row in dt.Rows)
                 {
                     listaDatos.Add(new DTO_IVETRF21Temporal
@@ -1150,27 +1251,19 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
 
             return listaDatos;
         }
-        private List<DTO_IVETRF21Archivos> ConsultarIVETRF21PorRangoFechas(int fechaInicial, int fechaFinal)
+        private List<DTO_IVETRF21Archivos> ConsultarIVETRF21(int año, int mes)
         {
-            List<DTO_IVETRF21Archivos> listaDatos = new List<DTO_IVETRF21Archivos>();
-
-            // Extraer año y mes de las fechas inicial y final
-            int anioInicial = fechaInicial / 10000;
-            int mesInicial = (fechaInicial / 100) % 100;
-            int anioFinal = fechaFinal / 10000;
-            int mesFinal = (fechaFinal / 100) % 100;
+            List<DTO_IVETRF21Archivos> listaDatos = new List<DTO_IVETRF21Archivos>();            
 
             string query = @"
                 SELECT * 
                 FROM IVE_TRF21_Archivos 
-                WHERE (Ano > @AnioInicial OR (Ano = @AnioInicial AND Mes >= @MesInicial))
-                  AND (Ano < @AnioFinal OR (Ano = @AnioFinal AND Mes <= @MesFinal))";
+                WHERE Mes = @Mes
+                  AND Ano = @Ano";
 
             SqlParameter[] parameters = {
-                        new SqlParameter("@AnioInicial", anioInicial),
-                        new SqlParameter("@MesInicial", mesInicial),
-                        new SqlParameter("@AnioFinal", anioFinal),
-                        new SqlParameter("@MesFinal", mesFinal)
+                        new SqlParameter("@Ano", año),                        
+                        new SqlParameter("@Mes", mes)
                     };
 
             try
@@ -1192,7 +1285,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
             }
             catch (Exception ex)
             {
-                throw new Exception("Error en ConsultarIVETRF21PorRangoFechas: " + ex.Message);
+                throw new Exception("Error en IVE_TRF21_Archivos: " + ex.Message);
             }
 
             return listaDatos;
@@ -1572,27 +1665,27 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
         {
             List<DTO_IVE21TRF> listaDatos = new List<DTO_IVE21TRF>();
 
-            string queryReal = @"
-                SELECT DISTINCT 
-                    IVE21Transferencia.*, 
-                    DWAGENCIA.*, 
-                    dwcuenta_iban.iban AS ibano, 
-                    dwcuenta_ibanben.iban AS ibanb
-                FROM 
-                    IVE21Transferencia
-                LEFT OUTER JOIN 
-                    DWAGENCIA ON AGENCIAID = TRFBRN
-                LEFT OUTER JOIN 
-                    [172.16.4.62].dwbinter.dbo.dwcuenta_iban dwcuenta_iban ON dwcuenta_iban.cuenta COLLATE SQL_Latin1_General_CP1_CI_AS = trfocta
-                LEFT OUTER JOIN 
-                    [172.16.4.62].dwbinter.dbo.dwcuenta_iban dwcuenta_ibanben ON dwcuenta_ibanben.cuenta COLLATE SQL_Latin1_General_CP1_CI_AS = trfbcta
-                WHERE  
-                    ive21 = 'S' 
-                    AND YEAR(trffecha) = 2024  -- Reemplaza con el valor real de CmbAno.Text
-                    AND MONTH(trffecha) = 1    -- Reemplaza con (CmbMes.ListIndex + 1)
-                ORDER BY 
-                    trffecha, trftipo, trftran;
-            ";
+            //string queryReal = @"
+            //    SELECT DISTINCT 
+            //        IVE21Transferencia.*, 
+            //        DWAGENCIA.*, 
+            //        dwcuenta_iban.iban AS ibano, 
+            //        dwcuenta_ibanben.iban AS ibanb
+            //    FROM 
+            //        IVE21Transferencia
+            //    LEFT OUTER JOIN 
+            //        DWAGENCIA ON AGENCIAID = TRFBRN
+            //    LEFT OUTER JOIN 
+            //        [172.16.4.62].dwbinter.dbo.dwcuenta_iban dwcuenta_iban ON dwcuenta_iban.cuenta COLLATE SQL_Latin1_General_CP1_CI_AS = trfocta
+            //    LEFT OUTER JOIN 
+            //        [172.16.4.62].dwbinter.dbo.dwcuenta_iban dwcuenta_ibanben ON dwcuenta_ibanben.cuenta COLLATE SQL_Latin1_General_CP1_CI_AS = trfbcta
+            //    WHERE  
+            //        ive21 = 'S' 
+            //        AND YEAR(trffecha) = 2024  -- Reemplaza con el valor real de CmbAno.Text
+            //        AND MONTH(trffecha) = 1    -- Reemplaza con (CmbMes.ListIndex + 1)
+            //    ORDER BY 
+            //        trffecha, trftipo, trftran;
+            //";
             string query = @"
                 SELECT DISTINCT 
                     IVE21Transferencia.*, 
@@ -1690,16 +1783,16 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                         UbicacionGeoId = row["ubicaciongeoid"] as short?,
 
                         // Propiedades de dwcuenta_iban
-                        IbanIdOrigen = row["ibanid"] as int?,
-                        CuentaOrigen = row["cuenta"] as long?,
+                        //IbanIdOrigen = row["ibanid"] as int?,
+                        //CuentaOrigen = row["cuenta"] as long?,
                         IBANO = row["ibano"]?.ToString(),
-                        IbanFormatoOrigen = row["iban_formato"]?.ToString(),
+                        //IbanFormatoOrigen = row["iban_formato"]?.ToString(),
 
                         // Propiedades de dwcuenta_ibanben
-                        IbanIdBeneficiario = row["ibanid"] as int?,
-                        CuentaBeneficiario = row["cuenta"] as long?,
+                        //IbanIdBeneficiario = row["ibanid"] as int?,
+                        //CuentaBeneficiario = row["cuenta"] as long?,
                         IBANB = row["ibanb"]?.ToString(),
-                        IbanFormatoBeneficiario = row["iban_formato"]?.ToString(),
+                        //IbanFormatoBeneficiario = row["iban_formato"]?.ToString(),
 
                         
 
@@ -1715,6 +1808,113 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
             return listaDatos;
         }
 
+        // Método para consultar ubicaciones geográficas
+        private List<DTO_UbicacionGeografica> ConsultarUbicacionesGeograficas()
+        {
+            List<DTO_UbicacionGeografica> listaDatos = new List<DTO_UbicacionGeografica>();
 
+            string query = @"
+                    SELECT 
+                        ubicaciongeoid, 
+                        nombrepais, 
+                        nombredepartamento, 
+                        nombremunicipio, 
+                        paisid, 
+                        departamentoid, 
+                        municipioid, 
+                        Cod_Orbe_Muni, 
+                        Cod_orbe_pais, 
+                        cod_SIB_Muni, 
+                        MRPeso, 
+                        cod_INE
+                    FROM 
+                        dwubicaciongeografica";
+
+            try
+            {
+                DataTable dt = _dbHelper.ExecuteSelectCommand(query);
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    listaDatos.Add(new DTO_UbicacionGeografica
+                    {
+                        UbicacionGeoId = Convert.ToInt16(row["ubicaciongeoid"]),
+                        NombrePais = row["nombrepais"].ToString(),
+                        NombreDepartamento = row["nombredepartamento"].ToString(),
+                        NombreMunicipio = row["nombremunicipio"].ToString(),
+                        PaisId = Convert.ToInt16(row["paisid"]),
+                        DepartamentoId = Convert.ToInt16(row["departamentoid"]),
+                        MunicipioId = Convert.ToInt32(row["municipioid"]),
+                        CodOrbeMuni = row["Cod_Orbe_Muni"].ToString(),
+                        CodOrbePais = row["Cod_orbe_pais"].ToString(),
+                        CodSibMuni = row["cod_SIB_Muni"].ToString(),
+                        MRPeso = Convert.ToInt16(row["MRPeso"]),
+                        CodINE = row["cod_INE"].ToString()
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error en ConsultarUbicacionesGeograficas: " + ex.Message);
+            }
+
+            return listaDatos;
+        }
+
+        // Función para formatear cadenas
+        private string FormateoString(string stringAFormatear, int digitos, char relleno, bool orientacionDerecha = false)
+        {
+            string stringFormateado = stringAFormatear.Trim();
+            int longitud = stringFormateado.Length;
+
+            if (longitud <= digitos)
+            {
+                if (!orientacionDerecha)
+                {
+                    return stringFormateado.PadLeft(digitos, relleno);
+                }
+                else
+                {
+                    return stringFormateado.PadRight(digitos, relleno);
+                }
+            }
+            else
+            {
+                return stringFormateado.Substring(0, digitos);
+            }
+        }
+
+        // Función para formatear montos
+        private string FormateoMontos(string montoATransformar)
+        {
+            if (decimal.TryParse(montoATransformar, out decimal monto))
+            {
+                monto *= 100;
+                return ((int)monto).ToString();
+            }
+            else
+            {
+                return "0"; // Valor por defecto si la conversión falla
+            }
+        }
+
+
+        public string QuitoTildes(string stringQuitar)
+        {
+            return stringQuitar
+                .Replace("Á", "A")
+                .Replace("É", "E")
+                .Replace("Í", "I")
+                .Replace("Ó", "O")
+                .Replace("Ú", "U")
+                .Replace("-", " ")
+                .Replace("/", " ")
+                .Replace("$", " ");
+        }
+        public string QuitoCaracter(string stringQuitar)
+        {
+            string stringTemporal = stringQuitar.Replace(",", "").Replace("-", "");
+            return stringTemporal;
+        }
     }
 }

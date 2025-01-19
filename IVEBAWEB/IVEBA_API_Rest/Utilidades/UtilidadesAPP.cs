@@ -74,6 +74,19 @@
                 .Replace("&", " ");
         }
 
+        public string QuitoTildes2(string stringQuitar)
+        {
+            return stringQuitar
+                .Replace("Á", "A")
+                .Replace("É", "E")
+                .Replace("Í", "I")
+                .Replace("Ó", "O")
+                .Replace("Ú", "U")
+                .Replace("-", " ")
+                .Replace("/", " ")
+                .Replace("$", " ");                
+        }
+
         public string QuitoCaracter(string stringQuitar)
         {
             string stringTemporal = stringQuitar.Replace(",", "").Replace("-", "");

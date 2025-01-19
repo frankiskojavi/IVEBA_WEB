@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IVEBA_API_Rest")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bee1b8b11f62dfb65426333f5c668d2ae32ffcd9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f8ba2cfa133dcf1f82a0801c46ea2c98e951a49a")]
 [assembly: System.Reflection.AssemblyProductAttribute("IVEBA_API_Rest")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IVEBA_API_Rest")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
