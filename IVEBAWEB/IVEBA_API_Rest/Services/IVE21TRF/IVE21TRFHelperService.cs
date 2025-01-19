@@ -886,11 +886,11 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                             StringGrabar += FormateoString(QuitoTildes(OPAPE?.Substring(45, Math.Min(15, OPAPE.Length - 45))), 15, ' ', true) + "&&";
                                             StringGrabar += FormateoString(QuitoTildes(OPAPE?.Substring(60, Math.Min(30, OPAPE.Length - 60))), 30, ' ', true) + "&&";
                                             */
-                                            StringGrabar += FormateoString(QuitoTildes((OPAPE?.Length >= 15 ? OPAPE.Substring(0, 15) : OPAPE?.PadRight(15) ?? string.Empty.PadRight(15))), 15, ' ', true) + "&&";
-                                            StringGrabar += FormateoString(QuitoTildes((OPAPE?.Length >= 30 ? OPAPE.Substring(15, 15) : OPAPE?.Substring(15)?.PadRight(15) ?? string.Empty.PadRight(15))), 15, ' ', true) + "&&";
-                                            StringGrabar += FormateoString(QuitoTildes((OPAPE?.Length >= 45 ? OPAPE.Substring(30, 15) : OPAPE?.Substring(30)?.PadRight(15) ?? string.Empty.PadRight(15))), 15, ' ', true) + "&&";
-                                            StringGrabar += FormateoString(QuitoTildes((OPAPE?.Length >= 60 ? OPAPE.Substring(45, 15) : OPAPE?.Substring(45)?.PadRight(15) ?? string.Empty.PadRight(15))), 15, ' ', true) + "&&";
-                                            StringGrabar += FormateoString(QuitoTildes((OPAPE?.Length > 60 ? OPAPE.Substring(60).PadRight(30) : string.Empty.PadRight(30))), 30, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes(OPAPE != null && OPAPE.Length > 0 ? OPAPE.PadRight(15).Substring(0, 15) : string.Empty.PadRight(15)), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes(OPAPE != null && OPAPE.Length > 15 ? OPAPE.PadRight(30).Substring(15, 15) : string.Empty.PadRight(15)), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes(OPAPE != null && OPAPE.Length > 30 ? OPAPE.PadRight(45).Substring(30, 15) : string.Empty.PadRight(15)), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes(OPAPE != null && OPAPE.Length > 45 ? OPAPE.PadRight(60).Substring(45, 15) : string.Empty.PadRight(15)), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes(OPAPE != null && OPAPE.Length > 60 ? OPAPE.PadRight(90).Substring(60, 30) : string.Empty.PadRight(30)), 30, ' ', true) + "&&";
 
                                         }
 
