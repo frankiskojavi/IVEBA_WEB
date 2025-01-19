@@ -219,11 +219,19 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                 }
 
                 // Construcción de apellidos y nombres
+                /*
                 stringArmado += FormateoString(QuitoTildes(clienteData.Apellido1?.ToUpper() ?? ""), 15, ' ', true) + "&&";
                 stringArmado += FormateoString(QuitoTildes(clienteData.Apellido2?.ToUpper() ?? ""), 15, ' ', true) + "&&";
                 stringArmado += FormateoString(QuitoTildes(clienteData.ApellidoCasada?.ToUpper() ?? ""), 15, ' ', true) + "&&";
                 stringArmado += FormateoString(QuitoTildes(clienteData.Nombre1?.ToUpper() ?? ""), 15, ' ', true) + "&&";
                 stringArmado += FormateoString(QuitoTildes(clienteData.Nombre2?.ToUpper() ?? ""), 30, ' ', true);
+                */
+                stringArmado += FormateoString(QuitoTildes((clienteData.Apellido1?.ToUpper() ?? "").PadRight(15)).Substring(0, 15), 15, ' ', true) + "&&";
+                stringArmado += FormateoString(QuitoTildes((clienteData.Apellido2?.ToUpper() ?? "").PadRight(15)).Substring(0, 15), 15, ' ', true) + "&&";
+                stringArmado += FormateoString(QuitoTildes((clienteData.ApellidoCasada?.ToUpper() ?? "").PadRight(15)).Substring(0, 15), 15, ' ', true) + "&&";
+                stringArmado += FormateoString(QuitoTildes((clienteData.Nombre1?.ToUpper() ?? "").PadRight(15)).Substring(0, 15), 15, ' ', true) + "&&";
+                stringArmado += FormateoString(QuitoTildes((clienteData.Nombre2?.ToUpper() ?? "").PadRight(30)).Substring(0, 30), 30, ' ', true);
+
 
                 // Resultado final
                 stringDatos = QuitoTildes(stringArmado);
@@ -234,8 +242,6 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                 throw new Exception("Error en ProcesoFisicos: " + ex.Message, ex);
             }
         }
-
-
         private bool ProcesoJuridicos(int cliente, out string stringDatos)
         {
             try
@@ -430,12 +436,20 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                         StringGrabar += FormateoString(OORDEN, 3, ' ', true) + "&&";
                                         StringGrabar += FormateoString(OID, 20, ' ', true) + "&&";
                                         StringGrabar += FormateoString(OMUNI, 2, ' ', true) + "&&";
+                                        /*
                                         StringGrabar += FormateoString(QuitoTildes(OPAPE.Substring(1, 15)), 15, ' ', true) + "&&";
                                         StringGrabar += FormateoString(QuitoTildes(OPAPE.Substring(16, 15)), 15, ' ', true) + "&&";
                                         StringGrabar += FormateoString(QuitoTildes(OPAPE.Substring(31, 15)), 15, ' ', true) + "&&";
                                         StringGrabar += FormateoString(QuitoTildes(OPAPE.Substring(46, 15)), 15, ' ', true) + "&&";
                                         StringGrabar += FormateoString(QuitoTildes(OPAPE.Substring(61, 30)), 30, ' ', true) + "&&";
-                                    }                                                                        
+                                        */
+                                        StringGrabar += FormateoString(QuitoTildes((OPAPE.Length > 1 ? OPAPE.Substring(1).PadRight(15) : string.Empty.PadRight(15)).Substring(0, 15)), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes((OPAPE.Length > 16 ? OPAPE.Substring(16).PadRight(15) : string.Empty.PadRight(15)).Substring(0, 15)), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes((OPAPE.Length > 31 ? OPAPE.Substring(31).PadRight(15) : string.Empty.PadRight(15)).Substring(0, 15)), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes((OPAPE.Length > 46 ? OPAPE.Substring(46).PadRight(15) : string.Empty.PadRight(15)).Substring(0, 15)), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes((OPAPE.Length > 61 ? OPAPE.Substring(61).PadRight(30) : string.Empty.PadRight(30)).Substring(0, 30)), 30, ' ', true) + "&&";
+
+                                    }
                                 }
 
                                 //****** ORIGEN : 
@@ -533,11 +547,19 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                         StringGrabar += FormateoString(BORDEN, 3, ' ', true) + "&&";
                                         StringGrabar += FormateoString(BID, 20, ' ', true) + "&&";
                                         StringGrabar += FormateoString(BMUNI, 2, ' ', true) + "&&";
+                                        /*
                                         StringGrabar += FormateoString(QuitoTildes(BPAPE.Substring(0, 15)), 15, ' ', true) + "&&";
                                         StringGrabar += FormateoString(QuitoTildes(BPAPE.Substring(16, 15)), 15, ' ', true) + "&&";
                                         StringGrabar += FormateoString(QuitoTildes(BPAPE.Substring(31, 15)), 15, ' ', true) + "&&";
                                         StringGrabar += FormateoString(QuitoTildes(BPAPE.Substring(46, 15)), 15, ' ', true) + "&&";
                                         StringGrabar += FormateoString(QuitoTildes(BPAPE.Substring(61, 30)), 30, ' ', true) + "&&";
+                                        */
+                                        StringGrabar += FormateoString(QuitoTildes((BPAPE.Length >= 15 ? BPAPE.Substring(0, 15) : BPAPE.PadRight(15)).Substring(0, 15)), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes((BPAPE.Length >= 31 ? BPAPE.Substring(16, 15) : string.Empty.PadRight(15)).Substring(0, 15)), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes((BPAPE.Length >= 46 ? BPAPE.Substring(31, 15) : string.Empty.PadRight(15)).Substring(0, 15)), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes((BPAPE.Length >= 61 ? BPAPE.Substring(46, 15) : string.Empty.PadRight(15)).Substring(0, 15)), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes((BPAPE.Length > 61 ? BPAPE.Substring(61).PadRight(30) : string.Empty.PadRight(30)).Substring(0, 30)), 30, ' ', true) + "&&";
+
                                     }
                                 }
 
@@ -622,11 +644,19 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                             StringGrabar += "  " + "&&";
 
                                             NombreTmp = "BANCO INTERNACIONAL, S.A.";
+                                            /*
                                             StringGrabar += FormateoString(QuitoTildes(NombreTmp.Substring(1, 15)), 15, ' ', true) + "&&";
                                             StringGrabar += FormateoString(QuitoTildes(NombreTmp.Substring(16, 15)), 15, ' ', true) + "&&";
                                             StringGrabar += FormateoString(QuitoTildes(NombreTmp.Substring(31, 15)), 15, ' ', true) + "&&";
                                             StringGrabar += FormateoString(QuitoTildes(NombreTmp.Substring(46, 15)), 15, ' ', true) + "&&";
                                             StringGrabar += FormateoString(QuitoTildes(NombreTmp.Substring(61, 30)), 30, ' ', true) + "&&";
+                                            */
+                                            StringGrabar += FormateoString(QuitoTildes((NombreTmp.Length > 1 ? NombreTmp.Substring(1).PadRight(15) : string.Empty.PadRight(15)).Substring(0, 15)), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes((NombreTmp.Length > 16 ? NombreTmp.Substring(16).PadRight(15) : string.Empty.PadRight(15)).Substring(0, 15)), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes((NombreTmp.Length > 31 ? NombreTmp.Substring(31).PadRight(15) : string.Empty.PadRight(15)).Substring(0, 15)), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes((NombreTmp.Length > 46 ? NombreTmp.Substring(46).PadRight(15) : string.Empty.PadRight(15)).Substring(0, 15)), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes((NombreTmp.Length > 61 ? NombreTmp.Substring(61).PadRight(30) : string.Empty.PadRight(30)).Substring(0, 30)), 30, ' ', true) + "&&";
+
                                         }
 
                                         if (registro.IBANO != null)
@@ -688,11 +718,19 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                             StringGrabar += FormateoString(BORDEN, 3, ' ', true) + "&&";
                                             StringGrabar += FormateoString(BID, 20, ' ', true) + "&&";
                                             StringGrabar += FormateoString(BMUNI, 2, ' ', true) + "&&";
+                                            /*
                                             StringGrabar += FormateoString(QuitoTildes(BPAPE?.Substring(1, 15)), 15, ' ', true) + "&&";
                                             StringGrabar += FormateoString(QuitoTildes(BPAPE?.Substring(16, 15)), 15, ' ', true) + "&&";
                                             StringGrabar += FormateoString(QuitoTildes(BPAPE?.Substring(31, 15)), 15, ' ', true) + "&&";
                                             StringGrabar += FormateoString(QuitoTildes(BPAPE?.Substring(46, 15)), 15, ' ', true) + "&&";
                                             StringGrabar += FormateoString(QuitoTildes(BPAPE?.Substring(61, 30)), 30, ' ', true) + "&&";
+                                            */
+                                            StringGrabar += FormateoString(QuitoTildes((BPAPE?.Length > 1 ? BPAPE.Substring(1).PadRight(15) : string.Empty.PadRight(15)).Substring(0, 15)), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes((BPAPE?.Length > 16 ? BPAPE.Substring(16).PadRight(15) : string.Empty.PadRight(15)).Substring(0, 15)), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes((BPAPE?.Length > 31 ? BPAPE.Substring(31).PadRight(15) : string.Empty.PadRight(15)).Substring(0, 15)), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes((BPAPE?.Length > 46 ? BPAPE.Substring(46).PadRight(15) : string.Empty.PadRight(15)).Substring(0, 15)), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes((BPAPE?.Length > 61 ? BPAPE.Substring(61).PadRight(30) : string.Empty.PadRight(30)).Substring(0, 30)), 30, ' ', true) + "&&";
+
                                         }
 
                                         if (!string.IsNullOrEmpty(registro.IBANB))
@@ -841,11 +879,19 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                             StringGrabar += FormateoString(OORDEN, 3, ' ', true) + "&&";
                                             StringGrabar += FormateoString(OID, 20, ' ', true) + "&&";
                                             StringGrabar += FormateoString(OMUNI, 2, ' ', true) + "&&";
+                                            /*
                                             StringGrabar += FormateoString(QuitoTildes(OPAPE?.Substring(0, Math.Min(15, OPAPE.Length))), 15,' ', true) + "&&";
                                             StringGrabar += FormateoString(QuitoTildes(OPAPE?.Substring(15, Math.Min(15, OPAPE.Length - 15))), 15, ' ', true) + "&&";
                                             StringGrabar += FormateoString(QuitoTildes(OPAPE?.Substring(30, Math.Min(15, OPAPE.Length - 30))), 15, ' ', true) + "&&";
                                             StringGrabar += FormateoString(QuitoTildes(OPAPE?.Substring(45, Math.Min(15, OPAPE.Length - 45))), 15, ' ', true) + "&&";
                                             StringGrabar += FormateoString(QuitoTildes(OPAPE?.Substring(60, Math.Min(30, OPAPE.Length - 60))), 30, ' ', true) + "&&";
+                                            */
+                                            StringGrabar += FormateoString(QuitoTildes((OPAPE?.Length >= 15 ? OPAPE.Substring(0, 15) : OPAPE?.PadRight(15) ?? string.Empty.PadRight(15))), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes((OPAPE?.Length >= 30 ? OPAPE.Substring(15, 15) : OPAPE?.Substring(15)?.PadRight(15) ?? string.Empty.PadRight(15))), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes((OPAPE?.Length >= 45 ? OPAPE.Substring(30, 15) : OPAPE?.Substring(30)?.PadRight(15) ?? string.Empty.PadRight(15))), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes((OPAPE?.Length >= 60 ? OPAPE.Substring(45, 15) : OPAPE?.Substring(45)?.PadRight(15) ?? string.Empty.PadRight(15))), 15, ' ', true) + "&&";
+                                            StringGrabar += FormateoString(QuitoTildes((OPAPE?.Length > 60 ? OPAPE.Substring(60).PadRight(30) : string.Empty.PadRight(30))), 30, ' ', true) + "&&";
+
                                         }
 
                                         if (!string.IsNullOrEmpty(registro.IBANO))
@@ -932,11 +978,19 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                                 StringGrabar += FormateoString(BORDEN, 3, ' ', true) + "&&";
                                                 StringGrabar += FormateoString(BID, 20, ' ', true) + "&&";
                                                 StringGrabar += FormateoString(BMUNI, 2, ' ', true) + "&&";
+                                                /*
                                                 StringGrabar += FormateoString(QuitoTildes(BPAPE?.Substring(0, Math.Min(15, BPAPE.Length))), 15, ' ', true) + "&&";
                                                 StringGrabar += FormateoString(QuitoTildes(BPAPE?.Substring(15, Math.Min(15, BPAPE.Length - 15))), 15, ' ', true) + "&&";
                                                 StringGrabar += FormateoString(QuitoTildes(BPAPE?.Substring(30, Math.Min(15, BPAPE.Length - 30))), 15, ' ', true) + "&&";
                                                 StringGrabar += FormateoString(QuitoTildes(BPAPE?.Substring(45, Math.Min(15, BPAPE.Length - 45))), 15, ' ', true) + "&&";
                                                 StringGrabar += FormateoString(QuitoTildes(BPAPE?.Substring(60, Math.Min(30, BPAPE.Length - 60))), 30, ' ', true) + "&&";
+                                                */
+                                                StringGrabar += FormateoString(QuitoTildes((BPAPE?.Length >= 15 ? BPAPE.Substring(0, 15) : BPAPE?.PadRight(15) ?? string.Empty.PadRight(15))), 15, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(QuitoTildes((BPAPE?.Length >= 30 ? BPAPE.Substring(15, 15) : BPAPE?.Substring(15)?.PadRight(15) ?? string.Empty.PadRight(15))), 15, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(QuitoTildes((BPAPE?.Length >= 45 ? BPAPE.Substring(30, 15) : BPAPE?.Substring(30)?.PadRight(15) ?? string.Empty.PadRight(15))), 15, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(QuitoTildes((BPAPE?.Length >= 60 ? BPAPE.Substring(45, 15) : BPAPE?.Substring(45)?.PadRight(15) ?? string.Empty.PadRight(15))), 15, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(QuitoTildes((BPAPE?.Length > 60 ? BPAPE.Substring(60).PadRight(30) : string.Empty.PadRight(30))), 30, ' ', true) + "&&";
+
                                             }
                                         }
 
@@ -1106,11 +1160,19 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                         StringGrabar += FormateoString(OORDEN, 3, ' ', true) + "&&";
                                         StringGrabar += FormateoString(OID, 20, ' ', true) + "&&";
                                         StringGrabar += FormateoString(OMUNI, 2, ' ', true) + "&&";
+                                        /*
                                         StringGrabar += FormateoString(QuitoTildes(OPAPE.Substring(0, 15).Trim()), 15, ' ', true) + "&&";
                                         StringGrabar += FormateoString(QuitoTildes(OPAPE.Substring(15, 15).Trim()), 15, ' ', true) + "&&";
                                         StringGrabar += FormateoString(QuitoTildes(OPAPE.Substring(30, 15).Trim()), 15, ' ', true) + "&&";
                                         StringGrabar += FormateoString(QuitoTildes(OPAPE.Substring(45, 15).Trim()), 15, ' ', true) + "&&";
                                         StringGrabar += FormateoString(QuitoTildes(OPAPE.Substring(60, 30).Trim()), 30, ' ', true) + "&&";
+                                        */
+                                        StringGrabar += FormateoString(QuitoTildes((OPAPE?.Length >= 15 ? OPAPE.Substring(0, 15).Trim() : OPAPE?.PadRight(15) ?? string.Empty.PadRight(15)).Substring(0, 15)), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes((OPAPE?.Length >= 30 ? OPAPE.Substring(15, 15).Trim() : OPAPE?.Substring(15)?.PadRight(15) ?? string.Empty.PadRight(15)).Substring(0, 15)), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes((OPAPE?.Length >= 45 ? OPAPE.Substring(30, 15).Trim() : OPAPE?.Substring(30)?.PadRight(15) ?? string.Empty.PadRight(15)).Substring(0, 15)), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes((OPAPE?.Length >= 60 ? OPAPE.Substring(45, 15).Trim() : OPAPE?.Substring(45)?.PadRight(15) ?? string.Empty.PadRight(15)).Substring(0, 15)), 15, ' ', true) + "&&";
+                                        StringGrabar += FormateoString(QuitoTildes((OPAPE?.Length > 60 ? OPAPE.Substring(60).Trim().PadRight(30) : string.Empty.PadRight(30)).Substring(0, 30)), 30, ' ', true) + "&&";
+
                                     }
                                 }
 
@@ -1130,11 +1192,20 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                 StringGrabar += "  " + "&&";
 
                                 NombreTmp = "POR PAGO DE PLANILLAS";
+                                /*
                                 StringGrabar += FormateoString(QuitoTildes(NombreTmp.Substring(0, 15).Trim()), 15, ' ', true) + "&&";
                                 StringGrabar += FormateoString(QuitoTildes(NombreTmp.Substring(15, 15).Trim()), 15, ' ', true) + "&&";
                                 StringGrabar += FormateoString(QuitoTildes(NombreTmp.Substring(30, 15).Trim()), 15, ' ', true) + "&&";
                                 StringGrabar += FormateoString(QuitoTildes(NombreTmp.Substring(45, 15).Trim()), 15, ' ', true) + "&&";
                                 StringGrabar += FormateoString(QuitoTildes(NombreTmp.Substring(60, 30).Trim()), 30, ' ', true) + "&&";
+                                */
+                                
+                                StringGrabar += FormateoString(QuitoTildes(NombreTmp != null && NombreTmp.Length > 0 ? NombreTmp.PadRight(15).Substring(0, 15).Trim() : string.Empty.PadRight(15)), 15, ' ', true) + "&&";
+                                StringGrabar += FormateoString(QuitoTildes(NombreTmp != null && NombreTmp.Length > 15 ? NombreTmp.PadRight(30).Substring(15, 15).Trim() : string.Empty.PadRight(15)), 15, ' ', true) + "&&";
+                                StringGrabar += FormateoString(QuitoTildes(NombreTmp != null && NombreTmp.Length > 30 ? NombreTmp.PadRight(45).Substring(30, 15).Trim() : string.Empty.PadRight(15)), 15, ' ', true) + "&&";
+                                StringGrabar += FormateoString(QuitoTildes(NombreTmp != null && NombreTmp.Length > 45 ? NombreTmp.PadRight(60).Substring(45, 15).Trim() : string.Empty.PadRight(15)), 15, ' ', true) + "&&";
+                                StringGrabar += FormateoString(QuitoTildes(NombreTmp != null && NombreTmp.Length > 60 ? NombreTmp.PadRight(90).Substring(60, 30).Trim() : string.Empty.PadRight(30)), 30, ' ', true) + "&&";
+
 
                                 if (!string.IsNullOrEmpty(registro.IBANB))
                                 {
