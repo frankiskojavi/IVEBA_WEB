@@ -28,7 +28,10 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
         public async Task<DTO_IVE21TRFResponse> GeneracionArchivoIVE21TRF(int fechaInicial, int fechaFinal, bool archivoDefinitivo)
         {
             DTO_IVE21TRFResponse response = new DTO_IVE21TRFResponse();
-            string filePath = Path.Combine(Path.GetTempPath(), "archivoGenerado.txt");
+            string archivoErrores = Path.Combine(Path.GetTempPath(), "archivoErrores.txt");
+            string archivoReconstruido = Path.Combine(Path.GetTempPath(), "archivoReconstruido.txt");
+            string archivoOK = Path.Combine(Path.GetTempPath(), "archivoOK.txt");
+
             string datosPersona = "";
             string datosEmpresa = "";
             int cantidadRegistrosOK = 0;
@@ -49,7 +52,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                     if (registros.Count > 0)
                     {
                         //Existe archivo, devuelve archivo generado.
-                        using (StreamWriter archivo = new StreamWriter(filePath))
+                        using (StreamWriter archivo = new StreamWriter(archivoReconstruido))
                         {
                             foreach (var registro in registros)
                             {
@@ -59,8 +62,8 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                 cantidadRegistrosOK++;
                             }
                         }
-                        byte[] fileBytesExistente = File.ReadAllBytes(filePath);
-                        File.Delete(filePath);
+                        byte[] fileBytesExistente = File.ReadAllBytes(archivoReconstruido);
+                        File.Delete(archivoReconstruido);
                         response.registrosOKEncabezado = cantidadRegistrosOK;
                         response.registrosErrorEncabezado = 0;
                         response.archivoTXTOk = fileBytesExistente;
@@ -114,17 +117,17 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                 // *****************************
                 // ARCHIVO CON ERRORES 
                 // *****************************
-                await File.WriteAllTextAsync(filePath, logErrores.ToString());
+                await File.WriteAllTextAsync(archivoErrores, logErrores.ToString());
                 
-                byte[] fileBytes = await File.ReadAllBytesAsync(filePath);
-                File.Delete(filePath);
+                byte[] fileBytes = await File.ReadAllBytesAsync(archivoErrores);
+                File.Delete(archivoErrores);
                 response.archivoTXTErrores = fileBytes;
 
                 // *****************************
                 // ARCHIVO OK
                 // *****************************
                 listaIVE21TemporalGlobal = ConsultarIVETRF21Temporal();
-                response.archivoTXTOk = TransaccionesClientes(archivoDefinitivo, filePath, año, mes);
+                response.archivoTXTOk = TransaccionesClientes(archivoDefinitivo, archivoOK, año, mes);
 
 
                 response.cantidadNit = contadorNit;
@@ -317,7 +320,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
             string DeptoD = "";
             string DeptoO = "";
             string NombreTmp = "";
-
+            string DeptoOrigen = "";
 
             string OTIPOID = "";
             string OORDEN = "";
@@ -339,7 +342,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
             string BPNOM = "";
             string BSNOM = "";
             string OTIPOP = "";
-
+            string StringGrabarTMPFetch;
             try
             {
                 List<DTO_IVE21TRF> listaIVE21TRF = ConsultarIVE21TRFPorFecha(año, mes);                
@@ -348,6 +351,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                 {
                     foreach (DTO_IVE21TRF registro in listaIVE21TRF)
                     {
+                        StringGrabarTMPFetch = "";
                         switch (registro.TRFTIPO)
                         {
                             case "2":
@@ -355,24 +359,27 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                 {
                                     CltOrd = false;
                                     var listaIVE21Temporal = listaIVE21TemporalGlobal.Where(x => x.Cliente == float.Parse(registro.TRFOCUN));
+                                    
                                     foreach (DTO_IVETRF21Temporal registro2 in listaIVE21Temporal)
                                     {
-                                        StringGrabar = "";
-                                        StringGrabar += registro.TRFFECHA.ToString("yyyyMMdd") + "&&";
-                                        StringGrabar += "2" + "&&";
-                                        StringGrabar += "E" + "&&";
+                                        StringGrabarTMPFetch = "";                                        
+                                        StringGrabarTMPFetch += registro.TRFFECHA.ToString("yyyyMMdd") + "&&";
+                                        StringGrabarTMPFetch += "2" + "&&";
+                                        StringGrabarTMPFetch += "E" + "&&";
 
                                         if (registro2.String.Substring(0, 1) == "I")
                                         {
-                                            StringGrabar += FormateoString(registro2.String.Trim(), 135, ' ', true) + "&&";
+                                            StringGrabarTMPFetch += FormateoString(registro2.String.Trim(), 135, ' ', true) + "&&";
                                         }
                                         else
                                         {
-                                            StringGrabar += FormateoString(registro2.String.Trim(), 135, ' ', true) + "&&";
+                                            StringGrabarTMPFetch += FormateoString(registro2.String.Trim(), 135, ' ', true) + "&&";
                                         }
-                                        CltOrd = true;
-                                        //fileWriter.WriteLine(StringGrabar);
+                                        CltOrd = true;                                        
+                                        //fileWriter.WriteLine(StringGrabar);                                        
                                     }
+                                    StringGrabar += StringGrabarTMPFetch;
+                                    StringGrabarTMPFetch = "";
                                 }
                                 else
                                 {
@@ -465,22 +472,25 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
 
                                 if (!string.IsNullOrEmpty(registro.TRFBCUN) && !registro.TRFBCUN.Equals("0"))
                                 {                                    
-                                    var listaTemporalBeneficiarios = listaIVE21TemporalGlobal.Where(x => x.Cliente == float.Parse(registro.TRFOCUN));
+                                    var listaTemporalBeneficiarios = listaIVE21TemporalGlobal.Where(x => x.Cliente == float.Parse(registro.TRFBCUN));
 
                                     if (listaTemporalBeneficiarios.Any())
                                     {
                                         foreach (var registro2 in listaTemporalBeneficiarios)
                                         {
+                                            StringGrabarTMPFetch = "";
                                             if (registro2.String.StartsWith("I"))
                                             {
-                                                StringGrabar += FormateoString(registro2.String.Trim(), 135, ' ', true) + "&&";
+                                                StringGrabarTMPFetch += FormateoString(registro2.String.Trim(), 135, ' ', true) + "&&";
                                             }
                                             else
                                             {
-                                                StringGrabar += FormateoString(registro2.String.Trim(), 135, ' ', true) + "&&";
+                                                StringGrabarTMPFetch += FormateoString(registro2.String.Trim(), 135, ' ', true) + "&&";
                                             }
-                                            CltBen = true;
+                                            CltBen = true;                                                                                        
                                         }
+                                        StringGrabar += StringGrabarTMPFetch;
+                                        StringGrabarTMPFetch = "";
                                     }
                                     else
                                     {
@@ -623,13 +633,16 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                             {
                                                 foreach (var temporal in listaTemporal)
                                                 {
-                                                    StringGrabar = "";
-                                                    StringGrabar += registro.TRFFECHA.ToString("yyyyMMdd") + "&&";
-                                                    StringGrabar += "3" + "&&";
-                                                    StringGrabar += "E" + "&&";
-                                                    StringGrabar += FormateoString(temporal.String.Trim(), 135, ' ', true) + "&&";                                                    
+                                                    StringGrabarTMPFetch = "";
+                                                    StringGrabarTMPFetch = "";
+                                                    StringGrabarTMPFetch += registro.TRFFECHA.ToString("yyyyMMdd") + "&&";
+                                                    StringGrabarTMPFetch += "3" + "&&";
+                                                    StringGrabarTMPFetch += "E" + "&&";
+                                                    StringGrabarTMPFetch += FormateoString(temporal.String.Trim(), 135, ' ', true) + "&&";                                                    
                                                 }
                                             }
+                                            StringGrabar += StringGrabarTMPFetch;
+                                            StringGrabarTMPFetch = "";
                                         }
                                         else
                                         {
@@ -762,7 +775,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
 
                                         StringGrabar += FormateoString(Pais, 2, ' ', true) + "&&";
 
-                                        string DeptoOrigen = !string.IsNullOrEmpty(registro.DepartamentoAgencia.ToString()) ? registro.DepartamentoAgencia.ToString() : "01";
+                                        DeptoOrigen = !string.IsNullOrEmpty(registro.DepartamentoAgencia.ToString()) ? registro.DepartamentoAgencia.ToString() : "01";
                                         if (DeptoOrigen == "" || DeptoOrigen == "0")
                                         {
                                             DeptoOrigen = "01";
@@ -911,17 +924,19 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                             {
                                                 foreach (var temp in registrosTemporal)
                                                 {
+                                                    StringGrabarTMPFetch = "";
                                                     if (temp.String.StartsWith("I"))
                                                     {
-                                                        StringGrabar += FormateoString(temp.String.Trim(), 135, ' ', true) + "&&";
+                                                        StringGrabarTMPFetch += FormateoString(temp.String.Trim(), 135, ' ', true) + "&&";
                                                     }
                                                     else
                                                     {
-                                                        StringGrabar += FormateoString(temp.String.Trim(), 135, ' ', true) + "&&";
-                                                    }
+                                                        StringGrabarTMPFetch += FormateoString(temp.String.Trim(), 135, ' ', true) + "&&";
+                                                    }                                                                           
                                                 }
                                                 CltBen = true;
                                             }
+                                            StringGrabar += StringGrabarTMPFetch;
                                         }
 
                                         if (CltBen == false)
@@ -1083,15 +1098,18 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
 
                                         foreach (var registroTemporal in registrosTemporales)
                                         {
+                                            StringGrabarTMPFetch = "";
                                             if (registroTemporal.String.StartsWith("I"))
                                             {
-                                                StringGrabar += FormateoString(registroTemporal.String.Trim(), 135, ' ', true) + "&&";
+                                                StringGrabarTMPFetch += FormateoString(registroTemporal.String.Trim(), 135, ' ', true) + "&&";
                                             }
                                             else
                                             {
-                                                StringGrabar += FormateoString(registroTemporal.String.Trim(), 135, ' ', true) + "&&";
-                                            }
+                                                StringGrabarTMPFetch += FormateoString(registroTemporal.String.Trim(), 135, ' ', true) + "&&";
+                                            }                                            
                                         }
+                                        StringGrabar += StringGrabarTMPFetch;
+                                        StringGrabarTMPFetch = "";
                                         CltOrd = true;
                                     }
                                     else
@@ -1250,14 +1268,39 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                 break;
 
                         }
-                        fileWriter.WriteLine(QuitoTildes(StringGrabar));
-                        cantidadRegsDetalleOK++;
-                    }                    
 
-                    byte[] fileBytes = File.ReadAllBytes(filePath);
-                    File.Delete(filePath);
-                    return fileBytes;
+                        if(StringGrabar.Trim().Length == 440)
+                        {
+                            fileWriter.WriteLine(QuitoTildes(StringGrabar));
+                            cantidadRegsDetalleOK++;
+                        }                                                
+                                                
+                        StringGrabar = "";
+                        OORDEN = "";
+                        OID = "";
+                        OTIPOID = "";
+                        OMUNI = "";
+                        OPAPE = "";
+                        OSAPE = "";
+                        OACAS = "";
+                        OPNOM = "";
+                        OSNOM = "";
+                        BORDEN = "";
+                        BID = "";
+                        BTIPOID = "";
+                        BMUNI = "";
+                        BPAPE = "";
+                        BSAPE = "";
+                        BACAS = "";
+                        BPNOM = "";
+                        BSNOM = "";
+                        DeptoOrigen = "";
+                    }
+                    fileWriter.Flush();                    
                 }
+                byte[] fileBytes = File.ReadAllBytes(filePath);
+                File.Delete(filePath);
+                return fileBytes;
             }
             catch (Exception ex)
             {
@@ -1298,7 +1341,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
         {
             List<DTO_IVETRF21Temporal> listaDatos = new List<DTO_IVETRF21Temporal>();
 
-            string query = "SELECT * FROM IVE_TRF21_TEMPORAL";            
+            string query = "SELECT * FROM IVE_TRF21_TEMPORAL ORDER BY String";            
 
             try
             {
