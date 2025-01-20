@@ -37,8 +37,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
             int cantidadRegistrosOK = 0;
             int año = 0;
             int mes = 0;
-            StringBuilder logErrores = new StringBuilder();
-
+            StringBuilder logErrores = new StringBuilder();            
             try
             {
                 año = int.Parse(fechaInicial.ToString().Substring(0, 4));
@@ -342,6 +341,9 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
             string BPNOM = "";
             string BSNOM = "";
             string OTIPOP = "";
+
+            int registroActual = 0;
+
             string StringGrabarTMPFetch;
             try
             {
@@ -352,6 +354,11 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                     foreach (DTO_IVE21TRF registro in listaIVE21TRF)
                     {
                         StringGrabarTMPFetch = "";
+                        registroActual++;
+                        if(registroActual == 10)
+                        {
+                            Console.WriteLine("Stop");
+                        }
                         switch (registro.TRFTIPO)
                         {
                             case "2":
@@ -375,8 +382,9 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                         {
                                             StringGrabarTMPFetch += FormateoString(registro2.String.Trim(), 135, ' ', true) + "&&";
                                         }
-                                        CltOrd = true;                                        
-                                        //fileWriter.WriteLine(StringGrabar);                                        
+                                        CltOrd = true;
+                                        //fileWriter.WriteLine(StringGrabar);
+                                        break;
                                     }
                                     StringGrabar += StringGrabarTMPFetch;
                                     StringGrabarTMPFetch = "";
@@ -487,7 +495,8 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                             {
                                                 StringGrabarTMPFetch += FormateoString(registro2.String.Trim(), 135, ' ', true) + "&&";
                                             }
-                                            CltBen = true;                                                                                        
+                                            CltBen = true;
+                                            break;
                                         }
                                         StringGrabar += StringGrabarTMPFetch;
                                         StringGrabarTMPFetch = "";
@@ -638,7 +647,8 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                                     StringGrabarTMPFetch += registro.TRFFECHA.ToString("yyyyMMdd") + "&&";
                                                     StringGrabarTMPFetch += "3" + "&&";
                                                     StringGrabarTMPFetch += "E" + "&&";
-                                                    StringGrabarTMPFetch += FormateoString(temporal.String.Trim(), 135, ' ', true) + "&&";                                                    
+                                                    StringGrabarTMPFetch += FormateoString(temporal.String.Trim(), 135, ' ', true) + "&&";
+                                                    break;
                                                 }
                                             }
                                             StringGrabar += StringGrabarTMPFetch;
@@ -932,7 +942,8 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                                     else
                                                     {
                                                         StringGrabarTMPFetch += FormateoString(temp.String.Trim(), 135, ' ', true) + "&&";
-                                                    }                                                                           
+                                                    }
+                                                    break;
                                                 }
                                                 CltBen = true;
                                             }
@@ -1000,11 +1011,11 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                                 StringGrabar += FormateoString(QuitoTildes(BPAPE?.Substring(45, Math.Min(15, BPAPE.Length - 45))), 15, ' ', true) + "&&";
                                                 StringGrabar += FormateoString(QuitoTildes(BPAPE?.Substring(60, Math.Min(30, BPAPE.Length - 60))), 30, ' ', true) + "&&";
                                                 */
-                                                StringGrabar += FormateoString(QuitoTildes((BPAPE?.Length >= 15 ? BPAPE.Substring(0, 15) : BPAPE?.PadRight(15) ?? string.Empty.PadRight(15))), 15, ' ', true) + "&&";
-                                                StringGrabar += FormateoString(QuitoTildes((BPAPE?.Length >= 30 ? BPAPE.Substring(15, 15) : BPAPE?.Substring(15)?.PadRight(15) ?? string.Empty.PadRight(15))), 15, ' ', true) + "&&";
-                                                StringGrabar += FormateoString(QuitoTildes((BPAPE?.Length >= 45 ? BPAPE.Substring(30, 15) : BPAPE?.Substring(30)?.PadRight(15) ?? string.Empty.PadRight(15))), 15, ' ', true) + "&&";
-                                                StringGrabar += FormateoString(QuitoTildes((BPAPE?.Length >= 60 ? BPAPE.Substring(45, 15) : BPAPE?.Substring(45)?.PadRight(15) ?? string.Empty.PadRight(15))), 15, ' ', true) + "&&";
-                                                StringGrabar += FormateoString(QuitoTildes((BPAPE?.Length > 60 ? BPAPE.Substring(60).PadRight(30) : string.Empty.PadRight(30))), 30, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(QuitoTildes(BPAPE != null && BPAPE.Length > 0 ? BPAPE.PadRight(15).Substring(0, 15) : string.Empty.PadRight(15)), 15, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(QuitoTildes(BPAPE != null && BPAPE.Length > 15 ? BPAPE.PadRight(30).Substring(15, 15) : string.Empty.PadRight(15)), 15, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(QuitoTildes(BPAPE != null && BPAPE.Length > 30 ? BPAPE.PadRight(45).Substring(30, 15) : string.Empty.PadRight(15)), 15, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(QuitoTildes(BPAPE != null && BPAPE.Length > 45 ? BPAPE.PadRight(60).Substring(45, 15) : string.Empty.PadRight(15)), 15, ' ', true) + "&&";
+                                                StringGrabar += FormateoString(QuitoTildes(BPAPE != null && BPAPE.Length > 60 ? BPAPE.PadRight(90).Substring(60, 30) : string.Empty.PadRight(30)), 30, ' ', true) + "&&";
 
                                             }
                                         }
@@ -1106,7 +1117,9 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                                             else
                                             {
                                                 StringGrabarTMPFetch += FormateoString(registroTemporal.String.Trim(), 135, ' ', true) + "&&";
-                                            }                                            
+                                            }
+                                            //clavo
+                                            break;
                                         }
                                         StringGrabar += StringGrabarTMPFetch;
                                         StringGrabarTMPFetch = "";
@@ -1304,7 +1317,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
             }
             catch (Exception ex)
             {
-                throw new Exception(" Error en TransaccionesClientes " + ex.Message);
+                throw new Exception(" Error en TransaccionesClientes " + ex.Message + " error en linea : " + registroActual);
             }            
         }
 
@@ -1341,7 +1354,7 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
         {
             List<DTO_IVETRF21Temporal> listaDatos = new List<DTO_IVETRF21Temporal>();
 
-            string query = "SELECT * FROM IVE_TRF21_TEMPORAL ORDER BY String";            
+            string query = "SELECT * FROM IVE_TRF21_TEMPORAL";            
 
             try
             {
