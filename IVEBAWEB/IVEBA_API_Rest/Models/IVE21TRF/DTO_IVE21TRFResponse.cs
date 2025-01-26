@@ -7,7 +7,7 @@
         public int registrosOKDetalle { get; set; }
         public int registrosERRORDetalle { get; set; }
         public int cantidadNit { get; set; }
-        public byte[] archivoTXTErrores { get; set; }
-        public byte[] archivoTXTOk { get; set; }
+        public byte[]? archivoTXTErrores { get; set; }
+        public byte[]? archivoTXTOk { get; set; }
     }
 }
