@@ -1792,27 +1792,6 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
         {
             List<DTO_IVE21TRF> listaDatos = new List<DTO_IVE21TRF>();
 
-            //string queryReal = @"
-            //    SELECT DISTINCT 
-            //        IVE21Transferencia.*, 
-            //        DWAGENCIA.*, 
-            //        dwcuenta_iban.iban AS ibano, 
-            //        dwcuenta_ibanben.iban AS ibanb
-            //    FROM 
-            //        IVE21Transferencia
-            //    LEFT OUTER JOIN 
-            //        DWAGENCIA ON AGENCIAID = TRFBRN
-            //    LEFT OUTER JOIN 
-            //        [172.16.4.62].dwbinter.dbo.dwcuenta_iban dwcuenta_iban ON dwcuenta_iban.cuenta COLLATE SQL_Latin1_General_CP1_CI_AS = trfocta
-            //    LEFT OUTER JOIN 
-            //        [172.16.4.62].dwbinter.dbo.dwcuenta_iban dwcuenta_ibanben ON dwcuenta_ibanben.cuenta COLLATE SQL_Latin1_General_CP1_CI_AS = trfbcta
-            //    WHERE  
-            //        ive21 = 'S' 
-            //        AND YEAR(trffecha) = 2024  -- Reemplaza con el valor real de CmbAno.Text
-            //        AND MONTH(trffecha) = 1    -- Reemplaza con (CmbMes.ListIndex + 1)
-            //    ORDER BY 
-            //        trffecha, trftipo, trftran;
-            //";
             string query = @"
                 SELECT DISTINCT 
                     IVE21Transferencia.*, 
@@ -1824,17 +1803,38 @@ namespace IVEBA_API_Rest.Services.IVE21TRF
                 LEFT OUTER JOIN 
                     DWAGENCIA ON AGENCIAID = TRFBRN
                 LEFT OUTER JOIN 
-                    DBVariosFH_Remoto.dbo.dwcuenta_iban dwcuenta_iban 
-                    ON CAST(dwcuenta_iban.cuenta AS NVARCHAR) COLLATE SQL_Latin1_General_CP1_CI_AS = CAST(trfocta AS NVARCHAR)
+                    [172.16.4.62].dwbinter.dbo.dwcuenta_iban dwcuenta_iban ON CAST(dwcuenta_iban.cuenta AS NVARCHAR) COLLATE SQL_Latin1_General_CP1_CI_AS = CAST(trfocta AS NVARCHAR)
                 LEFT OUTER JOIN 
-                    DBVariosFH_Remoto.dbo.dwcuenta_iban dwcuenta_ibanben 
-                    ON CAST(dwcuenta_ibanben.cuenta AS NVARCHAR) COLLATE SQL_Latin1_General_CP1_CI_AS = CAST(trfbcta AS NVARCHAR)
+                    [172.16.4.62].dwbinter.dbo.dwcuenta_iban dwcuenta_ibanben ON CAST(dwcuenta_ibanben.cuenta AS NVARCHAR) COLLATE SQL_Latin1_General_CP1_CI_AS = CAST(trfbcta AS NVARCHAR)
                 WHERE  
                     ive21 = 'S' 
                     AND YEAR(trffecha) = @Anio  
-                    AND MONTH(trffecha) = @Mes    
+                    AND MONTH(trffecha) = @Mes                        
                 ORDER BY 
                     trffecha, trftipo, trftran;";
+
+            //string query = @"
+            //    SELECT DISTINCT 
+            //        IVE21Transferencia.*, 
+            //        DWAGENCIA.*, 
+            //        dwcuenta_iban.iban AS ibano, 
+            //        dwcuenta_ibanben.iban AS ibanb
+            //    FROM 
+            //        IVE21Transferencia
+            //    LEFT OUTER JOIN 
+            //        DWAGENCIA ON AGENCIAID = TRFBRN
+            //    LEFT OUTER JOIN 
+            //        DBVariosFH_Remoto.dbo.dwcuenta_iban dwcuenta_iban 
+            //        ON CAST(dwcuenta_iban.cuenta AS NVARCHAR) COLLATE SQL_Latin1_General_CP1_CI_AS = CAST(trfocta AS NVARCHAR)
+            //    LEFT OUTER JOIN 
+            //        DBVariosFH_Remoto.dbo.dwcuenta_iban dwcuenta_ibanben 
+            //        ON CAST(dwcuenta_ibanben.cuenta AS NVARCHAR) COLLATE SQL_Latin1_General_CP1_CI_AS = CAST(trfbcta AS NVARCHAR)
+            //    WHERE  
+            //        ive21 = 'S' 
+            //        AND YEAR(trffecha) = @Anio  
+            //        AND MONTH(trffecha) = @Mes    
+            //    ORDER BY 
+            //        trffecha, trftipo, trftran;";
 
             SqlParameter[] parameters = {
                 new SqlParameter("@Anio", año),
