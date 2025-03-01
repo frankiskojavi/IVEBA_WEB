@@ -1,1 +1,7 @@
 ﻿IVEBAWEB/IVEBA_API_Rest/obj/Debug/net8.0/staticwebassets.removed.txt
+*.cache
+IVEBAWEB/.vs/IVEBAWEB/FileContentIndex/2330db89-98af-409b-8a53-05512f9a17d3.vsidx
+*.vsidx
+*.bin
+*.cache
+*.bin

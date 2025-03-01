@@ -1,30 +1,14 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\frank\\Desktop\\OneDrive\\Trabajo\\INTER\\IVE WEB\\Github\\IVEBA_WEB\\IVEBAWEB\\",
+  "WorkspaceRootPath": "C:\\Users\\francisco.huit\\Desktop\\Interbanco\\Fuentes\\Github\\IVEBA_WEB\\IVEBAWEB\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|c:\\users\\frank\\desktop\\onedrive\\trabajo\\inter\\ive web\\github\\iveba_web\\ivebaweb\\iveba_api_rest\\services\\ive21trf\\ive21trfhelperservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|c:\\users\\francisco.huit\\desktop\\interbanco\\fuentes\\github\\iveba_web\\ivebaweb\\iveba_api_rest\\services\\ive21trf\\ive21trfhelperservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|solutionrelative:iveba_api_rest\\services\\ive21trf\\ive21trfhelperservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|c:\\users\\frank\\desktop\\onedrive\\trabajo\\inter\\ive web\\github\\iveba_web\\ivebaweb\\iveba_api_rest\\controllers\\ive21trf\\archivotrf21controller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|c:\\users\\francisco.huit\\desktop\\interbanco\\fuentes\\github\\iveba_web\\ivebaweb\\iveba_api_rest\\controllers\\ive21trf\\archivotrf21controller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|solutionrelative:iveba_api_rest\\controllers\\ive21trf\\archivotrf21controller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|c:\\users\\frank\\desktop\\onedrive\\trabajo\\inter\\ive web\\github\\iveba_web\\ivebaweb\\iveba_api_rest\\services\\ive21trf\\iive21trfhelperservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|solutionrelative:iveba_api_rest\\services\\ive21trf\\iive21trfhelperservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|c:\\users\\frank\\desktop\\onedrive\\trabajo\\inter\\ive web\\github\\iveba_web\\ivebaweb\\iveba_api_rest\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|solutionrelative:iveba_api_rest\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|c:\\users\\frank\\desktop\\onedrive\\trabajo\\inter\\ive web\\github\\iveba_web\\ivebaweb\\iveba_api_rest\\utilidades\\utilidadesapp.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|solutionrelative:iveba_api_rest\\utilidades\\utilidadesapp.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|c:\\users\\frank\\desktop\\onedrive\\trabajo\\inter\\ive web\\github\\iveba_web\\ivebaweb\\iveba_api_rest\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{552AADAA-57A8-453D-9250-711083C5D9B1}|IVEBA_API_Rest\\IVEBA_API_Rest.csproj|solutionrelative:iveba_api_rest\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -34,85 +18,36 @@
       "DocumentGroups": [
         {
           "DockedWidth": 278,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 1,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "UtilidadesAPP.cs",
-              "DocumentMoniker": "C:\\Users\\frank\\Desktop\\OneDrive\\Trabajo\\INTER\\IVE WEB\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\Utilidades\\UtilidadesAPP.cs",
-              "RelativeDocumentMoniker": "IVEBA_API_Rest\\Utilidades\\UtilidadesAPP.cs",
-              "ToolTip": "C:\\Users\\frank\\Desktop\\OneDrive\\Trabajo\\INTER\\IVE WEB\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\Utilidades\\UtilidadesAPP.cs",
-              "RelativeToolTip": "IVEBA_API_Rest\\Utilidades\\UtilidadesAPP.cs",
-              "ViewState": "AgIAAEAAAAAAAAAAAAAiwF0AAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-19T16:40:50.638Z",
-              "IsPinned": true
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:128:0:{13b12e3e-c1b4-4539-9371-4fe9a0d523fc}"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\frank\\Desktop\\OneDrive\\Trabajo\\INTER\\IVE WEB\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\Program.cs",
-              "RelativeDocumentMoniker": "IVEBA_API_Rest\\Program.cs",
-              "ToolTip": "C:\\Users\\frank\\Desktop\\OneDrive\\Trabajo\\INTER\\IVE WEB\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\Program.cs",
-              "RelativeToolTip": "IVEBA_API_Rest\\Program.cs",
-              "ViewState": "AgIAABYAAAAAAAAAAAAgwB4AAAAnAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "IVE21TRFHelperService.cs",
+              "DocumentMoniker": "C:\\Users\\francisco.huit\\Desktop\\Interbanco\\Fuentes\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\Services\\IVE21TRF\\IVE21TRFHelperService.cs",
+              "RelativeDocumentMoniker": "IVEBA_API_Rest\\Services\\IVE21TRF\\IVE21TRFHelperService.cs",
+              "ToolTip": "C:\\Users\\francisco.huit\\Desktop\\Interbanco\\Fuentes\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\Services\\IVE21TRF\\IVE21TRFHelperService.cs",
+              "RelativeToolTip": "IVEBA_API_Rest\\Services\\IVE21TRF\\IVE21TRFHelperService.cs",
+              "ViewState": "AQIAAIkBAAAA2MzMzEwtwNkAAABpAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-20T00:40:38.896Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "appsettings.Development.json",
-              "DocumentMoniker": "C:\\Users\\frank\\Desktop\\OneDrive\\Trabajo\\INTER\\IVE WEB\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\appsettings.Development.json",
-              "RelativeDocumentMoniker": "IVEBA_API_Rest\\appsettings.Development.json",
-              "ToolTip": "C:\\Users\\frank\\Desktop\\OneDrive\\Trabajo\\INTER\\IVE WEB\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\appsettings.Development.json",
-              "RelativeToolTip": "IVEBA_API_Rest\\appsettings.Development.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAfAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-01-20T00:08:11.699Z"
+              "WhenOpened": "2025-02-21T22:12:54.85Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "ArchivoTRF21Controller.cs",
-              "DocumentMoniker": "C:\\Users\\frank\\Desktop\\OneDrive\\Trabajo\\INTER\\IVE WEB\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\Controllers\\IVE21TRF\\ArchivoTRF21Controller.cs",
+              "DocumentMoniker": "C:\\Users\\francisco.huit\\Desktop\\Interbanco\\Fuentes\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\Controllers\\IVE21TRF\\ArchivoTRF21Controller.cs",
               "RelativeDocumentMoniker": "IVEBA_API_Rest\\Controllers\\IVE21TRF\\ArchivoTRF21Controller.cs",
-              "ToolTip": "C:\\Users\\frank\\Desktop\\OneDrive\\Trabajo\\INTER\\IVE WEB\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\Controllers\\IVE21TRF\\ArchivoTRF21Controller.cs",
+              "ToolTip": "C:\\Users\\francisco.huit\\Desktop\\Interbanco\\Fuentes\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\Controllers\\IVE21TRF\\ArchivoTRF21Controller.cs",
               "RelativeToolTip": "IVEBA_API_Rest\\Controllers\\IVE21TRF\\ArchivoTRF21Controller.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAxwBMAAAAIAAAAAAAAAA==",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABYAAAAzAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-12T16:23:45.601Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "IIVE21TRFHelperService.cs",
-              "DocumentMoniker": "C:\\Users\\frank\\Desktop\\OneDrive\\Trabajo\\INTER\\IVE WEB\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\Services\\IVE21TRF\\IIVE21TRFHelperService.cs",
-              "RelativeDocumentMoniker": "IVEBA_API_Rest\\Services\\IVE21TRF\\IIVE21TRFHelperService.cs",
-              "ToolTip": "C:\\Users\\frank\\Desktop\\OneDrive\\Trabajo\\INTER\\IVE WEB\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\Services\\IVE21TRF\\IIVE21TRFHelperService.cs",
-              "RelativeToolTip": "IVEBA_API_Rest\\Services\\IVE21TRF\\IIVE21TRFHelperService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAYAAAAqAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-12T16:23:53.266Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "IVE21TRFHelperService.cs",
-              "DocumentMoniker": "C:\\Users\\frank\\Desktop\\OneDrive\\Trabajo\\INTER\\IVE WEB\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\Services\\IVE21TRF\\IVE21TRFHelperService.cs",
-              "RelativeDocumentMoniker": "IVEBA_API_Rest\\Services\\IVE21TRF\\IVE21TRFHelperService.cs",
-              "ToolTip": "C:\\Users\\frank\\Desktop\\OneDrive\\Trabajo\\INTER\\IVE WEB\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\Services\\IVE21TRF\\IVE21TRFHelperService.cs",
-              "RelativeToolTip": "IVEBA_API_Rest\\Services\\IVE21TRF\\IVE21TRFHelperService.cs",
-              "ViewState": "AgIAACUFAAAAAAAAAAApwFQFAAAVAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-12T16:24:02.122Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-02-21T22:12:35.442Z"
             }
           ]
         },

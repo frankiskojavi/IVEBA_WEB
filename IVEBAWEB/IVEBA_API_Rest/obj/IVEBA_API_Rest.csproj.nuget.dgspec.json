@@ -1,26 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\frank\\Desktop\\OneDrive\\Trabajo\\INTER\\IVE WEB\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\IVEBA_API_Rest.csproj": {}
+    "C:\\Users\\francisco.huit\\Desktop\\Interbanco\\Fuentes\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\IVEBA_API_Rest.csproj": {}
   },
   "projects": {
-    "C:\\Users\\frank\\Desktop\\OneDrive\\Trabajo\\INTER\\IVE WEB\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\IVEBA_API_Rest.csproj": {
+    "C:\\Users\\francisco.huit\\Desktop\\Interbanco\\Fuentes\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\IVEBA_API_Rest.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\frank\\Desktop\\OneDrive\\Trabajo\\INTER\\IVE WEB\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\IVEBA_API_Rest.csproj",
+        "projectUniqueName": "C:\\Users\\francisco.huit\\Desktop\\Interbanco\\Fuentes\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\IVEBA_API_Rest.csproj",
         "projectName": "IVEBA_API_Rest",
-        "projectPath": "C:\\Users\\frank\\Desktop\\OneDrive\\Trabajo\\INTER\\IVE WEB\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\IVEBA_API_Rest.csproj",
-        "packagesPath": "C:\\Users\\frank\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\frank\\Desktop\\OneDrive\\Trabajo\\INTER\\IVE WEB\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\obj\\",
+        "projectPath": "C:\\Users\\francisco.huit\\Desktop\\Interbanco\\Fuentes\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\IVEBA_API_Rest.csproj",
+        "packagesPath": "C:\\Users\\francisco.huit\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\francisco.huit\\Desktop\\Interbanco\\Fuentes\\Github\\IVEBA_WEB\\IVEBAWEB\\IVEBA_API_Rest\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\DevExpress 24.1\\Components\\Offline Packages",
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\frank\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 24.1.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\francisco.huit\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -28,7 +22,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\DevExpress 24.1\\Components\\System\\Components\\Packages": {},
           "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
@@ -47,8 +40,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.100"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -82,7 +74,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
