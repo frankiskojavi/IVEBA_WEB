@@ -5,6 +5,53 @@
     "version": "1.0"
   },
   "paths": {
+    "/api/ArchivoBA05/GenerarArchivoIVEBA05": {
+      "get": {
+        "tags": [
+          "ArchivoBA05"
+        ],
+        "parameters": [
+          {
+            "name": "fechaInicial",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "fechaFinal",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DTO_IVEBA05Response"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DTO_IVEBA05Response"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DTO_IVEBA05Response"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/ArchivoCH/GenerarArchivoDefinitivo": {
       "get": {
         "tags": [
@@ -450,6 +497,25 @@
             "nullable": true
           },
           "archivoTXTOk": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DTO_IVEBA05Response": {
+        "type": "object",
+        "properties": {
+          "cantidadRegistrosOK": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cantidadRegistrosError": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "archivoTXT": {
             "type": "string",
             "format": "byte",
             "nullable": true

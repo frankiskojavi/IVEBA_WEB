@@ -3,6 +3,7 @@ using IVEBA_API_Rest.Services.IVE13ME;
 using IVEBA_API_Rest.Services.IVE14EF;
 using IVEBA_API_Rest.Services.IVE17DV;
 using IVEBA_API_Rest.Services.IVE21TRF;
+using IVEBA_API_Rest.Services.IVEBA05;
 using IVEBA_API_Rest.Services.IVECH;
 using IVEBA_API_Rest.Services.SeguridadAPP;
 
@@ -23,6 +24,7 @@ builder.Services.AddScoped<IIVE14EFHelperService, IVE14EFHelperService>();
 builder.Services.AddScoped<IIVE17DVHelperService, IVE17DVHelperService>();
 builder.Services.AddScoped<IIVECHHelperService, IVECHHelperService>();
 builder.Services.AddScoped<IIVE21TRFHelperService, IVE21TRFHelperService>();
+builder.Services.AddScoped<IIVEBA05HelperService, IVEBA05HelperService>();
 builder.Services.AddScoped<iSeguridadaAPPService, SeguridadaAPPService>();
 
 // Configurar CORS
