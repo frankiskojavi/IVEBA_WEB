@@ -1,11 +1,12 @@
 {
   "Version": 1,
-  "Hash": "0DzmhD+rKiJQlMVMn0EqUxInnx7mtMIa95UTpJO0V9E=",
+  "Hash": "clebWYZD7Y0uOmE8Kx/N3/SC3PVF18VU1YH/iM7qYcU=",
   "Source": "IVEBA_API_Rest",
   "BasePath": "_content/IVEBA_API_Rest",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
   "DiscoveryPatterns": [],
-  "Assets": []
+  "Assets": [],
+  "Endpoints": []
 }
